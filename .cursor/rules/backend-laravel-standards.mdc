@@ -1,0 +1,397 @@
+---
+description: Laravel/Backend coding standards for ReelForge
+globs: backend/**/*.php
+alwaysApply: false
+---
+
+# Backend Laravel Standards для ReelForge
+
+## Архитектурные принципы
+
+- **API-first архитектура** - вся бизнес-логика в API
+- **Подготовка к мобильным приложениям** - чистые REST API
+- **Queue обязательно** - все тяжелые операции через очереди
+- **Stateless API** - используй Sanctum токены
+
+## Структура контроллеров
+
+```php
+<?php
+// ✅ ХОРОШО - API контроллер с четкой структурой
+namespace App\Http\Controllers\API;
+
+use App\Http\Controllers\Controller;
+use App\Services\ProjectService;
+use App\Http\Requests\CreateProjectRequest;
+use App\Http\Resources\ProjectResource;
+use Illuminate\Http\JsonResponse;
+
+class ProjectController extends Controller
+{
+    public function __construct(
+        private ProjectService $projectService
+    ) {}
+
+    public function index(): JsonResponse
+    {
+        $projects = $this->projectService->getUserProjects(auth()->id());
+        
+        return response()->json([
+            'success' => true,
+            'data' => ProjectResource::collection($projects)
+        ]);
+    }
+
+    public function store(CreateProjectRequest $request): JsonResponse
+    {
+        try {
+            $project = $this->projectService->createProject(
+                $request->validated(),
+                auth()->id()
+            );
+
+            return response()->json([
+                'success' => true,
+                'data' => new ProjectResource($project)
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to create project'
+            ], 500);
+        }
+    }
+}
+```
+
+## Сервисы для бизнес-логики
+
+```php
+<?php
+// ✅ ХОРОШО - Вся логика в сервисах
+namespace App\Services\Video;
+
+use App\Models\Project;
+use App\Jobs\GenerateVideoJob;
+use App\Exceptions\VideoGenerationException;
+
+class VideoService
+{
+    public function generateVideo(Project $project): void
+    {
+        if ($project->status === 'processing') {
+            throw new VideoGenerationException('Video is already being processed');
+        }
+
+        $project->update(['status' => 'processing']);
+        
+        GenerateVideoJob::dispatch($project);
+    }
+
+    public function processVideo(Project $project): string
+    {
+        $images = $project->images()->orderBy('order')->get();
+        
+        if ($images->count() < 3) {
+            throw new VideoGenerationException('At least 3 images required');
+        }
+
+        $videoPath = $this->createVideoFromImages($images, $project);
+        
+        $project->update([
+            'status' => 'done',
+            'video_path' => $videoPath
+        ]);
+
+        return $videoPath;
+    }
+
+    private function createVideoFromImages($images, Project $project): string
+    {
+        // FFmpeg логика здесь
+        $outputPath = "videos/{$project->id}_" . time() . ".mp4";
+        
+        // Создание видео через FFmpeg
+        $this->executeFFmpegCommand($images, $project, $outputPath);
+        
+        return $outputPath;
+    }
+}
+```
+
+## Jobs для тяжелых операций
+
+```php
+<?php
+// ✅ ХОРОШО - Все тяжелые операции через Jobs
+namespace App\Jobs;
+
+use App\Models\Project;
+use App\Services\Video\VideoService;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+
+class GenerateVideoJob implements ShouldQueue
+{
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    public int $tries = 3;
+    public int $timeout = 300; // 5 минут
+
+    public function __construct(
+        private Project $project
+    ) {}
+
+    public function handle(VideoService $videoService): void
+    {
+        try {
+            $videoService->processVideo($this->project);
+        } catch (\Exception $e) {
+            $this->project->update(['status' => 'failed']);
+            
+            \Log::error('Video generation failed', [
+                'project_id' => $this->project->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            throw $e;
+        }
+    }
+
+    public function failed(\Throwable $exception): void
+    {
+        $this->project->update(['status' => 'failed']);
+    }
+}
+```
+
+## Модели с отношениями
+
+```php
+<?php
+// ✅ ХОРОШО - Четкие отношения и скоупы
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class Project extends Model
+{
+    protected $fillable = [
+        'user_id',
+        'title',
+        'price',
+        'description',
+        'status',
+        'template_id',
+        'video_path'
+    ];
+
+    protected $casts = [
+        'price' => 'decimal:2',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
+    ];
+
+    // Отношения
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function images(): HasMany
+    {
+        return $this->hasMany(ProjectImage::class);
+    }
+
+    public function template(): BelongsTo
+    {
+        return $this->belongsTo(Template::class);
+    }
+
+    // Скоупы
+    public function scopeForUser($query, int $userId)
+    {
+        return $query->where('user_id', $userId);
+    }
+
+    public function scopeCompleted($query)
+    {
+        return $query->where('status', 'done');
+    }
+
+    // Аксессоры
+    public function getVideoUrlAttribute(): ?string
+    {
+        return $this->video_path 
+            ? Storage::url($this->video_path)
+            : null;
+    }
+}
+```
+
+## Request валидация
+
+```php
+<?php
+// ✅ ХОРОШО - Отдельные Request классы
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class CreateProjectRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return auth()->check();
+    }
+
+    public function rules(): array
+    {
+        return [
+            'title' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0|max:999999.99',
+            'description' => 'required|string|max:1000',
+            'template_id' => 'required|exists:templates,id',
+            'images' => 'required|array|min:3|max:5',
+            'images.*' => 'image|mimes:jpeg,png,jpg|max:2048'
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'images.min' => 'At least 3 images are required',
+            'images.max' => 'Maximum 5 images allowed',
+            'images.*.image' => 'Each file must be an image',
+        ];
+    }
+}
+```
+
+## API Resources
+
+```php
+<?php
+// ✅ ХОРОШО - Структурированные API ответы
+namespace App\Http\Resources;
+
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class ProjectResource extends JsonResource
+{
+    public function toArray($request): array
+    {
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'price' => $this->price,
+            'description' => $this->description,
+            'status' => $this->status,
+            'video_url' => $this->video_url,
+            'template' => new TemplateResource($this->whenLoaded('template')),
+            'images' => ProjectImageResource::collection($this->whenLoaded('images')),
+            'created_at' => $this->created_at->toISOString(),
+            'updated_at' => $this->updated_at->toISOString(),
+        ];
+    }
+}
+```
+
+## Обработка ошибок
+
+```php
+<?php
+// ✅ ХОРОШО - Кастомные исключения
+namespace App\Exceptions;
+
+use Exception;
+
+class VideoGenerationException extends Exception
+{
+    public function render($request)
+    {
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => false,
+                'message' => $this->getMessage()
+            ], 422);
+        }
+
+        return parent::render($request);
+    }
+}
+
+// В Handler.php
+public function register()
+{
+    $this->reportable(function (Throwable $e) {
+        if ($e instanceof VideoGenerationException) {
+            \Log::warning('Video generation issue', [
+                'message' => $e->getMessage(),
+                'user_id' => auth()->id()
+            ]);
+        }
+    });
+}
+```
+
+## Файловая структура
+
+```
+backend/app/
+├── Http/
+│   ├── Controllers/API/    # API контроллеры
+│   ├── Requests/          # Form Request классы
+│   └── Resources/         # API Resources
+├── Services/              # Бизнес-логика
+│   └── Video/            # Сервисы для видео
+├── Jobs/                 # Queue Jobs
+├── Models/               # Eloquent модели
+├── DTO/                  # Data Transfer Objects
+└── Exceptions/           # Кастомные исключения
+```
+
+## Именование
+
+- Контроллеры: `PascalCase` + `Controller` (ProjectController)
+- Сервисы: `PascalCase` + `Service` (VideoService)
+- Jobs: `PascalCase` + `Job` (GenerateVideoJob)
+- Модели: `PascalCase` единственное число (Project, User)
+- Методы: `camelCase` (createProject, generateVideo)
+- Константы: `UPPER_SNAKE_CASE`
+
+## Безопасность
+
+```php
+// ✅ ХОРОШО - Всегда проверяй права доступа
+public function show(Project $project): JsonResponse
+{
+    $this->authorize('view', $project);
+    
+    return response()->json([
+        'success' => true,
+        'data' => new ProjectResource($project->load(['images', 'template']))
+    ]);
+}
+
+// ✅ ХОРОШО - Используй Policy классы
+class ProjectPolicy
+{
+    public function view(User $user, Project $project): bool
+    {
+        return $user->id === $project->user_id;
+    }
+
+    public function delete(User $user, Project $project): bool
+    {
+        return $user->id === $project->user_id && 
+               $project->status !== 'processing';
+    }
+}
+```

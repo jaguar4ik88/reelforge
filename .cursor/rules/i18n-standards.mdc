@@ -1,0 +1,194 @@
+---
+description: Правила интернационализации (i18n) для ReelForge — украинский и английский
+globs: frontend/**/*.{js,jsx,ts,tsx}
+alwaysApply: false
+---
+
+# i18n стандарты ReelForge
+
+## Основной принцип
+
+**ЛЮБОЙ текст видимый пользователю должен быть в i18n файлах.**
+Основной язык — 🇺🇦 **Украинский** (`uk.js`), второй — 🇬🇧 **Английский** (`en.js`).
+
+---
+
+## ❌ Запрещено — хардкод строк в JSX
+
+```jsx
+// ❌ ПЛОХО — текст напрямую в компоненте
+<h1>Створити проєкт</h1>
+<button>Зберегти</button>
+<p>Відео готове!</p>
+
+// ❌ ПЛОХО — даже если кажется "мелочью"
+<span>або</span>
+<label>Email</label>
+<div>Завантаження...</div>
+```
+
+## ✅ Правильно — всегда через t()
+
+```jsx
+import { useTranslation } from 'react-i18next'
+
+const MyComponent = () => {
+  const { t } = useTranslation()
+
+  return (
+    <h1>{t('projects.createTitle')}</h1>
+    <button>{t('common.save')}</button>
+    <p>{t('projects.videoReady')}</p>
+  )
+}
+```
+
+---
+
+## Структура ключей
+
+Группируй ключи по фиче/странице:
+
+```js
+// uk.js и en.js — одинаковая структура ключей
+{
+  common: {
+    save:       'Зберегти',       // 'Save'
+    cancel:     'Скасувати',      // 'Cancel'
+    delete:     'Видалити',       // 'Delete'
+    loading:    'Завантаження...', // 'Loading...'
+    error:      'Помилка',        // 'Error'
+    back:       'Назад',          // 'Back'
+    confirm:    'Підтвердити',    // 'Confirm'
+    or:         'або',            // 'or'
+  },
+  nav: { ... },
+  landing: { ... },
+  auth: { ... },
+  dashboard: { ... },
+  projects: { ... },
+  pricing: { ... },   // ← новая фича = новая группа
+  blog: { ... },      // ← новая фича = новая группа
+  errors: { ... },
+}
+```
+
+---
+
+## Алгоритм добавления нового текста
+
+### Шаг 1: Добавь ключ в `uk.js` (основной)
+```js
+// frontend/src/i18n/uk.js
+pricing: {
+  title:      'Почніть творити.',
+  monthlyBtn: 'Щомісячно',
+  yearlyBtn:  'Щорічно',
+  discount:   '-50%',
+  startBtn:   'Почати',
+  popular:    'ПОПУЛЯРНИЙ',
+}
+```
+
+### Шаг 2: Добавь тот же ключ в `en.js`
+```js
+// frontend/src/i18n/en.js
+pricing: {
+  title:      'Start creating.',
+  monthlyBtn: 'Monthly',
+  yearlyBtn:  'Yearly',
+  discount:   '-50%',
+  startBtn:   'Get started',
+  popular:    'POPULAR',
+}
+```
+
+### Шаг 3: Используй в компоненте
+```jsx
+const { t } = useTranslation()
+<h1>{t('pricing.title')}</h1>
+```
+
+---
+
+## Переменные в строках
+
+```js
+// uk.js
+credits: {
+  balance: 'Ваш баланс: {{count}} кредитів',
+  spent:   'Витрачено {{amount}} кредитів за {{operation}}',
+}
+```
+
+```jsx
+// В компоненте
+t('credits.balance', { count: 150 })
+t('credits.spent', { amount: 10, operation: t('credits.videoGen') })
+```
+
+## Плюрализация
+
+```js
+// uk.js — украинский имеет 3 формы (one/few/many)
+videos: {
+  count_one:   '{{count}} відео',
+  count_few:   '{{count}} відео',
+  count_many:  '{{count}} відео',
+}
+
+// en.js — английский 2 формы
+videos: {
+  count_one:   '{{count}} video',
+  count_other: '{{count}} videos',
+}
+```
+
+## HTML в переводах (Trans)
+
+```jsx
+import { Trans } from 'react-i18next'
+
+// uk.js: hero: 'Перетвори фото на <1>вірусні відео</1>'
+<Trans i18nKey="landing.hero" components={[<span className="gradient-text" />]} />
+```
+
+---
+
+## Файлы переводов
+
+```
+frontend/src/i18n/
+├── uk.js       # 🇺🇦 Основной язык — украинский
+├── en.js       # 🇬🇧 Второй язык — английский
+└── index.js    # Конфигурация i18next (defaultLng: 'uk')
+```
+
+---
+
+## Чеклист перед коммитом
+
+- [ ] Нет хардкод-строк в JSX (кроме символов типа `/`, `·`, `©`)
+- [ ] Ключ добавлен в **оба файла**: `uk.js` и `en.js`
+- [ ] Структура ключей одинакова в обоих файлах
+- [ ] Новая фича = новая группа ключей с понятным именем
+- [ ] Переменные в строках используют `{{variable}}` синтаксис
+
+---
+
+## Исключения — можно не переводить
+
+```jsx
+// ✅ Символы и пунктуация
+<span>/</span>
+<span>·</span>
+<span>©</span>
+
+// ✅ Числа и даты (форматируются отдельно)
+<span>{price}</span>
+<span>{new Date().getFullYear()}</span>
+
+// ✅ Названия бренда
+<span>ReelForge</span>
+<span>Stripe</span>
+```

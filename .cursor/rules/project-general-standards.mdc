@@ -1,0 +1,227 @@
+---
+description: Общие стандарты проекта ReelForge
+alwaysApply: true
+---
+
+# Общие стандарты проекта ReelForge
+
+## Архитектурные принципы
+
+### API-First подход
+- **Вся бизнес-логика только в Backend API**
+- Frontend - это просто клиент для отображения данных
+- Подготовка к будущей мобильной версии (React Native/Flutter)
+- Stateless API с JWT/Sanctum токенами
+
+### Разделение ответственности
+- **Backend (Laravel)**: API, бизнес-логика, обработка видео, аутентификация, система кредитов
+- **Frontend (React)**: UI, UX, взаимодействие с пользователем
+- **Queue (Redis)**: Тяжелые операции (генерация видео)
+- **Storage (S3)**: Хранение файлов (изображения, видео)
+- **Payments (Stripe)**: Обработка платежей за кредиты и подписки
+
+### Система кредитов
+- **Гибкая монетизация**: Пользователи покупают кредиты вместо жестких лимитов
+- **Пакеты кредитов**: Разовые покупки от 50 до 1000 кредитов
+- **Подписки**: Ежемесячное начисление кредитов (100-1000 в месяц)
+- **Стоимость операций**: Каждая генерация видео стоит определенное количество кредитов
+- **Прозрачность**: Пользователь всегда видит стоимость операции заранее
+
+## Стек технологий
+
+### Backend
+- Laravel 11 + PHP 8.2+
+- MySQL 8.0
+- Redis (Queue + Cache)
+- Sanctum (Authentication)
+- FFmpeg (Video processing)
+
+### Frontend  
+- React 18 + Vite
+- Tailwind CSS
+- Axios (HTTP client)
+- React Router
+
+### DevOps
+- Docker + Docker Compose
+- Nginx (Reverse proxy)
+
+## Соглашения по коду
+
+### Языки и локализация
+- **Код**: английский (переменные, функции, комментарии)
+- **Комментарии к архитектуре**: русский (для объяснения бизнес-логики)
+- **Commit messages**: английский
+- **API документация**: английский
+
+### Форматирование
+```php
+// ✅ ХОРОШО - PHP
+class VideoService 
+{
+    public function generateVideo(Project $project): void
+    {
+        // Бизнес-логика генерации видео
+        if ($project->status === 'processing') {
+            throw new VideoGenerationException('Already processing');
+        }
+    }
+}
+```
+
+```jsx
+// ✅ ХОРОШО - React
+const ProjectCard = ({ project }) => {
+  const handleGenerate = async () => {
+    try {
+      await api.generateVideo(project.id);
+    } catch (error) {
+      console.error('Generation failed:', error);
+    }
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-md p-6">
+      <h3 className="text-lg font-semibold">{project.title}</h3>
+    </div>
+  );
+};
+```
+
+## API Стандарты
+
+### Структура ответов
+```json
+// ✅ Успешный ответ
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "title": "My Project"
+  }
+}
+
+// ✅ Ошибка
+{
+  "success": false,
+  "message": "Validation failed",
+  "errors": {
+    "title": ["Title is required"]
+  }
+}
+```
+
+### Эндпоинты
+- `GET /api/projects` - список проектов
+- `POST /api/projects` - создание проекта  
+- `POST /api/projects/{id}/generate` - запуск генерации видео
+- `POST /api/projects/{id}/images` - загрузка изображений
+
+## Обработка ошибок
+
+### Backend
+```php
+// ✅ Логирование с контекстом
+\Log::error('Video generation failed', [
+    'project_id' => $project->id,
+    'user_id' => auth()->id(),
+    'error' => $e->getMessage()
+]);
+```
+
+### Frontend
+```jsx
+// ✅ Пользовательские сообщения об ошибках
+const [error, setError] = useState(null);
+
+try {
+  await api.generateVideo(projectId);
+} catch (error) {
+  setError('Failed to generate video. Please try again.');
+  console.error('API Error:', error);
+}
+```
+
+## Безопасность
+
+### Аутентификация
+- Sanctum токены для API
+- Middleware для защиты роутов
+- Policy классы для авторизации
+
+### Валидация
+```php
+// ✅ Backend валидация
+public function rules(): array
+{
+    return [
+        'images' => 'required|array|min:3|max:5',
+        'images.*' => 'image|mimes:jpeg,png,jpg|max:2048'
+    ];
+}
+```
+
+### Файлы
+- Проверка типов файлов
+- Ограничение размеров
+- Безопасные имена файлов
+
+## Производительность
+
+### Queue Jobs
+```php
+// ✅ Тяжелые операции через очереди
+GenerateVideoJob::dispatch($project);
+```
+
+### Кеширование
+- Redis для кеша API ответов
+- Browser cache для статических ресурсов
+
+### Оптимизация
+- Lazy loading для изображений
+- Пагинация для списков
+- Debounce для поиска
+
+## Git workflow
+
+### Ветки
+- `main` - продакшен
+- `develop` - разработка
+- `feature/название` - новые функции
+- `fix/название` - исправления
+
+### Commit messages
+```
+feat: add video generation API endpoint
+fix: resolve image upload validation issue
+docs: update API documentation
+refactor: extract video service logic
+```
+
+## Тестирование
+
+### Backend
+- Unit тесты для сервисов
+- Feature тесты для API
+- Job тесты для очередей
+
+### Frontend  
+- Component тесты с React Testing Library
+- Integration тесты для API взаимодействия
+
+## Документация
+
+### Правила создания документации
+- **Все *.md файлы помещать в папку `docs/`**
+- Папка `docs/` находится в .gitignore
+- Не создавать MD файлы в корне проекта
+
+### API
+- OpenAPI/Swagger документация
+- Примеры запросов и ответов
+
+### Код
+- Комментарии для сложной бизнес-логики
+- README с инструкциями по запуску
+- Архитектурные решения в отдельных файлах

@@ -1,0 +1,190 @@
+---
+description: React/Frontend coding standards for ReelForge
+globs: frontend/**/*.{js,jsx,ts,tsx,css}
+alwaysApply: false
+---
+
+# Frontend React Standards для ReelForge
+
+## Архитектурные принципы
+
+- **API-first**: Вся бизнес-логика только в API, фронтенд - просто клиент
+- **Никакой бизнес-логики во frontend** - только UI и взаимодействие с API
+- **Подготовка к мобильной версии** - код должен быть переиспользуемым
+
+## Структура компонентов
+
+```jsx
+// ✅ ХОРОШО - Функциональный компонент с хуками
+import { useState, useEffect } from 'react';
+import { api } from '../services/api';
+
+const ProjectCard = ({ project }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const handleGenerate = async () => {
+    setIsLoading(true);
+    try {
+      await api.generateVideo(project.id);
+    } catch (error) {
+      console.error('Generation failed:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-md p-6">
+      <h3 className="text-lg font-semibold">{project.title}</h3>
+      <button 
+        onClick={handleGenerate}
+        disabled={isLoading}
+        className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
+      >
+        {isLoading ? 'Generating...' : 'Generate Video'}
+      </button>
+    </div>
+  );
+};
+```
+
+## API взаимодействие
+
+```jsx
+// ✅ ХОРОШО - Все через API сервис
+import { api } from '../services/api';
+
+// Используй кастомные хуки для API вызовов
+const useProjects = () => {
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const data = await api.getProjects();
+        setProjects(data);
+      } catch (error) {
+        console.error('Failed to fetch projects:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
+  return { projects, loading };
+};
+
+// ❌ ПЛОХО - Прямые fetch вызовы в компонентах
+const Component = () => {
+  useEffect(() => {
+    fetch('/api/projects').then(res => res.json());
+  }, []);
+};
+```
+
+## Стилизация с Tailwind
+
+```jsx
+// ✅ ХОРОШО - Используй Tailwind классы
+<div className="max-w-4xl mx-auto p-6">
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+      <img className="w-full h-48 object-cover rounded-t-lg" />
+      <div className="p-4">
+        <h3 className="text-lg font-semibold text-gray-900">Title</h3>
+      </div>
+    </div>
+  </div>
+</div>
+
+// ❌ ПЛОХО - Inline стили
+<div style={{maxWidth: '1024px', margin: '0 auto'}}>
+```
+
+## Обработка состояний
+
+```jsx
+// ✅ ХОРОШО - Четкие состояния загрузки и ошибок
+const ProjectView = ({ projectId }) => {
+  const [project, setProject] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const loadProject = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await api.getProject(projectId);
+        setProject(data);
+      } catch (err) {
+        setError('Failed to load project');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProject();
+  }, [projectId]);
+
+  if (loading) return <div className="animate-pulse">Loading...</div>;
+  if (error) return <div className="text-red-500">{error}</div>;
+  if (!project) return <div>Project not found</div>;
+
+  return <ProjectDetails project={project} />;
+};
+```
+
+## Файловая структура
+
+```
+frontend/src/
+├── components/          # Переиспользуемые компоненты
+│   ├── ui/             # Базовые UI компоненты
+│   └── forms/          # Формы
+├── pages/              # Страницы приложения
+├── layouts/            # Лейауты
+├── services/           # API сервисы
+├── hooks/              # Кастомные хуки
+└── utils/              # Утилиты
+```
+
+## Именование
+
+- Компоненты: `PascalCase` (ProjectCard, VideoPlayer)
+- Файлы компонентов: `PascalCase.jsx` 
+- Хуки: `camelCase` с префиксом `use` (useProjects, useAuth)
+- Константы: `UPPER_SNAKE_CASE`
+- Переменные: `camelCase`
+
+## Производительность
+
+```jsx
+// ✅ ХОРОШО - Мемоизация тяжелых компонентов
+import { memo } from 'react';
+
+const VideoPreview = memo(({ video }) => {
+  return (
+    <video className="w-full h-auto" controls>
+      <source src={video.url} type="video/mp4" />
+    </video>
+  );
+});
+
+// ✅ ХОРОШО - Debounce для поиска
+import { useDebouncedCallback } from 'use-debounce';
+
+const SearchInput = ({ onSearch }) => {
+  const debouncedSearch = useDebouncedCallback(onSearch, 300);
+  
+  return (
+    <input 
+      onChange={(e) => debouncedSearch(e.target.value)}
+      placeholder="Search projects..."
+    />
+  );
+};
+```

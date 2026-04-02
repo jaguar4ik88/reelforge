@@ -1,0 +1,96 @@
+<?php
+
+namespace App\Models;
+
+use App\Services\Credits\CreditService;
+use Illuminate\Auth\Passwords\CanResetPassword;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
+
+class User extends Authenticatable
+{
+    use CanResetPassword, HasApiTokens, HasFactory, Notifiable;
+
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'provider',
+        'provider_id',
+        'plan',
+        'locale',
+        'avatar_path',
+        'subscription_status',
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
+
+    public function projects(): HasMany
+    {
+        return $this->hasMany(Project::class);
+    }
+
+    public function creditWallet(): HasOne
+    {
+        return $this->hasOne(UserCredit::class);
+    }
+
+    public function userSubscriptions(): HasMany
+    {
+        return $this->hasMany(UserSubscription::class);
+    }
+
+    public function videosThisMonth(): int
+    {
+        return $this->projects()
+            ->where('status', 'done')
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count();
+    }
+
+    public function videoLimit(): int
+    {
+        return match ($this->plan) {
+            'pro' => (int) config('reelforge.pro_plan_videos_per_month', 100),
+            default => (int) config('reelforge.free_plan_videos_per_month', 10),
+        };
+    }
+
+    public function canGenerateVideo(): bool
+    {
+        $creditService = app(CreditService::class);
+        $cost = $creditService->getOperationCost('video_generation');
+
+        if (config('reelforge.credits.require_for_generation', true)) {
+            if (! $creditService->canSpend($this, $cost)) {
+                return false;
+            }
+        } else {
+            if ($this->videosThisMonth() >= $this->videoLimit()) {
+                return false;
+            }
+        }
+
+        if (config('reelforge.credits.enforce_monthly_cap', false)) {
+            return $this->videosThisMonth() < $this->videoLimit();
+        }
+
+        return true;
+    }
+}
