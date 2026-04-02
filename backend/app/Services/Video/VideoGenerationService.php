@@ -60,11 +60,14 @@ class VideoGenerationService
         $fontFile  = config('reelforge.ffmpeg_font_path', '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf');
 
         // drawtext requires libfreetype compiled into ffmpeg.
-        // Fall back to slideshow-only if font file is missing.
-        $withText = file_exists($fontFile);
+        // Check capability at runtime to gracefully fall back on minimal builds (e.g. local dev).
+        $withText = $this->ffmpegSupportsDrawtext($ffmpeg) && file_exists($fontFile);
 
         if (! $withText) {
-            Log::warning("ffmpeg font not found at [{$fontFile}] — generating slideshow without text overlay.");
+            Log::warning('ffmpeg drawtext unavailable — generating slideshow without text overlay.', [
+                'font_exists' => file_exists($fontFile),
+                'ffmpeg'      => $ffmpeg,
+            ]);
         }
 
         // Build input arguments: one -loop/-t/-i per image
@@ -148,5 +151,16 @@ class VideoGenerationService
             array_map('unlink', glob("{$dir}/*"));
             rmdir($dir);
         }
+    }
+
+    private function ffmpegSupportsDrawtext(string $ffmpeg): bool
+    {
+        exec(escapeshellarg($ffmpeg) . ' -filters 2>&1', $output);
+        foreach ($output as $line) {
+            if (str_contains($line, 'drawtext')) {
+                return true;
+            }
+        }
+        return false;
     }
 }
