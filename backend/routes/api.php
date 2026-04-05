@@ -1,11 +1,13 @@
 <?php
 
+use App\Http\Controllers\API\Admin\AdminTemplateController;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\GenerationController;
 use App\Http\Controllers\API\PhotoGuidedProjectController;
 use App\Http\Controllers\API\ProjectController;
 use App\Http\Controllers\API\ImageController;
 use App\Http\Controllers\API\TemplateController;
-use App\Http\Controllers\API\VideoController;
+use App\Http\Controllers\API\HomeController;
 use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\CreditsController;
 use Illuminate\Support\Facades\Route;
@@ -25,18 +27,25 @@ Route::get('/credits/costs', [CreditsController::class, 'costs']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/me',      [AuthController::class, 'me']);
+    Route::get('/home',         HomeController::class);
 
-    // Projects
+    // Projects (photo-guided AI flow only)
     Route::post('projects/from-photo', [PhotoGuidedProjectController::class, 'store']);
+    Route::post('projects/{project}/product-analysis', [PhotoGuidedProjectController::class, 'analyzeProduct']);
     Route::post('projects/{project}/photo-generations', [PhotoGuidedProjectController::class, 'startGeneration']);
-    Route::apiResource('projects', ProjectController::class)->except(['update']);
+    Route::apiResource('projects', ProjectController::class)->only(['index', 'show', 'update', 'destroy']);
+
+    Route::middleware('staff')->prefix('admin')->group(function () {
+        Route::get('templates', [AdminTemplateController::class, 'index']);
+        Route::post('templates', [AdminTemplateController::class, 'store']);
+        Route::get('templates/{template}', [AdminTemplateController::class, 'show']);
+        // POST (not PUT) so multipart preview uploads work reliably on all PHP stacks.
+        Route::post('templates/{template}', [AdminTemplateController::class, 'update']);
+        Route::delete('templates/{template}', [AdminTemplateController::class, 'destroy']);
+    });
 
     // Images
-    Route::post('/projects/{project}/images', [ImageController::class, 'upload']);
     Route::delete('/projects/{project}/images/{image}', [ImageController::class, 'destroy']);
-
-    // Video generation
-    Route::post('/projects/{project}/generate', [VideoController::class, 'generate']);
 
     // Templates (read-only for users)
     Route::get('/templates', [TemplateController::class, 'index']);
@@ -53,4 +62,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/password',      [ProfileController::class, 'changePassword']);
         Route::get('/stats',          [ProfileController::class, 'stats']);
     });
+
+    // AI Image Generation (Replicate)
+    Route::post('/generate',          [GenerationController::class, 'start']);
+    Route::get('/generate/{predictionId}', [GenerationController::class, 'status']);
 });

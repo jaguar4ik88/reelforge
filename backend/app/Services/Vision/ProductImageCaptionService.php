@@ -17,11 +17,24 @@ class ProductImageCaptionService
             return '';
         }
 
-        // Stub: no external API. Log path for debugging pipelines.
-        \Log::debug('ProductImageCaptionService: stub caption', [
+        $image->loadMissing('project');
+        $project = $image->project;
+        $meta    = $project?->product_meta_json;
+
+        if (is_array($meta) && ($meta['name'] ?? '') !== '') {
+            $parts = [(string) $meta['name']];
+            if (! empty($meta['category'])) {
+                $parts[] = 'Category: '.(string) $meta['category'];
+            }
+            if (! empty($meta['qualities']) && is_array($meta['qualities'])) {
+                $parts[] = 'Selling points: '.implode('; ', array_slice($meta['qualities'], 0, 6));
+            }
+
+            return implode('. ', $parts);
+        }
+
+        \Log::debug('ProductImageCaptionService: no product_meta_json, empty caption', [
             'project_image_id' => $image->id,
-            'path'             => $image->path,
-            'disk'             => ReelForgeStorage::contentDisk(),
         ]);
 
         return '';

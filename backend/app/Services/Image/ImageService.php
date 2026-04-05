@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Storage;
 
 class ImageService
 {
+    public function __construct(
+        private readonly ImageResizeService $imageResize,
+    ) {}
+
     public function uploadMany(Project $project, array $files): Collection
     {
         foreach ($project->images as $image) {
@@ -27,8 +31,9 @@ class ImageService
 
     public function uploadOne(Project $project, UploadedFile $file, int $order): ProjectImage
     {
-        $disk = ReelForgeStorage::contentDisk();
-        $path = $file->store(ReelForgeStorage::projectImagesPath($project), $disk);
+        $disk     = ReelForgeStorage::contentDisk();
+        $toStore  = $this->imageResize->resizeUploadedFileIfNeeded($file);
+        $path     = $toStore->store(ReelForgeStorage::projectImagesPath($project), $disk);
 
         return $project->images()->create([
             'path'  => $path,

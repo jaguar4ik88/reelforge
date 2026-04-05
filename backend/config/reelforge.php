@@ -19,11 +19,44 @@ return [
         'templates_path_prefix' => env('REELFORGE_TEMPLATES_PATH_PREFIX', 'templates'),
     ],
 
+    /*
+     * Product images: max length of the longer side after upload (px). Reduces storage and future vision token cost.
+     * Requires PHP GD extension for resizing.
+     */
+    'image_max_dimension' => (int) env('REELFORGE_IMAGE_MAX_DIMENSION', 1024),
+
+    /*
+     * Photo-guided generation: translate/expand user wishes via Claude/OpenAI before FLUX.
+     * MVP: keep false — users type wishes in English; set true when ANTHROPIC_API_KEY or OPENAI is used for enrichment.
+     */
+    'photo_guided' => [
+        'wishes_enrichment' => filter_var(env('REELFORGE_WISHES_ENRICHMENT', false), FILTER_VALIDATE_BOOLEAN),
+    ],
+
     'credits' => [
         'welcome_bonus'               => (int) env('REELFORGE_WELCOME_CREDITS', 50),
         'default_video_cost'          => (int) env('REELFORGE_DEFAULT_VIDEO_CREDIT_COST', 10),
         'default_photo_guided_cost'   => (int) env('REELFORGE_DEFAULT_PHOTO_GUIDED_CREDIT_COST', 5),
         'require_for_generation'      => filter_var(env('REELFORGE_CREDITS_REQUIRE_FOR_GENERATION', true), FILTER_VALIDATE_BOOLEAN),
         'enforce_monthly_cap'         => filter_var(env('REELFORGE_ENFORCE_MONTHLY_CAP_WITH_CREDITS', false), FILTER_VALIDATE_BOOLEAN),
+        /*
+         * Photo-flow UI pricing (project page: refinements + extra generations).
+         * Photo: credits per generated image; Card: credits per card image; Video: fixed tiers by duration.
+         */
+        'photo_flow' => [
+            'improvement'     => (int) env('REELFORGE_IMPROVEMENT_CREDIT_COST', 1),
+            'photo_per_image' => (int) env('REELFORGE_PHOTO_CONTENT_CREDIT_PER_IMAGE', 2),
+            /** Per-scene overrides for photo tab (defaults fall back to photo_per_image). */
+            'photo_scene_credits' => [
+                'from_wishes' => (int) env('REELFORGE_PHOTO_SCENE_FROM_WISHES_CREDITS', 2),
+                'in_use'      => (int) env('REELFORGE_PHOTO_SCENE_IN_USE_CREDITS', 2),
+                'studio'      => (int) env('REELFORGE_PHOTO_SCENE_STUDIO_CREDITS', 2),
+            ],
+            'card_per_image'  => (int) env('REELFORGE_CARD_CONTENT_CREDIT_PER_IMAGE', 1),
+            'video_options'   => [
+                ['seconds' => 5, 'credits' => (int) env('REELFORGE_VIDEO_5S_CREDIT_COST', 10)],
+                ['seconds' => 20, 'credits' => (int) env('REELFORGE_VIDEO_20S_CREDIT_COST', 20)],
+            ],
+        ],
     ],
 ];

@@ -15,6 +15,12 @@ class User extends Authenticatable
 {
     use CanResetPassword, HasApiTokens, HasFactory, Notifiable;
 
+    public const ROLE_CLIENT = 'client';
+
+    public const ROLE_MANAGER = 'manager';
+
+    public const ROLE_ADMIN = 'admin';
+
     protected $fillable = [
         'name',
         'email',
@@ -22,6 +28,7 @@ class User extends Authenticatable
         'provider',
         'provider_id',
         'plan',
+        'role',
         'locale',
         'avatar_path',
         'subscription_status',
@@ -70,6 +77,27 @@ class User extends Authenticatable
             'pro' => (int) config('reelforge.pro_plan_videos_per_month', 100),
             default => (int) config('reelforge.free_plan_videos_per_month', 10),
         };
+    }
+
+    public function isClient(): bool
+    {
+        return ($this->role ?? self::ROLE_CLIENT) === self::ROLE_CLIENT;
+    }
+
+    public function isManager(): bool
+    {
+        return ($this->role ?? self::ROLE_CLIENT) === self::ROLE_MANAGER;
+    }
+
+    public function isAdmin(): bool
+    {
+        return ($this->role ?? self::ROLE_CLIENT) === self::ROLE_ADMIN;
+    }
+
+    /** Admin or manager — staff area at /admin. */
+    public function isStaff(): bool
+    {
+        return $this->isAdmin() || $this->isManager();
     }
 
     public function canGenerateVideo(): bool

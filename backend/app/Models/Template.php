@@ -17,6 +17,8 @@ class Template extends Model
         'is_active',
         'sort_order',
         'preview_path',
+        'generation_prompt',
+        'negative_prompt',
         'config_json',
     ];
 

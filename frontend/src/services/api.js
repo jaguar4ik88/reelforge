@@ -49,40 +49,38 @@ export const authApi = {
 
 // ── Projects ──────────────────────────────────────────────────────────────────
 export const projectsApi = {
-  list:     (page = 1) => api.get(`/projects?page=${page}`),
-  get:      (id)       => api.get(`/projects/${id}`),
-  create:   (data)     => api.post('/projects', data),
-  delete:   (id)       => api.delete(`/projects/${id}`),
+  list:   (page = 1) => api.get(`/projects?page=${page}`),
+  get:    (id)       => api.get(`/projects/${id}`),
+  update: (id, body) => api.patch(`/projects/${id}`, body),
+  delete: (id)       => api.delete(`/projects/${id}`),
 }
 
 // ── Images ────────────────────────────────────────────────────────────────────
 export const imagesApi = {
-  upload: (projectId, files) => {
-    const form = new FormData()
-    files.forEach((f) => form.append('images[]', f))
-    return api.post(`/projects/${projectId}/images`, form, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    })
-  },
   delete: (projectId, imageId) => api.delete(`/projects/${projectId}/images/${imageId}`),
-}
-
-// ── Video ─────────────────────────────────────────────────────────────────────
-export const videoApi = {
-  generate: (projectId) => api.post(`/projects/${projectId}/generate`),
 }
 
 // ── Photo-guided project (product reference → generation job) ────────────────
 export const photoFlowApi = {
-  /** @param {File} imageFile */
-  createFromPhoto: (imageFile, title) => {
+  /**
+   * @param {File|File[]} files
+   * @param {{ productName: string, category: string }} meta — required by API (MVP: manual name + category)
+   */
+  createFromPhoto: (files, { productName, category, templateId }) => {
     const form = new FormData()
-    form.append('image', imageFile)
-    if (title) form.append('title', title)
+    const list = Array.isArray(files) ? files : [files]
+    list.forEach((f) => form.append('images[]', f))
+    form.append('product_name', productName)
+    form.append('category', category)
+    if (templateId != null && templateId !== '') {
+      form.append('template_id', String(templateId))
+    }
     return api.post('/projects/from-photo', form, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
   },
+  /** Future: AI vision analysis (not used in MVP). */
+  analyzeProduct: (projectId) => api.post(`/projects/${projectId}/product-analysis`),
   startGeneration: (projectId, payload) =>
     api.post(`/projects/${projectId}/photo-generations`, payload),
 }
@@ -93,7 +91,26 @@ export const templatesApi = {
   get:  (id) => api.get(`/templates/${id}`),
 }
 
+export const adminTemplatesApi = {
+  list: (page = 1) => api.get(`/admin/templates?page=${page}`),
+  get: (id) => api.get(`/admin/templates/${id}`),
+  create: (formData) =>
+    api.post('/admin/templates', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
+  update: (id, formData) =>
+    api.post(`/admin/templates/${id}`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
+  remove: (id) => api.delete(`/admin/templates/${id}`),
+}
+
 // ── Profile ───────────────────────────────────────────────────────────────────
+export const homeApi = {
+  /** Authenticated: plan, credits, image/video counts, last 4 projects */
+  dashboard: () => api.get('/home'),
+}
+
 export const profileApi = {
   get:            ()       => api.get('/profile'),
   update:         (data)   => {
@@ -103,6 +120,12 @@ export const profileApi = {
   },
   changePassword: (data)   => api.post('/profile/password', data),
   stats:          ()       => api.get('/profile/stats'),
+}
+
+// ── AI Generation (Replicate) ─────────────────────────────────────────────────
+export const generationApi = {
+  start:  (data)         => api.post('/generate', data),
+  status: (predictionId) => api.get(`/generate/${predictionId}`),
 }
 
 export default api

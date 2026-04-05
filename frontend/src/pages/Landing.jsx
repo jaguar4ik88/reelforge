@@ -4,7 +4,7 @@ import { Film, Zap, Upload, Download, Smartphone, CheckCircle } from 'lucide-rea
 import LandingNav from '../components/layout/LandingNav'
 
 const featureIcons = [Upload, Film, Zap, Download, Smartphone, CheckCircle]
-const featureKeys  = ['upload', 'template', 'generate', 'download', 'mobile', 'noSkills']
+const featureKeys = ['upload', 'template', 'generate', 'download', 'mobile', 'noSkills']
 
 export default function Landing() {
   const { t } = useTranslation()

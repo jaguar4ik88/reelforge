@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Project extends Model
 {
@@ -17,6 +18,8 @@ class Project extends Model
         'title',
         'price',
         'description',
+        'product_meta_json',
+        'final_prompt',
         'status',
         'template_id',
         'video_path',
@@ -27,7 +30,8 @@ class Project extends Model
     protected function casts(): array
     {
         return [
-            'price' => 'decimal:2',
+            'price'             => 'decimal:2',
+            'product_meta_json' => 'array',
         ];
     }
 
@@ -54,6 +58,11 @@ class Project extends Model
     public function generationJobs(): HasMany
     {
         return $this->hasMany(GenerationJob::class);
+    }
+
+    public function latestGenerationJob(): HasOne
+    {
+        return $this->hasOne(GenerationJob::class)->latestOfMany();
     }
 
     public function isPhotoGuided(): bool

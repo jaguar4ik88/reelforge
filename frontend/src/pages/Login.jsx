@@ -5,7 +5,8 @@ import { useAuthContext } from '../context/AuthContext'
 import FormField from '../components/ui/FormField'
 import Spinner from '../components/ui/Spinner'
 import toast from 'react-hot-toast'
-import { getApiOrigin, getOAuthRedirectUrl } from '../utils/apiBase'
+import { getApiOrigin, getOAuthRedirectUrl, redirectToApp } from '../utils/apiBase'
+import { postLoginPath } from '../constants/routes'
 
 export default function Login() {
   const { t } = useTranslation()
@@ -36,9 +37,9 @@ export default function Login() {
     setErrors({})
     setLoading(true)
     try {
-      await login(form)
+      const u = await login(form)
       toast.success(t('auth.signIn'))
-      navigate('/dashboard')
+      redirectToApp(postLoginPath(u.role), navigate)
     } catch (err) {
       const data = err.response?.data
       if (data?.errors) setErrors(data.errors)

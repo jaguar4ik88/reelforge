@@ -7,29 +7,13 @@ import FormField from '../components/ui/FormField'
 import Spinner from '../components/ui/Spinner'
 import toast from 'react-hot-toast'
 import {
-  User, Mail, Globe, Lock, BarChart3, Camera,
-  CheckCircle2, Film, AlertCircle, Clock, Calendar, Zap, Coins,
+  User, Mail, Globe, Lock, Camera, Calendar, Zap, Coins,
 } from 'lucide-react'
-
-function StatCard({ icon: Icon, label, value, accent }) {
-  return (
-    <div className="card text-center">
-      <div className={`w-10 h-10 rounded-xl flex items-center justify-center mx-auto mb-3 ${accent ?? 'bg-brand-900/40 border border-brand-500/20'}`}>
-        <Icon className="w-5 h-5 text-brand-400" />
-      </div>
-      <p className="text-2xl font-bold text-white">{value ?? '—'}</p>
-      <p className="text-xs text-gray-500 mt-1">{label}</p>
-    </div>
-  )
-}
 
 export default function Profile() {
   const { t }                         = useTranslation()
   const { user, refreshUser }         = useAuthContext()
   const { locale, changeLocale }      = useLocale()
-
-  const [stats, setStats]             = useState(null)
-  const [statsLoading, setStatsLoading] = useState(true)
 
   // Profile form
   const [profileForm, setProfileForm] = useState({ name: '', email: '', locale: 'uk' })
@@ -50,12 +34,6 @@ export default function Profile() {
       setAvatarPreview(user.avatar_url ?? null)
     }
   }, [user])
-
-  useEffect(() => {
-    profileApi.stats()
-      .then(({ data }) => setStats(data.data))
-      .finally(() => setStatsLoading(false))
-  }, [])
 
   const handleAvatarChange = (e) => {
     const file = e.target.files?.[0]
@@ -209,45 +187,21 @@ export default function Profile() {
           </div>
 
           {/* Member since */}
-          {stats && (
+          {user?.created_at && (
             <div className="card">
               <div className="flex items-center gap-2 text-xs text-gray-500 uppercase tracking-wider font-semibold mb-3">
                 <Calendar className="w-3.5 h-3.5" />
                 {t('profile.memberSince')}
               </div>
               <p className="text-white text-sm">
-                {new Date(stats.member_since).toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' })}
+                {new Date(user.created_at).toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' })}
               </p>
             </div>
           )}
         </div>
 
-        {/* Right column: forms + stats */}
+        {/* Right column: forms */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Stats */}
-          <div>
-            <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4 flex items-center gap-2">
-              <BarChart3 className="w-3.5 h-3.5" />
-              {t('profile.stats')}
-            </h2>
-            {statsLoading ? (
-              <div className="flex justify-center py-6"><Spinner /></div>
-            ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-                <StatCard icon={Film}        label={t('profile.totalProjects')} value={stats?.total_projects} />
-                <StatCard icon={CheckCircle2} label={t('profile.doneVideos')}  value={stats?.done_projects}  accent="bg-green-900/30 border border-green-500/20" />
-                <StatCard icon={Clock}       label={t('dashboard.videosMonth')} value={stats?.videos_this_month} />
-                <StatCard icon={AlertCircle} label={t('profile.failedVideos')} value={stats?.failed_projects} accent="bg-red-900/20 border border-red-500/20" />
-                <StatCard
-                  icon={Coins}
-                  label={t('profile.creditsBalance')}
-                  value={user?.credits?.balance ?? stats?.credits_balance}
-                  accent="bg-amber-900/25 border border-amber-500/25"
-                />
-              </div>
-            )}
-          </div>
-
           {/* Personal info form */}
           <div className="card">
             <h2 className="text-sm font-semibold text-white mb-5 flex items-center gap-2">

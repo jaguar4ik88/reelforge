@@ -24,13 +24,13 @@ class UserSeeder extends Seeder
             ]
         );
 
-        // Создаем админа
-        User::firstOrCreate(
+        User::updateOrCreate(
             ['email' => 'admin@reelforge.com'],
             [
                 'name' => 'Admin User',
                 'password' => Hash::make('admin123'),
                 'plan' => 'free',
+                'role' => User::ROLE_ADMIN,
                 'email_verified_at' => now(),
             ]
         );

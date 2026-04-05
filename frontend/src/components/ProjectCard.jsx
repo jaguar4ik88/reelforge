@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Film, Trash2, Clock, CheckCircle2, AlertCircle, FileEdit } from 'lucide-react'
+import { APP_BASE } from '../constants/routes'
 import { useTranslation } from 'react-i18next'
 import StatusBadge from './ui/StatusBadge'
 
@@ -10,19 +11,34 @@ const statusIcons = {
   failed:     <AlertCircle className="w-5 h-5 text-red-400" />,
 }
 
+function isMp4Url(url) {
+  return typeof url === 'string' && /\.mp4(\?|$)/i.test(url)
+}
+
 export default function ProjectCard({ project, onDelete }) {
   const { t } = useTranslation()
-  const firstImage = project.images?.[0]
+  /** Prefer generated output; originals only as fallback. */
+  const generatedUrl = project.result_url || project.video_url || null
+  const thumbUrl = generatedUrl || project.images?.[0]?.url || null
+  const showVideoThumb = Boolean(generatedUrl) && isMp4Url(generatedUrl)
 
   return (
     <div className="card group hover:border-white/20 transition-all duration-200">
-      <Link to={`/projects/${project.id}`} className="block">
+      <Link to={`${APP_BASE}/projects/${project.id}`} className="block">
         <div className="aspect-[9/16] rounded-xl overflow-hidden bg-gray-800 mb-4 relative">
-          {firstImage ? (
+          {showVideoThumb && thumbUrl ? (
+            <video
+              src={thumbUrl}
+              muted
+              playsInline
+              preload="metadata"
+              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+          ) : thumbUrl ? (
             <img
-              src={firstImage.url}
+              src={thumbUrl}
               alt={project.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
@@ -53,17 +69,27 @@ export default function ProjectCard({ project, onDelete }) {
         </div>
       </Link>
 
-      <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-between">
+      <div
+        className={`mt-4 flex items-center border-t border-white/10 pt-4 ${
+          typeof onDelete === 'function' ? 'justify-between' : 'justify-start'
+        }`}
+      >
         <span className="text-xs text-gray-600">
           {new Date(project.created_at).toLocaleDateString()}
         </span>
-        <button
-          onClick={(e) => { e.preventDefault(); onDelete(project.id) }}
-          className="text-gray-600 hover:text-red-400 transition-colors p-1 rounded"
-          title={t('common.delete')}
-        >
-          <Trash2 className="w-4 h-4" />
-        </button>
+        {typeof onDelete === 'function' && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault()
+              onDelete(project.id)
+            }}
+            className="text-gray-600 hover:text-red-400 transition-colors p-1 rounded"
+            title={t('common.delete')}
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        )}
       </div>
     </div>
   )

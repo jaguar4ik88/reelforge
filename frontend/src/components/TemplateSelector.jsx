@@ -13,17 +13,32 @@ const STYLE_PREVIEWS = {
 
 function TemplatePreview({ template, selected, onSelect, productLabel, descLabel }) {
   const style = STYLE_PREVIEWS[template.config?.style] ?? STYLE_PREVIEWS.dark
+  const hasPreview = Boolean(template.preview_url)
 
   return (
     <button
+      type="button"
       onClick={() => onSelect(template.id)}
       className={`relative rounded-2xl overflow-hidden transition-all duration-200 aspect-[9/16] w-full
         ${selected ? 'ring-2 ring-brand-400 ring-offset-2 ring-offset-gray-950 scale-105' : 'hover:ring-1 hover:ring-white/20'}`}
     >
-      <div className={`absolute inset-0 bg-gradient-to-b ${style.bg}`} />
-      <div className="absolute inset-0 opacity-20">
-        <div className="w-full h-full bg-[radial-gradient(ellipse_at_center,_rgba(255,255,255,0.15)_0%,_transparent_60%)]" />
-      </div>
+      {hasPreview ? (
+        <>
+          <img
+            src={template.preview_url}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+        </>
+      ) : (
+        <>
+          <div className={`absolute inset-0 bg-gradient-to-b ${style.bg}`} />
+          <div className="absolute inset-0 opacity-20">
+            <div className="w-full h-full bg-[radial-gradient(ellipse_at_center,_rgba(255,255,255,0.15)_0%,_transparent_60%)]" />
+          </div>
+        </>
+      )}
       <div className="absolute bottom-0 left-0 right-0 p-3 bg-black/50">
         <p className="text-xs font-bold truncate" style={{ color: style.text }}>{productLabel}</p>
         <p className="text-sm font-extrabold" style={{ color: style.accent }}>$99.99</p>
@@ -34,8 +49,8 @@ function TemplatePreview({ template, selected, onSelect, productLabel, descLabel
           <CheckCircle2 className="w-6 h-6 text-brand-400 drop-shadow-lg" />
         </div>
       )}
-      <div className="absolute bottom-0 left-0 right-0 top-[60%] flex items-end">
-        <p className="w-full text-center pb-24 text-xs font-semibold text-white/80 drop-shadow">
+      <div className="absolute bottom-0 left-0 right-0 top-[55%] flex items-end pointer-events-none">
+        <p className="w-full text-center pb-20 px-2 text-xs font-semibold text-white/90 drop-shadow">
           {template.name}
         </p>
       </div>
@@ -49,14 +64,19 @@ export default function TemplateSelector({ value, onChange }) {
   const [loading, setLoading]     = useState(true)
 
   useEffect(() => {
-    templatesApi.list()
-      .then(({ data }) => setTemplates(data.data))
+    templatesApi
+      .list()
+      .then(({ data }) => setTemplates(data.data ?? []))
       .finally(() => setLoading(false))
   }, [])
 
   if (loading) return (
     <div className="flex justify-center py-8"><Spinner size="lg" /></div>
   )
+
+  if (templates.length === 0) {
+    return <p className="text-sm text-gray-500 text-center py-6">{t('templates.empty')}</p>
+  }
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">

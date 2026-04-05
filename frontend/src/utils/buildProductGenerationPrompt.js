@@ -10,6 +10,8 @@ const CONTENT_TYPE = {
 }
 
 const SCENE_STYLE = {
+  from_wishes:
+    'Scene: follow the user wishes as the primary art direction — composition, lighting, setting, and mood come from their description.',
   in_use:
     'Scene: product in real use — hands or context showing application; authentic lifestyle feel.',
   environment:

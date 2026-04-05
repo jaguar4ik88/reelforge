@@ -42,6 +42,8 @@ return [
         'need_reference_image' => 'Upload a product reference image first.',
         'already_running'     => 'A generation is already pending or processing for this project.',
         'insufficient_credits' => 'Not enough credits for photo-guided generation.',
+        'stub_quality_1'      => 'Product is visible in the frame',
+        'stub_quality_2'      => 'Add an image-analysis API key for automatic descriptions',
     ],
     'credits' => [
         'stub_purchase' => 'Credits added (stub purchase; enable only in debug).',

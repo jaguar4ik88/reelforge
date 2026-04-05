@@ -17,14 +17,16 @@ export function useAuth() {
     const token = localStorage.getItem('token')
     if (!token) {
       setLoading(false)
-      return
+      return null
     }
     try {
       const { data } = await authApi.me()
       setUser(data.data)
       syncLocale(data.data)
+      return data.data
     } catch {
       localStorage.removeItem('token')
+      return null
     } finally {
       setLoading(false)
     }

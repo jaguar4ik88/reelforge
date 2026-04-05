@@ -2,8 +2,11 @@
 
 namespace App\Services\Profile;
 
+use App\Http\Resources\ProjectResource;
+use App\Models\Project;
 use App\Models\User;
 use App\Support\ReelForgeStorage;
+use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -59,5 +62,56 @@ class ProfileService
             'plan'                => $user->plan,
             'member_since'        => $user->created_at->toISOString(),
         ];
+    }
+
+    /**
+     * Landing / home summary: plan, credits, output counts, last 4 projects.
+     */
+    public function getHomeDashboard(User $user): array
+    {
+        $user->loadMissing('creditWallet');
+
+        $recent = Project::query()
+            ->where('user_id', $user->id)
+            ->with(['template', 'images', 'latestGenerationJob'])
+            ->latest()
+            ->limit(4)
+            ->get();
+
+        $request = request() instanceof Request ? request() : Request::create('/');
+
+        return [
+            'plan'               => (string) ($user->plan ?? 'free'),
+            'credits_balance'    => (int) ($user->creditWallet?->balance ?? 0),
+            'images_generated'   => $this->countCompletedImageOutputs($user->id),
+            'videos_generated'   => $this->countCompletedVideoOutputs($user->id),
+            'recent_projects'    => $recent->map(fn (Project $p) => (new ProjectResource($p))->toArray($request))->values()->all(),
+        ];
+    }
+
+    /** Done projects whose primary file is a raster image (photo-guided image/card, etc.). */
+    private function countCompletedImageOutputs(int $userId): int
+    {
+        return Project::query()
+            ->where('user_id', $userId)
+            ->where('status', 'done')
+            ->whereNotNull('video_path')
+            ->where(function ($q) {
+                foreach (['png', 'jpg', 'jpeg', 'webp'] as $ext) {
+                    $q->orWhereRaw('LOWER(video_path) LIKE ?', ['%.'.$ext]);
+                }
+            })
+            ->count();
+    }
+
+    /** Done projects whose primary file is MP4 (template videos or photo-guided video). */
+    private function countCompletedVideoOutputs(int $userId): int
+    {
+        return Project::query()
+            ->where('user_id', $userId)
+            ->where('status', 'done')
+            ->whereNotNull('video_path')
+            ->whereRaw('LOWER(video_path) LIKE ?', ['%.mp4'])
+            ->count();
     }
 }

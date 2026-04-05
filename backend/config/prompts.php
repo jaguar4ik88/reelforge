@@ -1,0 +1,205 @@
+<?php
+
+/*
+ * ─────────────────────────────────────────────────────────────
+ * ReelForge — промпти для генерації зображень (v2)
+ *
+ * Wishes: користувацький текст спочатку проходить через WishesPromptEnrichmentService
+ * (Claude → OpenAI → fallback), щоб отримати англомовний промпт для FLUX.
+ * ─────────────────────────────────────────────────────────────
+ */
+
+return [
+
+    /*
+     | ── Wishes preprocessor (Anthropic / OpenAI) ─────────────────
+     */
+    'wishes_processor' => [
+
+        'system' => <<<'PROMPT'
+You are a professional prompt engineer for AI image generation (FLUX / product photography).
+Your task: receive a product name, category, and a user's scene wishes (possibly in Russian, Ukrainian, or any language), then output a single English prompt optimized for photorealistic product photography.
+
+Rules:
+- Output ONLY the English prompt — no explanations, no JSON, no markdown fences.
+- Translate and expand the user's wishes into vivid, specific visual language.
+- Keep the product as the clear hero of the shot.
+- Use photography and lighting terminology where helpful (soft light, depth of field, color temperature, mood).
+- Max 120 words.
+PROMPT,
+
+        'user' => <<<'PROMPT'
+Product: {product_name}
+Category: {category}
+User's scene wishes: {wishes}
+
+Write the image generation prompt.
+PROMPT,
+
+        'user_no_wishes' => <<<'PROMPT'
+Product: {product_name}
+Category: {category}
+No specific scene requested — choose the most flattering commercial photography setup for this product type.
+
+Write the image generation prompt.
+PROMPT,
+
+        'user_card' => <<<'PROMPT'
+Product: {product_name}
+Category: {category}
+The following text MUST appear on the product card image as typography (preserve exact characters, including Cyrillic):
+{wishes}
+
+Output ONLY an English prompt for FLUX describing layout, typography style, and product placement. Do not replace or translate the text that must appear on the card — refer to it as "the exact user text above".
+PROMPT,
+
+        'user_video' => <<<'PROMPT'
+Product: {product_name}
+Category: {category}
+User's video direction (camera, mood, effects): {wishes}
+
+Output ONLY an English prompt describing key visual frames, motion, and atmosphere for a short vertical product video concept.
+PROMPT,
+    ],
+
+    /*
+     | ── Сцени (photo-guided flow) ────────────────────────────────
+     | from_wishes: порожньо — основний зміст дає enrichment + побажання.
+     */
+    'styles' => [
+
+        'from_wishes' => '',
+
+        'in_use' => implode(', ', [
+            'product lifestyle photography',
+            'product naturally held or used in context',
+            'authentic real-world setting',
+            'soft natural window light',
+            'shallow depth of field',
+            'warm editorial atmosphere',
+            'story-driven composition',
+        ]),
+
+        'studio' => implode(', ', [
+            'professional studio product photography',
+            'clean white seamless background',
+            'three-point softbox lighting',
+            'tack-sharp focus on product',
+            'zero harsh shadows on background',
+            'commercial catalog e-commerce hero shot',
+        ]),
+
+        'environment' => implode(', ', [
+            'product in believable real-world environment',
+            'natural depth and context',
+            'realistic ambient light',
+        ]),
+
+        'lifestyle' => 'lifestyle product photography, natural light, bokeh background, editorial style',
+
+        'minimal' => 'minimalist product photo, marble surface, elegant composition, luxury brand aesthetic',
+
+        'outdoor' => 'outdoor product photography, natural environment, golden hour lighting',
+    ],
+
+    /*
+     | ── Типи контенту ────────────────────────────────────────────
+     */
+    'content_types' => [
+
+        'photo' => implode(', ', [
+            'photorealistic commercial product image',
+            'suitable for Instagram and paid ads',
+            'high-end production value',
+        ]),
+
+        'card' => implode(', ', [
+            'product marketing card',
+            'clean white background',
+            'product as visual anchor',
+            'exact on-image typography must include this text: {card_text}',
+            'bold readable typographic layout',
+            'premium retail presentation',
+            'generous white space',
+        ]),
+
+        'video' => implode(', ', [
+            'vertical short-form product video storyboard',
+            'dynamic cinematic framing',
+            'motion and pacing implied',
+        ]),
+
+        'video_short' => implode(', ', [
+            '5-second product video keyframe concept',
+            'dynamic close-up angle',
+            'high energy visual',
+        ]),
+
+        'video_long' => implode(', ', [
+            '20-second product video keyframe concept',
+            'cinematic product reveal',
+            'smooth camera movement implied',
+            'atmospheric lighting',
+        ]),
+
+        'preview' => 'quick product preview, clean background, sharp product detail',
+    ],
+
+    /*
+     | ── Суфікс ───────────────────────────────────────────────────
+     */
+    'suffix' => implode(', ', [
+        '4K resolution',
+        'photorealistic',
+        'professional color grading',
+        'no text unless specified for card',
+        'no watermarks',
+        'no logos',
+        'single product hero',
+    ]),
+
+    /*
+     | ── Негативний промпт (flux-dev без референсу) ───────────────
+     */
+    'negative' => implode(', ', [
+        'blurry', 'out of focus', 'low quality', 'low resolution',
+        'distorted product', 'deformed', 'warped shape',
+        'watermark', 'signature',
+        'multiple products', 'duplicate items',
+        'oversaturated', 'blown out highlights',
+        'amateur photography', 'phone camera quality',
+        'bad lighting', 'harsh shadows on product',
+        'extra limbs', 'bad anatomy',
+        'CGI look', 'plastic texture', 'fake looking',
+    ]),
+
+    /*
+     | ── Моделі Replicate ─────────────────────────────────────────
+     */
+    'models' => [
+        'kontext' => [
+            'id'                  => 'black-forest-labs/flux-kontext-pro',
+            'aspect_ratio'        => '1:1',
+            'output_format'       => 'jpg',
+            'safety_tolerance'    => 2,
+            'prompt_upsampling'   => true,
+        ],
+
+        'default' => [
+            'id'                  => 'black-forest-labs/flux-dev',
+            'num_inference_steps' => 35,
+            'guidance_scale'      => 3.5,
+            'width'               => 1024,
+            'height'              => 1024,
+        ],
+
+        'preview' => [
+            'id'                  => 'black-forest-labs/flux-schnell',
+            'num_inference_steps' => 4,
+            'guidance_scale'      => 3.5,
+            'width'               => 1024,
+            'height'              => 1024,
+        ],
+    ],
+
+];

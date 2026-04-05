@@ -26,6 +26,7 @@ class CreditsController extends Controller
                 'balance'                      => $this->creditService->balance($user),
                 'video_generation_cost'        => $this->creditService->getOperationCost('video_generation'),
                 'photo_guided_generation_cost' => $this->creditService->getOperationCost('photo_guided_generation'),
+                'photo_flow'                   => $this->creditService->getPhotoFlowPricing(),
             ],
         ]);
     }

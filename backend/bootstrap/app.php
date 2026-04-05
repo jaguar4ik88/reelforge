@@ -19,6 +19,9 @@ return Application::configure(basePath: dirname(__DIR__))
         // Убираем statefulApi() для обычного REST API без CSRF
         // $middleware->statefulApi();
         $middleware->appendToGroup('api', \App\Http\Middleware\SetLocale::class);
+        $middleware->alias([
+            'staff' => \App\Http\Middleware\EnsureStaff::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (ValidationException $e, Request $request) {

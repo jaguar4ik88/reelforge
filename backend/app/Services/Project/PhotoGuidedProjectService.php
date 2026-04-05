@@ -15,21 +15,38 @@ class PhotoGuidedProjectService
         private readonly ImageService $imageService,
     ) {}
 
-    public function createFromProductPhoto(User $user, UploadedFile $file, ?string $title = null): Project
+    /**
+     * @param  list<UploadedFile>  $files  1–4 images
+     */
+    public function createFromProductPhotos(User $user, array $files, string $productName, string $category, ?int $catalogTemplateId = null): Project
     {
-        $templateId = $this->internalTemplateId();
+        $templateId = $catalogTemplateId !== null
+            ? (int) $catalogTemplateId
+            : $this->internalTemplateId();
+
+        $name = Str::limit(trim($productName), 200, '');
+        if ($name === '') {
+            $name = __('messages.photo_guided.default_title');
+        }
+
+        $meta = [
+            'name'      => $name,
+            'category'  => $category,
+            'qualities' => [],
+        ];
 
         $project = Project::query()->create([
-            'user_id'       => $user->id,
-            'creation_flow' => 'photo_guided',
-            'title'         => $title !== null && $title !== '' ? Str::limit($title, 200, '') : __('messages.photo_guided.default_title'),
-            'price'         => 0,
-            'description'   => __('messages.photo_guided.default_description'),
-            'template_id'   => $templateId,
-            'status'        => 'draft',
+            'user_id'             => $user->id,
+            'creation_flow'       => 'photo_guided',
+            'title'               => $name,
+            'price'               => 0,
+            'description'         => __('messages.photo_guided.default_description'),
+            'product_meta_json'   => $meta,
+            'template_id'         => $templateId,
+            'status'              => 'draft',
         ]);
 
-        $this->imageService->uploadOne($project, $file, 1);
+        $this->imageService->uploadMany($project, $files);
 
         return $project->fresh(['images', 'template']);
     }

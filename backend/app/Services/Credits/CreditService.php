@@ -49,6 +49,83 @@ class CreditService
         return $this->costCache[$operationKey];
     }
 
+    /**
+     * Pricing shown on the photo-guided project page (improvements + batch generate).
+     *
+     * @return array{improvement: int, photo_per_image: int, photo_scene_credits: array<string, int>, card_per_image: int, video: array<int, array{seconds: int, credits: int}>}
+     */
+    public function getPhotoFlowPricing(): array
+    {
+        $video = config('reelforge.credits.photo_flow.video_options', []);
+
+        $basePhoto = (int) config('reelforge.credits.photo_flow.photo_per_image', 2);
+        $sceneMap  = config('reelforge.credits.photo_flow.photo_scene_credits', []);
+        $sceneCredits = is_array($sceneMap)
+            ? [
+                'from_wishes' => (int) ($sceneMap['from_wishes'] ?? $basePhoto),
+                'in_use'      => (int) ($sceneMap['in_use'] ?? $basePhoto),
+                'studio'      => (int) ($sceneMap['studio'] ?? $basePhoto),
+            ]
+            : [
+                'from_wishes' => $basePhoto,
+                'in_use'      => $basePhoto,
+                'studio'      => $basePhoto,
+            ];
+
+        return [
+            'improvement'          => (int) config('reelforge.credits.photo_flow.improvement', 1),
+            'photo_per_image'      => $basePhoto,
+            'photo_scene_credits'  => $sceneCredits,
+            'card_per_image'       => (int) config('reelforge.credits.photo_flow.card_per_image', 1),
+            'video'                => array_values(array_map(
+                fn (array $o): array => [
+                    'seconds' => (int) ($o['seconds'] ?? 0),
+                    'credits' => (int) ($o['credits'] ?? 0),
+                ],
+                is_array($video) ? $video : []
+            )),
+        ];
+    }
+
+    /**
+     * Cost for one photo-guided generation run (depends on content type and video length).
+     */
+    public function getPhotoGuidedGenerationCost(string $contentType, ?int $videoSeconds = null, ?string $photoSceneStyle = null): int
+    {
+        $p = $this->getPhotoFlowPricing();
+
+        return match ($contentType) {
+            'photo' => $this->resolvePhotoSceneCredits($p, $photoSceneStyle ?? 'from_wishes'),
+            'card' => $p['card_per_image'],
+            'video' => $this->resolveVideoTierCredits($p['video'], $videoSeconds ?? 5),
+            default => $p['photo_per_image'],
+        };
+    }
+
+    /**
+     * @param  array{photo_per_image: int, photo_scene_credits?: array<string, int>}  $p
+     */
+    private function resolvePhotoSceneCredits(array $p, string $sceneStyle): int
+    {
+        $map = $p['photo_scene_credits'] ?? [];
+
+        return (int) ($map[$sceneStyle] ?? $p['photo_per_image']);
+    }
+
+    /**
+     * @param  array<int, array{seconds: int, credits: int}>  $videoTiers
+     */
+    private function resolveVideoTierCredits(array $videoTiers, int $seconds): int
+    {
+        foreach ($videoTiers as $tier) {
+            if ((int) ($tier['seconds'] ?? 0) === $seconds) {
+                return (int) ($tier['credits'] ?? 0);
+            }
+        }
+
+        return (int) ($videoTiers[0]['credits'] ?? 10);
+    }
+
     public function canSpend(User $user, int $amount): bool
     {
         if ($amount <= 0) {

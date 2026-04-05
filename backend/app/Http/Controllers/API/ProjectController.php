@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
-use App\DTO\CreateProjectDTO;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Project\CreateProjectRequest;
 use App\Http\Resources\ProjectResource;
 use App\Models\Project;
 use App\Services\Project\ProjectService;
@@ -19,7 +17,7 @@ class ProjectController extends Controller
     {
         $projects = $request->user()
             ->projects()
-            ->with(['template', 'images'])
+            ->with(['template', 'images', 'latestGenerationJob'])
             ->latest()
             ->paginate(12);
 
@@ -30,18 +28,6 @@ class ProjectController extends Controller
         ]);
     }
 
-    public function store(CreateProjectRequest $request): JsonResponse
-    {
-        $dto     = CreateProjectDTO::fromArray($request->validated(), $request->user()->id);
-        $project = $this->projectService->create($dto);
-
-        return response()->json([
-            'success' => true,
-            'message' => __('messages.project.created'),
-            'data'    => new ProjectResource($project->load(['template', 'images'])),
-        ], 201);
-    }
-
     public function show(Request $request, Project $project): JsonResponse
     {
         $this->authorizeProject($project, $request);
@@ -49,7 +35,24 @@ class ProjectController extends Controller
         return response()->json([
             'success' => true,
             'message' => '',
-            'data'    => new ProjectResource($project->load(['template', 'images'])),
+            'data'    => new ProjectResource($project->load(['template', 'images', 'generationJobs'])),
+        ]);
+    }
+
+    public function update(Request $request, Project $project): JsonResponse
+    {
+        $this->authorizeProject($project, $request);
+
+        $validated = $request->validate([
+            'final_prompt' => 'nullable|string|max:65535',
+        ]);
+
+        $project->update($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => '',
+            'data'    => new ProjectResource($project->fresh()->load(['template', 'images', 'generationJobs'])),
         ]);
     }
 

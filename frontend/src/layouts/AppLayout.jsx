@@ -1,9 +1,10 @@
 import { Outlet, NavLink, Link, useNavigate, useLocation } from 'react-router-dom'
-import { Film, LayoutDashboard, Layers, Package, MessageSquare, Images, LogOut, User, Coins, ImagePlus, LayoutTemplate } from 'lucide-react'
+import { Film, LayoutDashboard, Layers, MessageSquare, Images, LogOut, User, Coins, ImagePlus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useAuthContext } from '../context/AuthContext'
 import LanguageSwitcher from '../components/ui/LanguageSwitcher'
 import toast from 'react-hot-toast'
+import { APP_BASE } from '../constants/routes'
 
 export default function AppLayout() {
   const { t } = useTranslation()
@@ -11,8 +12,8 @@ export default function AppLayout() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const fullBleed =
-    ['/templates', '/gallery', '/create'].includes(pathname) ||
-    pathname.startsWith('/projects/new')
+    [`${APP_BASE}/templates`, `${APP_BASE}/gallery`, `${APP_BASE}/create`].includes(pathname) ||
+    pathname.startsWith(`${APP_BASE}/projects/new-photo`)
 
   const handleLogout = async () => {
     await logout()
@@ -32,7 +33,7 @@ export default function AppLayout() {
       {/* Sidebar */}
       <aside className="w-64 flex-shrink-0 border-r border-white/10 bg-gray-900/50 backdrop-blur-sm flex flex-col">
         <div className="p-6 border-b border-white/10">
-          <Link to="/dashboard" className="flex items-center gap-2">
+          <Link to={`${APP_BASE}/dashboard`} className="flex items-center gap-2">
             <Film className="w-7 h-7 text-brand-400" />
             <span className="text-white font-bold text-xl gradient-text">ReelForge</span>
           </Link>
@@ -40,7 +41,7 @@ export default function AppLayout() {
 
         <nav className="flex-1 p-4 space-y-1">
           <NavLink
-            to="/dashboard"
+            to={`${APP_BASE}/dashboard`}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                 isActive
@@ -54,7 +55,7 @@ export default function AppLayout() {
           </NavLink>
 
           <NavLink
-            to="/templates"
+            to={`${APP_BASE}/templates`}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                 isActive
@@ -68,21 +69,7 @@ export default function AppLayout() {
           </NavLink>
 
           <NavLink
-            to="/products"
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-                isActive
-                  ? 'bg-brand-600/20 text-brand-300 border border-brand-500/30'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
-              }`
-            }
-          >
-            <Package className="w-4 h-4" />
-            {t('nav.products')}
-          </NavLink>
-
-          <NavLink
-            to="/projects/new-photo"
+            to={`${APP_BASE}/projects/new-photo`}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                 isActive
@@ -96,22 +83,7 @@ export default function AppLayout() {
           </NavLink>
 
           <NavLink
-            to="/projects/new"
-            end
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-                isActive
-                  ? 'bg-brand-600/20 text-brand-300 border border-brand-500/30'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
-              }`
-            }
-          >
-            <LayoutTemplate className="w-4 h-4" />
-            {t('nav.createByTemplate')}
-          </NavLink>
-
-          <NavLink
-            to="/create"
+            to={`${APP_BASE}/create`}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                 isActive
@@ -125,7 +97,7 @@ export default function AppLayout() {
           </NavLink>
 
           <NavLink
-            to="/gallery"
+            to={`${APP_BASE}/gallery`}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                 isActive
@@ -139,7 +111,7 @@ export default function AppLayout() {
           </NavLink>
 
           <NavLink
-            to="/profile"
+            to={`${APP_BASE}/profile`}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                 isActive
@@ -187,7 +159,7 @@ export default function AppLayout() {
                 {user.plan === 'free' && (
                   <>
                     {' · '}
-                    <Link to="/profile" className="text-brand-400 hover:underline">
+                    <Link to={`${APP_BASE}/profile`} className="text-brand-400 hover:underline">
                       {t('layout.upgrade')}
                     </Link>
                   </>

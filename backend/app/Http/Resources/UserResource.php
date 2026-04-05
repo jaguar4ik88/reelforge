@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\User;
 use App\Services\Credits\CreditService;
 use App\Support\ReelForgeStorage;
 use Illuminate\Http\Request;
@@ -19,6 +20,7 @@ class UserResource extends JsonResource
             'name'              => $this->name,
             'email'             => $this->email,
             'plan'              => $this->plan,
+            'role'              => $this->role ?? User::ROLE_CLIENT,
             'locale'            => $this->locale ?? 'uk',
             'avatar_url'        => ReelForgeStorage::url(
                 ReelForgeStorage::contentDisk(),
@@ -29,6 +31,7 @@ class UserResource extends JsonResource
                 'balance'                    => (int) ($this->creditWallet?->balance ?? 0),
                 'video_generation_cost'      => $creditService->getOperationCost('video_generation'),
                 'photo_guided_generation_cost' => $creditService->getOperationCost('photo_guided_generation'),
+                'photo_flow'                 => $creditService->getPhotoFlowPricing(),
             ],
             'videos_this_month' => $this->videosThisMonth(),
             'video_limit'       => $this->videoLimit(),

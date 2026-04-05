@@ -3,6 +3,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import toast from 'react-hot-toast'
 import { useAuthContext } from '../context/AuthContext'
+import { redirectToApp } from '../utils/apiBase'
+import { postLoginPath } from '../constants/routes'
 
 export default function OAuthCallback() {
   const { t } = useTranslation()
@@ -28,9 +30,10 @@ export default function OAuthCallback() {
 
     localStorage.setItem('token', token)
     refreshUser()
-      .then(() => {
+      .then((u) => {
         toast.success(t('auth.signIn'))
-        navigate('/dashboard', { replace: true })
+        if (u) redirectToApp(postLoginPath(u.role), navigate)
+        else navigate('/login', { replace: true })
       })
       .catch(() => {
         localStorage.removeItem('token')

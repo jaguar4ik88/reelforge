@@ -1,6 +1,9 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useParams } from 'react-router-dom'
 import { AuthProvider, useAuthContext } from './context/AuthContext'
+import { getAppUrl } from './utils/apiBase'
+import { postLoginPath, isStaffRole, APP_BASE, ADMIN_BASE } from './constants/routes'
 import AppLayout from './layouts/AppLayout'
+import AdminLayout from './layouts/AdminLayout'
 import AuthLayout from './layouts/AuthLayout'
 import Landing       from './pages/Landing'
 import Pricing       from './pages/Pricing'
@@ -11,25 +14,55 @@ import OAuthCallback   from './pages/OAuthCallback'
 import ForgotPassword  from './pages/ForgotPassword'
 import ResetPassword   from './pages/ResetPassword'
 import Dashboard     from './pages/Dashboard'
-import Products      from './pages/Products'
 import TemplatesPage from './pages/TemplatesPage'
 import CreateStudio  from './pages/CreateStudio'
 import Gallery       from './pages/Gallery'
-import CreateProject from './pages/CreateProject'
 import CreateProductPhotoFlow from './pages/CreateProductPhotoFlow'
 import ProjectView   from './pages/ProjectView'
 import Profile       from './pages/Profile'
+import AdminDashboard from './pages/admin/AdminDashboard'
+import AdminTemplates from './pages/admin/AdminTemplates'
+import AdminTemplateEdit from './pages/admin/AdminTemplateEdit'
 
-function PrivateRoute({ children }) {
+/** Authenticated clients only — staff is redirected to /admin. */
+function ClientAppRoute({ children }) {
   const { user, loading } = useAuthContext()
   if (loading) return <FullScreenSpinner />
-  return user ? children : <Navigate to="/login" replace />
+  if (!user) return <Navigate to="/login" replace />
+  if (isStaffRole(user.role)) {
+    return <Navigate to={`${ADMIN_BASE}/dashboard`} replace />
+  }
+  return children
+}
+
+/** Admin + manager only. */
+function StaffRoute({ children }) {
+  const { user, loading } = useAuthContext()
+  if (loading) return <FullScreenSpinner />
+  if (!user) return <Navigate to="/login" replace />
+  if (!isStaffRole(user.role)) {
+    return <Navigate to={`${APP_BASE}/dashboard`} replace />
+  }
+  return children
 }
 
 function GuestRoute({ children }) {
   const { user, loading } = useAuthContext()
   if (loading) return <FullScreenSpinner />
-  return !user ? children : <Navigate to="/dashboard" replace />
+  if (!user) return children
+
+  const dest = postLoginPath(user.role)
+  const appUrl = getAppUrl()
+  if (appUrl !== window.location.origin) {
+    window.location.href = appUrl + dest
+    return <FullScreenSpinner />
+  }
+  return <Navigate to={dest} replace />
+}
+
+function LegacyProjectRedirect() {
+  const { id } = useParams()
+  return <Navigate to={`${APP_BASE}/projects/${id}`} replace />
 }
 
 function FullScreenSpinner() {
@@ -56,17 +89,35 @@ export default function App() {
           <Route path="/auth/oauth-callback" element={<OAuthCallback />} />
         </Route>
 
-        <Route element={<PrivateRoute><AppLayout /></PrivateRoute>}>
-          <Route path="/dashboard"        element={<Dashboard />} />
-          <Route path="/products"         element={<Products />} />
-          <Route path="/templates"        element={<TemplatesPage />} />
-          <Route path="/create"           element={<CreateStudio />} />
-          <Route path="/gallery"          element={<Gallery />} />
-          <Route path="/projects/new"       element={<CreateProject />} />
-          <Route path="/projects/new-photo" element={<CreateProductPhotoFlow />} />
-          <Route path="/projects/:id"     element={<ProjectView />} />
-          <Route path="/profile"          element={<Profile />} />
+        <Route path="/app" element={<ClientAppRoute><AppLayout /></ClientAppRoute>}>
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard"   element={<Dashboard />} />
+          <Route path="products"    element={<Navigate to={`${APP_BASE}/gallery`} replace />} />
+          <Route path="templates"   element={<TemplatesPage />} />
+          <Route path="create"      element={<CreateStudio />} />
+          <Route path="gallery"     element={<Gallery />} />
+          <Route path="projects/new-photo" element={<CreateProductPhotoFlow />} />
+          <Route path="projects/:id"     element={<ProjectView />} />
+          <Route path="profile"     element={<Profile />} />
         </Route>
+
+        <Route path="/admin" element={<StaffRoute><AdminLayout /></StaffRoute>}>
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="templates" element={<AdminTemplates />} />
+          <Route path="templates/new" element={<AdminTemplateEdit />} />
+          <Route path="templates/:id/edit" element={<AdminTemplateEdit />} />
+        </Route>
+
+        {/* Old URLs → /app/... */}
+        <Route path="/dashboard" element={<Navigate to={`${APP_BASE}/dashboard`} replace />} />
+        <Route path="/products" element={<Navigate to={`${APP_BASE}/gallery`} replace />} />
+        <Route path="/templates" element={<Navigate to={`${APP_BASE}/templates`} replace />} />
+        <Route path="/create" element={<Navigate to={`${APP_BASE}/create`} replace />} />
+        <Route path="/gallery" element={<Navigate to={`${APP_BASE}/gallery`} replace />} />
+        <Route path="/profile" element={<Navigate to={`${APP_BASE}/profile`} replace />} />
+        <Route path="/projects/new-photo" element={<Navigate to={`${APP_BASE}/projects/new-photo`} replace />} />
+        <Route path="/projects/:id" element={<LegacyProjectRedirect />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
