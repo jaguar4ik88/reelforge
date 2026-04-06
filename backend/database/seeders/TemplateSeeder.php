@@ -63,20 +63,5 @@ class TemplateSeeder extends Seeder
                 ]
             );
         }
-
-        Template::query()->updateOrCreate(
-            ['slug' => 'photo-guided-internal'],
-            [
-                'name'         => 'Photo-guided (internal)',
-                'category'     => 'system',
-                'is_active'    => false,
-                'sort_order'   => 999,
-                'preview_path' => null,
-                'config_json'  => [
-                    'style'   => 'system',
-                    'purpose' => 'photo_guided_placeholder',
-                ],
-            ]
-        );
     }
 }

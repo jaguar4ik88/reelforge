@@ -5,6 +5,7 @@ import FormField from '../components/ui/FormField'
 import Spinner from '../components/ui/Spinner'
 import toast from 'react-hot-toast'
 import { authApi } from '../services/api'
+import SeoHead from '../components/seo/SeoHead'
 
 export default function ResetPassword() {
   const { t } = useTranslation()
@@ -47,6 +48,7 @@ export default function ResetPassword() {
   if (!canSubmit) {
     return (
       <div className="w-full max-w-md">
+        <SeoHead titleKey="seo.resetPasswordTitle" descriptionKey="seo.resetPasswordDescription" />
         <div className="card">
           <h1 className="text-2xl font-bold text-white mb-1">{t('auth.resetPasswordTitle')}</h1>
           <p className="text-gray-400 text-sm mb-6">{t('auth.resetLinkInvalid')}</p>
@@ -60,6 +62,7 @@ export default function ResetPassword() {
 
   return (
     <div className="w-full max-w-md">
+      <SeoHead titleKey="seo.resetPasswordTitle" descriptionKey="seo.resetPasswordDescription" />
       <div className="card">
         <h1 className="text-2xl font-bold text-white mb-1">{t('auth.resetPasswordTitle')}</h1>
         <p className="text-gray-400 text-sm mb-8">{t('auth.resetPasswordSub')}</p>

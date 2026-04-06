@@ -8,6 +8,7 @@ use App\Models\Template;
 use App\Support\ReelForgeStorage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -116,14 +117,11 @@ class AdminTemplateController extends Controller
 
     public function destroy(Template $template): JsonResponse
     {
-        abort_if(
-            $template->projects()->exists(),
-            422,
-            'Cannot delete a template that is used by projects.'
-        );
-
-        $this->deletePreviewIfAny($template);
-        $template->delete();
+        DB::transaction(function () use ($template) {
+            $template->projects()->update(['template_id' => null]);
+            $this->deletePreviewIfAny($template);
+            $template->delete();
+        });
 
         return response()->json([
             'success' => true,

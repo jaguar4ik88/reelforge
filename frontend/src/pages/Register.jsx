@@ -7,6 +7,7 @@ import Spinner from '../components/ui/Spinner'
 import toast from 'react-hot-toast'
 import { getApiOrigin, getOAuthRedirectUrl, redirectToApp } from '../utils/apiBase'
 import { postLoginPath } from '../constants/routes'
+import SeoHead from '../components/seo/SeoHead'
 
 export default function Register() {
   const { t } = useTranslation()
@@ -40,6 +41,7 @@ export default function Register() {
 
   return (
     <div className="w-full max-w-md">
+      <SeoHead titleKey="seo.registerTitle" descriptionKey="seo.registerDescription" />
       <div className="card">
         <h1 className="text-2xl font-bold text-white mb-1">{t('auth.registerTitle')}</h1>
         <p className="text-gray-400 text-sm mb-8">{t('auth.registerSub')}</p>
