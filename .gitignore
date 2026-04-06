@@ -57,6 +57,9 @@ jspm_packages/
 
 # Laravel specific
 /backend/vendor/
+# Vite build copied into public on deploy (not committed)
+/backend/public/index.html
+/backend/public/assets/
 /backend/storage/*.key
 /backend/.env
 /backend/.env.backup
