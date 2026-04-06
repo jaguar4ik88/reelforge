@@ -35,6 +35,9 @@ fi
 npm ci
 npm run build
 
+log "Copy frontend dist → backend/public (SPA + Laravel same host)"
+cp -a "${ROOT}/frontend/dist/." "${ROOT}/backend/public/"
+
 if [[ -n "${COPY_FRONTEND_TO:-}" ]]; then
   log "Copy frontend dist → ${COPY_FRONTEND_TO}"
   mkdir -p "$COPY_FRONTEND_TO"
