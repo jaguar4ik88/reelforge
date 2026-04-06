@@ -188,6 +188,10 @@ npm run dev
 - PWA версия
 - Расширенная кастомизация
 
+## 🚀 Автодеплой (CI/CD)
+
+Деплой при merge в **`main`**: GitHub Actions + SSH и скрипт **`scripts/deploy.sh`**. Подробно: [docs/DEPLOYMENT_AUTOMATION.md](docs/DEPLOYMENT_AUTOMATION.md).
+
 ## 📄 Лицензия
 
 Проект разработан для внутреннего использования.
