@@ -1,7 +1,9 @@
 import { ArrowRight, Clock } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import LandingNav from '../components/layout/LandingNav'
+import LandingFooter from '../components/layout/LandingFooter'
 import SeoHead from '../components/seo/SeoHead'
+import { useSite } from '../context/SiteContext'
 
 // Статические мета-данные постов (стили, ключи)
 const POST_META = [
@@ -15,6 +17,7 @@ const POST_META = [
 
 export default function Blog() {
   const { t } = useTranslation()
+  const { siteName } = useSite()
 
   const posts = POST_META.map(meta => ({
     ...meta,
@@ -42,7 +45,7 @@ export default function Blog() {
       {/* Header */}
       <div className="relative z-10 max-w-5xl mx-auto px-6 pt-14 pb-12">
         <div className="inline-flex items-center gap-2 bg-brand-900/40 border border-brand-500/30 rounded-full px-4 py-1.5 mb-5">
-          <span className="text-xs text-brand-300 font-medium">{t('blog.tag')}</span>
+          <span className="text-xs text-brand-300 font-medium">{t('blog.tag', { siteName })}</span>
         </div>
         <h1 className="text-5xl font-extrabold mb-4">{t('blog.title')}</h1>
         <p className="text-gray-400 text-lg max-w-xl">{t('blog.subtitle')}</p>
@@ -122,9 +125,7 @@ export default function Blog() {
         </div>
       </div>
 
-      <footer className="relative z-10 border-t border-white/10 py-8 text-center text-gray-600 text-sm">
-        © {new Date().getFullYear()} ReelForge. {t('common.allRightsReserved')}
-      </footer>
+      <LandingFooter />
     </div>
   )
 }

@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Check, Zap, Star, Sparkles, Crown, ChevronDown } from 'lucide-react'
+import { Check, Zap, Star, Sparkles, Crown } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import LandingNav from '../components/layout/LandingNav'
+import LandingFooter from '../components/layout/LandingFooter'
 import SeoHead from '../components/seo/SeoHead'
 
 // Статические данные плана (цены, иконки, стили) — не переводятся
@@ -63,30 +64,6 @@ const PACKAGES = [
   { credits: 350,  price: 49.99, labelKey: 'pro',   bonus: 100 },
   { credits: 1000, price: 99.99, labelKey: 'max',   bonus: 500 },
 ]
-
-const FAQ_KEYS = ['whatAreCredits', 'runOut', 'unused', 'cancel', 'yearlyDiscount', 'teams', 'videoQuality', 'paymentMethods']
-
-function FaqItem({ q, a }) {
-  const [open, setOpen] = useState(false)
-  return (
-    <div className="border border-white/10 rounded-2xl overflow-hidden">
-      <button
-        onClick={() => setOpen(o => !o)}
-        className="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-white/5 transition-colors"
-      >
-        <span className="font-medium text-white">{q}</span>
-        <ChevronDown
-          className={`w-5 h-5 text-gray-400 flex-shrink-0 ml-4 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
-        />
-      </button>
-      {open && (
-        <div className="px-6 pb-5 text-gray-400 text-sm leading-relaxed border-t border-white/10 pt-4">
-          {a}
-        </div>
-      )}
-    </div>
-  )
-}
 
 export default function Pricing() {
   const { t } = useTranslation()
@@ -248,23 +225,6 @@ export default function Pricing() {
         </div>
       </div>
 
-      {/* FAQ */}
-      <div className="relative z-10 max-w-3xl mx-auto px-6 pb-28">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-3">{t('pricing.faq.title')}</h2>
-          <p className="text-gray-400">{t('pricing.faq.subtitle')}</p>
-        </div>
-        <div className="flex flex-col gap-3">
-          {FAQ_KEYS.map((key) => (
-            <FaqItem
-              key={key}
-              q={t(`pricing.faq.items.${key}.q`)}
-              a={t(`pricing.faq.items.${key}.a`)}
-            />
-          ))}
-        </div>
-      </div>
-
       {/* Bottom CTA */}
       <div className="relative z-10 max-w-2xl mx-auto px-6 pb-24 text-center">
         <div className="bg-gradient-to-r from-brand-900/40 to-purple-900/40 border border-brand-500/20 rounded-3xl p-10">
@@ -276,9 +236,7 @@ export default function Pricing() {
         </div>
       </div>
 
-      <footer className="relative z-10 border-t border-white/10 py-8 text-center text-gray-600 text-sm">
-        © {new Date().getFullYear()} ReelForge. {t('common.allRightsReserved')}
-      </footer>
+      <LandingFooter />
     </div>
   )
 }

@@ -3,9 +3,11 @@ import { Link, NavLink } from 'react-router-dom'
 import { Film, Menu, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from '../ui/LanguageSwitcher'
+import { useSite } from '../../context/SiteContext'
 
 export default function LandingNav() {
   const { t } = useTranslation()
+  const { siteName } = useSite()
   const [mobileOpen, setMobileOpen] = useState(false)
 
   const navLinks = [
@@ -19,7 +21,7 @@ export default function LandingNav() {
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
           <Film className="w-8 h-8 text-brand-400" />
-          <span className="text-white font-bold text-2xl gradient-text">ReelForge</span>
+          <span className="text-white font-bold text-2xl gradient-text">{siteName}</span>
         </Link>
 
         {/* Desktop nav links */}

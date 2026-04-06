@@ -2,6 +2,7 @@ import { Outlet, NavLink, Link, useNavigate, useLocation } from 'react-router-do
 import { Film, LayoutDashboard, Layers, MessageSquare, Images, LogOut, User, Coins, ImagePlus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useAuthContext } from '../context/AuthContext'
+import { useSite } from '../context/SiteContext'
 import LanguageSwitcher from '../components/ui/LanguageSwitcher'
 import SeoHead from '../components/seo/SeoHead'
 import toast from 'react-hot-toast'
@@ -10,6 +11,7 @@ import { APP_BASE } from '../constants/routes'
 export default function AppLayout() {
   const { t } = useTranslation()
   const { user, logout } = useAuthContext()
+  const { siteName } = useSite()
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const fullBleed =
@@ -41,7 +43,7 @@ export default function AppLayout() {
         <div className="p-6 border-b border-white/10 flex-shrink-0">
           <Link to={`${APP_BASE}/dashboard`} className="flex items-center gap-2">
             <Film className="w-7 h-7 text-brand-400" />
-            <span className="text-white font-bold text-xl gradient-text">ReelForge</span>
+            <span className="text-white font-bold text-xl gradient-text">{siteName}</span>
           </Link>
         </div>
 

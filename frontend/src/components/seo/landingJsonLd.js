@@ -1,26 +1,22 @@
 /**
  * @param {string} siteUrl  Canonical origin, no trailing slash
+ * @param {string} siteName  Brand name (from config /api/site)
+ * @param {string} description  Short product description for SoftwareApplication
  * @returns {object|null}
  */
-export function buildLandingJsonLd(siteUrl) {
+export function buildLandingJsonLd(siteUrl, siteName = 'ReelForge', description = '') {
   if (!siteUrl) return null
-  const orgId = `${siteUrl}/#organization`
   return {
     '@context': 'https://schema.org',
-    '@graph': [
-      {
-        '@id': orgId,
-        '@type': 'Organization',
-        name: 'ReelForge',
-        url: siteUrl,
-      },
-      {
-        '@type': 'WebSite',
-        name: 'ReelForge',
-        url: siteUrl,
-        inLanguage: ['en-US', 'uk-UA'],
-        publisher: { '@id': orgId },
-      },
-    ],
+    '@type': 'SoftwareApplication',
+    name: siteName,
+    url: siteUrl,
+    description: description || `${siteName} — AI product photo and video for e-commerce.`,
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Web',
+    offers: {
+      '@type': 'Offer',
+      priceCurrency: 'USD',
+    },
   }
 }

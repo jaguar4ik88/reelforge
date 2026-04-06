@@ -2,12 +2,14 @@ import { Outlet, NavLink, Link, useNavigate } from 'react-router-dom'
 import { Film, LayoutDashboard, LayoutTemplate, LogOut } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useAuthContext } from '../context/AuthContext'
+import { useSite } from '../context/SiteContext'
 import toast from 'react-hot-toast'
 import { ADMIN_BASE } from '../constants/routes'
 import SeoHead from '../components/seo/SeoHead'
 
 export default function AdminLayout() {
   const { t } = useTranslation()
+  const { siteName } = useSite()
   const { user, logout } = useAuthContext()
   const navigate = useNavigate()
 
@@ -28,7 +30,7 @@ export default function AdminLayout() {
         <div className="p-6 border-b border-white/10 flex-shrink-0">
           <Link to={`${ADMIN_BASE}/dashboard`} className="flex items-center gap-2">
             <Film className="w-7 h-7 text-amber-400" />
-            <span className="text-white font-bold text-xl">ReelForge Admin</span>
+            <span className="text-white font-bold text-xl">{t('admin.nav.brandTitle', { siteName })}</span>
           </Link>
         </div>
         <nav className="flex-1 min-h-0 overflow-y-auto p-4 space-y-1">

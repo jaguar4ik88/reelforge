@@ -23,6 +23,16 @@ Route::prefix('auth')->group(function () {
 Route::get('/credits/packages', [CreditsController::class, 'packages']);
 Route::get('/credits/costs', [CreditsController::class, 'costs']);
 
+/** Public SPA config (brand name per deployment / domain). */
+Route::get('/site', function () {
+    return response()->json([
+        'success' => true,
+        'data'    => [
+            'site_name' => config('reelforge.site_name'),
+        ],
+    ]);
+});
+
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
