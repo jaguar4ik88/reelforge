@@ -1,6 +1,12 @@
 <?php
 
 return [
+    /*
+     * Public product name (header, emails, SEO). Override per deployment / white-label.
+     * Falls back to APP_NAME, then "ReelForge".
+     */
+    'site_name' => env('REELFORGE_SITE_NAME', env('APP_NAME', 'ReelForge')),
+
     'ffmpeg_binaries'            => env('FFMPEG_BINARIES', '/usr/bin/ffmpeg'),
     'ffprobe_binaries'           => env('FFPROBE_BINARIES', '/usr/bin/ffprobe'),
     'ffmpeg_font_path'           => env('FFMPEG_FONT_PATH', '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'),
@@ -34,7 +40,7 @@ return [
     ],
 
     'credits' => [
-        'welcome_bonus'               => (int) env('REELFORGE_WELCOME_CREDITS', 50),
+        'welcome_bonus'               => (int) env('REELFORGE_WELCOME_CREDITS', 5),
         'default_video_cost'          => (int) env('REELFORGE_DEFAULT_VIDEO_CREDIT_COST', 10),
         'default_photo_guided_cost'   => (int) env('REELFORGE_DEFAULT_PHOTO_GUIDED_CREDIT_COST', 5),
         'require_for_generation'      => filter_var(env('REELFORGE_CREDITS_REQUIRE_FOR_GENERATION', true), FILTER_VALIDATE_BOOLEAN),

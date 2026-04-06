@@ -14,30 +14,42 @@ export default {
     },
 
     seo: {
-      defaultTitle:       'ReelForge — Create Stunning Product Videos',
+      defaultTitle:       '{{siteName}} — Create Stunning Product Videos',
       defaultDescription: 'Turn your product photos into viral vertical videos in seconds. Credit-based pricing.',
-      landingTitle:       'ReelForge — Viral Product Videos from Photos',
-      landingDescription: 'Upload product photos, pick a template — get vertical MP4 for Instagram, TikTok, and Reels.',
-      pricingTitle:       'Pricing — ReelForge',
+      landingTitle:       '{{siteName}} — AI Photo & Video Generator for Product Cards',
+      landingDescription:
+        'Upload a smartphone product photo — get a professional product card, ad banner, or video in about 2 minutes. No photo studio or designer. For Amazon, Shopify, Rozetka, Etsy.',
+      landingOgTitle:       '{{siteName}} — AI Product Photos & Video for Cards',
+      landingOgDescription:
+        'Upload a photo from your phone — get a ready product card in 2 minutes. For Amazon, Shopify, Rozetka.',
+      landingKeywords:
+        'AI product photo, product card generator, Amazon product photo, Shopify product photo, Rozetka photo, Etsy product photo, online product card, marketplace video, no photo studio, AI product retouch, smartphone product photo, e-commerce SaaS, product banner',
+      jsonLdDescription: 'AI generator for product photos and video for product cards. No photo studio required.',
+      pricingTitle:       'Pricing — {{siteName}}',
       pricingDescription: 'Credit packs and subscriptions for AI product video generation.',
-      blogTitle:          'Blog — ReelForge',
+      blogTitle:          'Blog — {{siteName}}',
       blogDescription:    'Guides, tips, and updates on product video and social selling.',
-      loginTitle:         'Sign in — ReelForge',
-      loginDescription:   'Sign in to your ReelForge account.',
-      registerTitle:      'Create account — ReelForge',
+      privacyTitle:       'Privacy — {{siteName}}',
+      privacyDescription: 'How {{siteName}} collects, uses, and protects your data.',
+      termsTitle:         'Terms — {{siteName}}',
+      termsDescription:   'Terms of use for {{siteName}}.',
+      loginTitle:         'Sign in — {{siteName}}',
+      loginDescription:   'Sign in to your {{siteName}} account.',
+      registerTitle:      'Create account — {{siteName}}',
       registerDescription: 'Start with 5 free credits. No credit card required.',
-      forgotPasswordTitle: 'Reset password — ReelForge',
-      forgotPasswordDescription: 'Request a password reset link for your ReelForge account.',
-      resetPasswordTitle: 'Set new password — ReelForge',
-      resetPasswordDescription: 'Choose a new password for your ReelForge account.',
-      appAreaTitle:       'ReelForge',
+      forgotPasswordTitle: 'Reset password — {{siteName}}',
+      forgotPasswordDescription: 'Request a password reset link for your {{siteName}} account.',
+      resetPasswordTitle: 'Set new password — {{siteName}}',
+      resetPasswordDescription: 'Choose a new password for your {{siteName}} account.',
+      appAreaTitle:       '{{siteName}}',
       appAreaDescription: 'Create and manage product videos.',
-      oauthTitle:         'Signing in — ReelForge',
+      oauthTitle:         'Signing in — {{siteName}}',
       oauthDescription:   'Completing social sign-in.',
     },
 
     admin: {
       nav: {
+        brandTitle: '{{siteName}} Admin',
         dashboard: 'Admin',
         templates: 'Templates',
       },
@@ -188,29 +200,117 @@ export default {
     },
 
     landing: {
-      badge:       'Generate videos in seconds',
-      hero:        'Turn photos into <1>viral product videos</1>',
-      heroSub:     'Upload 3–5 product photos, add a title and price, pick a template — get a vertical MP4 ready for Instagram, TikTok, and Reels.',
+      badge:       'Built for e-commerce & marketplaces',
+      heroH1Line1: 'Professional product-card photos and video —',
+      heroH1Line2: 'no studio or designer',
+      heroSub:
+        'Lead with crisp catalog shots and product cards. When you need motion, turn the same assets into vertical video for TikTok, Instagram Reels, and Shorts.',
+      seoSectionTitle: 'About {{siteName}}',
+      seo: {
+        intro:
+          '{{siteName}} is an AI tool for creating professional product-card content without a photographer, retoucher, or designer. Upload a smartphone photo and get marketing-ready assets in about 2 minutes.',
+        whoTitle: 'Who is {{siteName}} for?',
+        whoBody:
+          'Built for entrepreneurs, marketplace sellers, and social marketers who want to sell more without a photo studio. {{siteName}} fits sellers on Amazon, Shopify, Etsy, Rozetka, Prom.ua, Allegro, and similar platforms.',
+        whatTitle: 'What can you create?',
+        whatBody:
+          'Three content types in one service: enhanced product photos with clean backgrounds and professional lighting; a product card with copy and branded layout; and short video for social feeds and ads. Everything is saved in your personal gallery and available to download anytime.',
+        howTitle: 'How does it work?',
+        howBody:
+          'Three steps: upload your product photo — choose content type and scene style — download the result. AI removes backgrounds, adds lighting, and outputs final assets aligned with marketplace standards.',
+        whyTitle: 'Why {{siteName}}?',
+        whyBody:
+          'A traditional shoot often costs $100+ and takes days. {{siteName}} cuts that to about 2 minutes and lets you produce unlimited variants for testing. Ideal for small and mid-sized businesses competing with larger brands.',
+      },
       ctaFree:     'Start for free — 5 credits',
       ctaLogin:    'Sign in',
-      featuresTitle: 'Everything you need to sell with video',
-      features: {
-        upload:   { title: 'Upload 3–5 photos',       desc: 'Drop your product photos and ReelForge does the rest.' },
-        template: { title: 'Choose a template',       desc: 'Pick from stunning templates designed to convert.' },
-        generate: { title: 'Auto-generate video',     desc: 'Our engine creates a 9:16 MP4 in seconds.' },
-        download: { title: 'Download & share',        desc: 'Get your video instantly. Ready for Stories & Reels.' },
-        mobile:   { title: 'Mobile-first format',    desc: 'All videos are vertical 1080×1920.' },
-        noSkills: { title: 'No editing skills needed', desc: 'Title, price, description — fill in and hit generate.' },
+      howItWorksTitle:    'How it works',
+      howItWorksSubtitle: 'From product photos to listings and social-ready clips',
+      howItWorks: {
+        step1: {
+          title: 'Upload product photos',
+          desc:  'Add 3–5 images — the foundation for both stills-style output and video.',
+        },
+        step2: {
+          title: 'Add details & pick a look',
+          desc:  'Title, price, description, and a template direction that fits your brand.',
+        },
+        step3: {
+          title: 'Generate & publish',
+          desc:  'Export visuals for your store and, when you need it, a 9:16 MP4 for Reels and TikTok.',
+        },
       },
-      ctaTitle:   'Ready to go viral?',
+      featuresTitle: 'Photos, cards, and video in one place',
+      features: {
+        upload:   { title: 'E-commerce product shots', desc: 'Images tuned for listings — clear, consistent, ready to sell.' },
+        template: { title: 'Product cards & layouts',    desc: 'Present your SKU in a polished card format for catalogs and stores.' },
+        generate: { title: 'Vertical video on demand',   desc: 'Spin up 9:16 MP4 in seconds when you need motion, not only stills.' },
+        download: { title: 'Download & share',         desc: 'Grab assets for your storefront, ads, and social posts.' },
+        mobile:   { title: 'Social-first formats',       desc: 'Vertical 1080×1920 video for feeds and stories.' },
+        noSkills: { title: 'No studio or editor required', desc: 'Fill in product details and generate — no complex tools.' },
+      },
+      videoSectionTitle:    'Video for TikTok & Instagram',
+      videoSectionSubtitle:
+        'Short vertical clips that fit TikTok, Instagram Reels, and Shorts — same product story, optimized for scroll and sound-on feeds.',
+      videoExample1:        'Example — coming soon',
+      videoExample2:        'Example — coming soon',
+      cardExamplesTitle:    'Product card examples',
+      cardExamplesSubtitle: 'Sample cards scroll slowly on their own — like a storefront window.',
+      cardExamples: {
+        sliderLabel: 'Scrolling product card examples',
+        empty:
+          'Add images to frontend/public/landing/card-examples/ and list them in landingCardExamples.js (or copy from tmp/exemple).',
+        placeholderBadge: 'Placeholder {{n}}',
+        reducedMotionHint: 'Scroll horizontally to browse examples.',
+      },
+      faq: {
+        title:    'Frequently asked questions',
+        subtitle: "Can't find an answer? Contact our support team.",
+        items: {
+          whatAreCredits: {
+            q: 'What are credits?',
+            a: "Credits are ReelForge's internal currency. Each video generation costs 5–15 credits depending on template complexity and quality. Your balance is topped up automatically each month with your subscription.",
+          },
+          runOut: {
+            q: 'What happens when I run out of credits?',
+            a: 'You can purchase an additional credit pack at any time without changing your plan. Or just wait for the next billing cycle — credits reset on your subscription start date.',
+          },
+          unused: {
+            q: 'Do unused credits roll over?',
+            a: 'Unfortunately, unused credits do not roll over to the next month. This allows us to keep prices affordable for all users.',
+          },
+          cancel: {
+            q: 'Can I cancel my subscription at any time?',
+            a: 'Yes. Cancel in one click from your profile settings. Access to features is retained until the end of the paid period. Unused days are non-refundable.',
+          },
+          yearlyDiscount: {
+            q: 'Is there a discount for annual billing?',
+            a: "Yes — choosing an annual plan saves you 50%. The price is locked for the entire year and won't change even if we update our pricing.",
+          },
+          teams: {
+            q: 'Do you support teams and companies?',
+            a: "Each subscription is currently tied to one account. Corporate plans with a shared credit pool are in development — reach out if you're interested.",
+          },
+          videoQuality: {
+            q: 'What video quality is available on each plan?',
+            a: 'HD (1080×1920) is available on all plans. 4K is available from the Creator plan. For 8K, contact us.',
+          },
+          paymentMethods: {
+            q: 'What payment methods are supported?',
+            a: 'Visa, Mastercard, American Express, and Apple Pay via Stripe. All payments are secured with PCI DSS Level 1 encryption.',
+          },
+        },
+      },
+      ctaTitle:   'Ready to refresh your catalog?',
       ctaSub:     'Free start with 5 credits. No credit card required.',
-      ctaBtn:     'Create your first video',
-      footer:     '© 2026 ReelForge. All rights reserved.',
+      ctaBtn:     'Create your first project',
+      footer:         '© {{year}} {{siteName}}. All rights reserved.',
+      footerNavLabel: 'Legal and site links',
     },
 
     auth: {
       loginTitle:       'Welcome back',
-      loginSub:         'Sign in to your ReelForge account',
+      loginSub:         'Sign in to your {{siteName}} account',
       registerTitle:    'Create your account',
       registerSub:      '5 credits to get started · No credit card required',
       email:            'Email',
@@ -588,20 +688,6 @@ export default {
           max:   'Max',
         },
       },
-      faq: {
-        title:    'Frequently asked questions',
-        subtitle: "Can't find an answer? Contact our support team.",
-        items: {
-          whatAreCredits:   { q: 'What are credits?',                          a: 'Credits are ReelForge\'s internal currency. Each video generation costs 5–15 credits depending on template complexity and quality. Your balance is topped up automatically each month with your subscription.' },
-          runOut:           { q: 'What happens when I run out of credits?',    a: 'You can purchase an additional credit pack at any time without changing your plan. Or just wait for the next billing cycle — credits reset on your subscription start date.' },
-          unused:           { q: 'Do unused credits roll over?',               a: 'Unfortunately, unused credits do not roll over to the next month. This allows us to keep prices affordable for all users.' },
-          cancel:           { q: 'Can I cancel my subscription at any time?',  a: 'Yes. Cancel in one click from your profile settings. Access to features is retained until the end of the paid period. Unused days are non-refundable.' },
-          yearlyDiscount:   { q: 'Is there a discount for annual billing?',    a: 'Yes — choosing an annual plan saves you 50%. The price is locked for the entire year and won\'t change even if we update our pricing.' },
-          teams:            { q: 'Do you support teams and companies?',        a: 'Each subscription is currently tied to one account. Corporate plans with a shared credit pool are in development — reach out if you\'re interested.' },
-          videoQuality:     { q: 'What video quality is available on each plan?', a: 'HD (1080×1920) is available on all plans. 4K is available from the Creator plan. For 8K, contact us.' },
-          paymentMethods:   { q: 'What payment methods are supported?',        a: 'Visa, Mastercard, American Express, and Apple Pay via Stripe. All payments are secured with PCI DSS Level 1 encryption.' },
-        },
-      },
       cta: {
         title:    'Ready to start?',
         subtitle: 'Try for free — your first 10 credits are on us.',
@@ -610,7 +696,7 @@ export default {
     },
 
     blog: {
-      tag:         'ReelForge Blog',
+      tag:         '{{siteName}} Blog',
       title:       'Video marketing insights',
       subtitle:    'Guides, case studies and tips on creating video content for social media and e-commerce.',
       readTime:    '{{count}} min',
@@ -665,6 +751,17 @@ export default {
     navLinks: {
       pricing: 'Pricing',
       blog:    'Blog',
+      privacy: 'Privacy',
+      terms:   'Terms',
+    },
+
+    legal: {
+      privacyTitle: 'Privacy Policy',
+      privacyBody:
+        'We are preparing the full text of our privacy policy. It will describe what data we collect, how we use it, and your rights.\n\nIf you have questions in the meantime, please contact support.',
+      termsTitle: 'Terms of Service',
+      termsBody:
+        'We are preparing the full terms of service. They will describe acceptable use of {{siteName}}, credits, subscriptions, and liability.\n\nIf you have questions in the meantime, please contact support.',
     },
 
     common: {

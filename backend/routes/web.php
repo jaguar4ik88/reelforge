@@ -1,7 +1,12 @@
 <?php
 
+use App\Http\Controllers\RobotsController;
+use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\SocialAuthController;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/robots.txt', RobotsController::class);
+Route::get('/sitemap.xml', SitemapController::class);
 
 Route::get('/auth/{provider}/redirect', [SocialAuthController::class, 'redirect'])
     ->whereIn('provider', ['google', 'apple']);

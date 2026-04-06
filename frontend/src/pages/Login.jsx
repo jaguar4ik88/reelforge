@@ -8,9 +8,11 @@ import toast from 'react-hot-toast'
 import { getApiOrigin, getOAuthRedirectUrl, redirectToApp } from '../utils/apiBase'
 import { postLoginPath } from '../constants/routes'
 import SeoHead from '../components/seo/SeoHead'
+import { useSite } from '../context/SiteContext'
 
 export default function Login() {
   const { t } = useTranslation()
+  const { siteName } = useSite()
   const { login } = useAuthContext()
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -56,7 +58,7 @@ export default function Login() {
       <SeoHead titleKey="seo.loginTitle" descriptionKey="seo.loginDescription" />
       <div className="card">
         <h1 className="text-2xl font-bold text-white mb-1">{t('auth.loginTitle')}</h1>
-        <p className="text-gray-400 text-sm mb-8">{t('auth.loginSub')}</p>
+        <p className="text-gray-400 text-sm mb-8">{t('auth.loginSub', { siteName })}</p>
 
         <form onSubmit={submit} className="space-y-5">
           <FormField label={t('auth.email')} error={errors.email?.[0]}>

@@ -29,6 +29,25 @@
   }
 }
 
+@keyframes rf-marquee-cards-x {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(var(--marquee-end, -50%), 0, 0);
+  }
+}
+
+.rf-marquee-track {
+  animation: rf-marquee-cards-x var(--marquee-duration, 100s) linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rf-marquee-track {
+    animation: none !important;
+  }
+}
+
 @layer components {
   .glass {
     @apply bg-white/5 backdrop-blur-sm border border-white/10;
