@@ -1,6 +1,7 @@
 import { ArrowRight, Clock } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import LandingNav from '../components/layout/LandingNav'
+import SeoHead from '../components/seo/SeoHead'
 
 // Статические мета-данные постов (стили, ключи)
 const POST_META = [
@@ -29,6 +30,7 @@ export default function Blog() {
 
   return (
     <div className="min-h-screen bg-gray-950 text-white">
+      <SeoHead titleKey="seo.blogTitle" descriptionKey="seo.blogDescription" />
       {/* Background glows */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 left-1/3 w-96 h-96 bg-brand-900/20 rounded-full blur-3xl" />

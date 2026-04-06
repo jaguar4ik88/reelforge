@@ -5,6 +5,7 @@ import toast from 'react-hot-toast'
 import { useAuthContext } from '../context/AuthContext'
 import { redirectToApp } from '../utils/apiBase'
 import { postLoginPath } from '../constants/routes'
+import SeoHead from '../components/seo/SeoHead'
 
 export default function OAuthCallback() {
   const { t } = useTranslation()
@@ -44,6 +45,11 @@ export default function OAuthCallback() {
 
   return (
     <div className="min-h-[40vh] flex items-center justify-center">
+      <SeoHead
+        titleKey="seo.oauthTitle"
+        descriptionKey="seo.oauthDescription"
+        noindex
+      />
       <div className="w-12 h-12 rounded-full border-4 border-brand-500/30 border-t-brand-500 animate-spin" />
     </div>
   )

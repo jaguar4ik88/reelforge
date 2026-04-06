@@ -3,7 +3,6 @@
 namespace App\Services\Project;
 
 use App\Models\Project;
-use App\Models\Template;
 use App\Models\User;
 use App\Services\Image\ImageService;
 use Illuminate\Http\UploadedFile;
@@ -20,9 +19,7 @@ class PhotoGuidedProjectService
      */
     public function createFromProductPhotos(User $user, array $files, string $productName, string $category, ?int $catalogTemplateId = null): Project
     {
-        $templateId = $catalogTemplateId !== null
-            ? (int) $catalogTemplateId
-            : $this->internalTemplateId();
+        $templateId = $catalogTemplateId !== null ? (int) $catalogTemplateId : null;
 
         $name = Str::limit(trim($productName), 200, '');
         if ($name === '') {
@@ -49,15 +46,5 @@ class PhotoGuidedProjectService
         $this->imageService->uploadMany($project, $files);
 
         return $project->fresh(['images', 'template']);
-    }
-
-    private function internalTemplateId(): int
-    {
-        $id = Template::query()->where('slug', 'photo-guided-internal')->value('id');
-        if ($id === null) {
-            throw new \RuntimeException('Missing template slug "photo-guided-internal". Run: php artisan db:seed --class=TemplateSeeder');
-        }
-
-        return (int) $id;
     }
 }

@@ -3,6 +3,7 @@ import { Film, LayoutDashboard, Layers, MessageSquare, Images, LogOut, User, Coi
 import { useTranslation } from 'react-i18next'
 import { useAuthContext } from '../context/AuthContext'
 import LanguageSwitcher from '../components/ui/LanguageSwitcher'
+import SeoHead from '../components/seo/SeoHead'
 import toast from 'react-hot-toast'
 import { APP_BASE } from '../constants/routes'
 
@@ -30,16 +31,21 @@ export default function AppLayout() {
 
   return (
     <div className="min-h-screen bg-gray-950 flex">
+      <SeoHead
+        titleKey="seo.appAreaTitle"
+        descriptionKey="seo.appAreaDescription"
+        noindex
+      />
       {/* Sidebar */}
-      <aside className="w-64 flex-shrink-0 border-r border-white/10 bg-gray-900/50 backdrop-blur-sm flex flex-col">
-        <div className="p-6 border-b border-white/10">
+      <aside className="w-64 flex-shrink-0 border-r border-white/10 bg-gray-900/50 backdrop-blur-sm flex flex-col h-[100dvh] min-h-0 sticky top-0 self-start">
+        <div className="p-6 border-b border-white/10 flex-shrink-0">
           <Link to={`${APP_BASE}/dashboard`} className="flex items-center gap-2">
             <Film className="w-7 h-7 text-brand-400" />
             <span className="text-white font-bold text-xl gradient-text">ReelForge</span>
           </Link>
         </div>
 
-        <nav className="flex-1 p-4 space-y-1">
+        <nav className="flex-1 min-h-0 overflow-y-auto p-4 space-y-1">
           <NavLink
             to={`${APP_BASE}/dashboard`}
             className={({ isActive }) =>
@@ -127,7 +133,7 @@ export default function AppLayout() {
 
         {/* Credits usage indicator */}
         {user && (
-          <div className="p-4 border-t border-white/10">
+          <div className="p-4 border-t border-white/10 flex-shrink-0 mt-auto">
             <div className="card p-4 mb-4">
               <div className="flex items-center justify-between gap-2 mb-2">
                 <span className="text-xs text-gray-400 font-medium flex items-center gap-1.5">

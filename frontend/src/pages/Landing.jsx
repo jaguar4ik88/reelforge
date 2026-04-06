@@ -2,15 +2,24 @@ import { Link } from 'react-router-dom'
 import { Trans, useTranslation } from 'react-i18next'
 import { Film, Zap, Upload, Download, Smartphone, CheckCircle } from 'lucide-react'
 import LandingNav from '../components/layout/LandingNav'
+import SeoHead from '../components/seo/SeoHead'
+import { buildLandingJsonLd } from '../components/seo/landingJsonLd'
+import { getSiteUrl } from '../utils/siteUrl'
 
 const featureIcons = [Upload, Film, Zap, Download, Smartphone, CheckCircle]
 const featureKeys = ['upload', 'template', 'generate', 'download', 'mobile', 'noSkills']
 
 export default function Landing() {
   const { t } = useTranslation()
+  const jsonLd = buildLandingJsonLd(getSiteUrl())
 
   return (
     <div className="min-h-screen bg-gray-950">
+      <SeoHead
+        titleKey="seo.landingTitle"
+        descriptionKey="seo.landingDescription"
+        jsonLd={jsonLd}
+      />
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 left-1/4 w-96 h-96 bg-brand-900/25 rounded-full blur-3xl" />
         <div className="absolute top-1/3 -right-20 w-80 h-80 bg-purple-900/20 rounded-full blur-3xl" />

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuthContext } from '../context/AuthContext'
 import toast from 'react-hot-toast'
 import { ADMIN_BASE } from '../constants/routes'
+import SeoHead from '../components/seo/SeoHead'
 
 export default function AdminLayout() {
   const { t } = useTranslation()
@@ -18,14 +19,19 @@ export default function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-gray-950 flex">
-      <aside className="w-64 flex-shrink-0 border-r border-white/10 bg-gray-900/50 backdrop-blur-sm flex flex-col">
-        <div className="p-6 border-b border-white/10">
+      <SeoHead
+        titleKey="seo.appAreaTitle"
+        descriptionKey="seo.appAreaDescription"
+        noindex
+      />
+      <aside className="w-64 flex-shrink-0 border-r border-white/10 bg-gray-900/50 backdrop-blur-sm flex flex-col h-[100dvh] min-h-0 sticky top-0 self-start">
+        <div className="p-6 border-b border-white/10 flex-shrink-0">
           <Link to={`${ADMIN_BASE}/dashboard`} className="flex items-center gap-2">
             <Film className="w-7 h-7 text-amber-400" />
             <span className="text-white font-bold text-xl">ReelForge Admin</span>
           </Link>
         </div>
-        <nav className="flex-1 p-4 space-y-1">
+        <nav className="flex-1 min-h-0 overflow-y-auto p-4 space-y-1">
           <NavLink
             to={`${ADMIN_BASE}/dashboard`}
             end
@@ -54,7 +60,7 @@ export default function AdminLayout() {
             {t('admin.nav.templates')}
           </NavLink>
         </nav>
-        <div className="p-4 border-t border-white/10">
+        <div className="p-4 border-t border-white/10 flex-shrink-0 mt-auto">
           <p className="text-xs text-gray-500 truncate mb-3">{user?.email}</p>
           <button
             type="button"

@@ -5,6 +5,7 @@ import FormField from '../components/ui/FormField'
 import Spinner from '../components/ui/Spinner'
 import toast from 'react-hot-toast'
 import { authApi } from '../services/api'
+import SeoHead from '../components/seo/SeoHead'
 
 export default function ForgotPassword() {
   const { t } = useTranslation()
@@ -32,6 +33,7 @@ export default function ForgotPassword() {
 
   return (
     <div className="w-full max-w-md">
+      <SeoHead titleKey="seo.forgotPasswordTitle" descriptionKey="seo.forgotPasswordDescription" />
       <div className="card">
         <h1 className="text-2xl font-bold text-white mb-1">{t('auth.forgotPasswordTitle')}</h1>
         <p className="text-gray-400 text-sm mb-8">{t('auth.forgotPasswordSub')}</p>

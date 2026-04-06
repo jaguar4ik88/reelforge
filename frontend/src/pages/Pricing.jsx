@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Check, Zap, Star, Sparkles, Crown, ChevronDown } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import LandingNav from '../components/layout/LandingNav'
+import SeoHead from '../components/seo/SeoHead'
 
 // Статические данные плана (цены, иконки, стили) — не переводятся
 const PLAN_META = [
@@ -93,6 +94,7 @@ export default function Pricing() {
 
   return (
     <div className="min-h-screen bg-gray-950 text-white">
+      <SeoHead titleKey="seo.pricingTitle" descriptionKey="seo.pricingDescription" />
       {/* Background glows */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 left-1/4 w-96 h-96 bg-brand-900/25 rounded-full blur-3xl" />

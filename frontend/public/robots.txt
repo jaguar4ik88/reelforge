@@ -1,0 +1,9 @@
+# Default: allow indexing. For a staging domain, replace this file with:
+#   User-agent: *
+#   Disallow: /
+#
+# Sitemap URL must be absolute (https://your-domain.com/sitemap.xml).
+User-agent: *
+Allow: /
+
+Sitemap: https://example.com/sitemap.xml
