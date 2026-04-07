@@ -311,6 +311,8 @@ export default {
     auth: {
       loginTitle:       'Welcome back',
       loginSub:         'Sign in to your {{siteName}} account',
+      loginNetworkHint:
+        'Cannot reach the API (often CORS or wrong API URL). On production: add your exact site origin to backend CORS_ALLOWED_ORIGINS, set APP_URL, rebuild the frontend with VITE_API_URL pointing at the API, use HTTPS.',
       registerTitle:    'Create your account',
       registerSub:      '5 credits to get started · No credit card required',
       email:            'Email',
