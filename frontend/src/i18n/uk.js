@@ -315,7 +315,7 @@ export default {
       loginTitle:       'З поверненням',
       loginSub:         'Увійдіть до вашого акаунту {{siteName}}',
       loginNetworkHint:
-        'Не вдається зʼєднатися з API (часто CORS або невірний URL). На проді: додайте точний origin сайту в backend CORS_ALLOWED_ORIGINS, перевірте APP_URL, перезберіть фронт з VITE_API_URL на API, використовуйте HTTPS.',
+        'Немає відповіді від API (часто CORS, SSL або невірний URL). У DevTools → Network подивіться повний URL запиту та червоні рядки в Console. Якщо фронт і API на одному домені — приберіть VITE_API_URL зі збірки (залишиться /api). Інакше: точний origin у CORS_ALLOWED_ORIGINS, HTTPS скрізь, перезбірка після зміни VITE_*.',
       registerTitle:    'Створити акаунт',
       registerSub:      '5 кредитів на старт · Без кредитної картки',
       email:            'Електронна пошта',

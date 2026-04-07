@@ -312,7 +312,7 @@ export default {
       loginTitle:       'Welcome back',
       loginSub:         'Sign in to your {{siteName}} account',
       loginNetworkHint:
-        'Cannot reach the API (often CORS or wrong API URL). On production: add your exact site origin to backend CORS_ALLOWED_ORIGINS, set APP_URL, rebuild the frontend with VITE_API_URL pointing at the API, use HTTPS.',
+        'No response from the API (often CORS, SSL, or wrong URL). In DevTools → Network check the full request URL and Console errors. If SPA and API share one domain, omit VITE_API_URL in the build (requests use /api). Otherwise: exact origin in CORS_ALLOWED_ORIGINS, HTTPS everywhere, rebuild after changing VITE_*.',
       registerTitle:    'Create your account',
       registerSub:      '5 credits to get started · No credit card required',
       email:            'Email',

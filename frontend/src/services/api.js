@@ -1,9 +1,23 @@
 import axios from 'axios'
 
+/**
+ * Resolves API prefix. VITE_API_URL = origin only (no /api). Trailing slash is OK.
+ * Uses URL() so https://host/ + /api never becomes https://host//api (breaks one deploy).
+ */
+function apiBaseUrl() {
+  const raw = import.meta.env.VITE_API_URL
+  if (raw == null || String(raw).trim() === '') return '/api'
+  const base = String(raw).trim().replace(/\/+$/, '')
+  if (base === '') return '/api'
+  try {
+    return new URL('/api', base).href.replace(/\/$/, '')
+  } catch {
+    return `${base}/api`.replace(/([^:]\/)\/+/g, '$1')
+  }
+}
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL
-    ? `${import.meta.env.VITE_API_URL}/api`
-    : '/api',
+  baseURL: apiBaseUrl(),
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
