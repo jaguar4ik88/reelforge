@@ -46,7 +46,12 @@ export default function Login() {
     } catch (err) {
       const data = err.response?.data
       if (data?.errors) setErrors(data.errors)
-      const message = data?.message ?? t('common.error')
+      const noResponse = !err.response
+      const networkLike =
+        noResponse && (err.message === 'Network Error' || err.code === 'ERR_NETWORK' || err.code === 'ECONNABORTED')
+      const message = networkLike
+        ? t('auth.loginNetworkHint')
+        : (data?.message ?? t('common.error'))
       toast.error(message)
     } finally {
       setLoading(false)
