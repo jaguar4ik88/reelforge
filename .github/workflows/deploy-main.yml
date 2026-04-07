@@ -1,5 +1,6 @@
 # Deploy when `main` is updated (push or merge).
-# Configure GitHub repository secrets (Settings → Secrets and variables → Actions).
+# Secrets: DEPLOY_HOST, DEPLOY_USER, DEPLOY_SSH_KEY, DEPLOY_PATH (required).
+# Optional: DEPLOY_PATH_B — second repo root on the same host (second site / folder).
 
 name: Deploy production
 
@@ -26,5 +27,11 @@ jobs:
           script_stop: true
           script: |
             set -euo pipefail
-            cd "${{ secrets.DEPLOY_PATH }}"
+            DEPLOY_PATH="${{ secrets.DEPLOY_PATH }}"
+            DEPLOY_PATH_B="${{ secrets.DEPLOY_PATH_B }}"
+            cd "$DEPLOY_PATH"
             bash scripts/deploy.sh
+            if [ -n "${DEPLOY_PATH_B}" ]; then
+              cd "$DEPLOY_PATH_B"
+              bash scripts/deploy.sh
+            fi

@@ -493,6 +493,12 @@ export default {
       uploadTitle: 'Upload product photo',
       uploadSub:   'Use a clear shot of the item — this will be the main reference for generation.',
       contentType: 'Content type',
+      advanced: {
+        title:       'Advanced settings',
+        formatLabel: 'Format',
+        formatHint:
+          'Output aspect ratio for the generated image (photo or card). Wider options suit banners; tall options suit stories.',
+      },
       content: {
         photo: 'Photo',
         card:  'Card',

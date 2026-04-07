@@ -111,13 +111,19 @@ class ProcessPhotoGuidedGenerationJob implements ShouldQueue
 
         if ($imageBase64 !== null) {
             $modelConfig = config('prompts.models.kontext');
+            $settings    = $job->settings_json ?? [];
+            $allowed     = ['9:16', '3:4', '1:1', '4:3', '16:9'];
+            $aspectRatio = $modelConfig['aspect_ratio'];
+            if (isset($settings['aspect_ratio']) && in_array($settings['aspect_ratio'], $allowed, true)) {
+                $aspectRatio = $settings['aspect_ratio'];
+            }
 
             return [
                 $modelConfig['id'],
                 [
                     'prompt'             => $prompt,
                     'input_image'        => $imageBase64,
-                    'aspect_ratio'       => $modelConfig['aspect_ratio'],
+                    'aspect_ratio'       => $aspectRatio,
                     'output_format'      => $modelConfig['output_format'],
                     'safety_tolerance'   => $modelConfig['safety_tolerance'],
                     'prompt_upsampling'  => $modelConfig['prompt_upsampling'],

@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useEffect } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Camera, Clapperboard, FileImage } from 'lucide-react'
+import { Camera, Clapperboard, FileImage, ChevronDown } from 'lucide-react'
 import toast from 'react-hot-toast'
 import ImageUploader from '../components/ImageUploader'
 import Spinner from '../components/ui/Spinner'
@@ -9,6 +9,7 @@ import ZoomableImage from '../components/ui/ZoomableImage'
 import { photoFlowApi } from '../services/api'
 import { APP_BASE } from '../constants/routes'
 import { useAuthContext } from '../context/AuthContext'
+import AspectRatioSelector from '../components/photo/AspectRatioSelector'
 
 const CONTENT_ICONS = { photo: Camera, card: FileImage, video: Clapperboard }
 
@@ -58,6 +59,9 @@ export default function CreateProductPhotoFlow() {
   const [videoDescription, setVideoDescription] = useState('')
   const [videoDuration, setVideoDuration] = useState(5)
   const [batchCount, setBatchCount] = useState(1)
+  const [advancedOpen, setAdvancedOpen] = useState(false)
+  /** FLUX Kontext output aspect ratio (photo & product card). */
+  const [outputAspectRatio, setOutputAspectRatio] = useState('3:4')
 
   /** Step 2 is enabled when photos + name are filled (no project on server yet). */
   const step1Ready = files.length >= 1 && productName.trim() !== ''
@@ -99,6 +103,8 @@ export default function CreateProductPhotoFlow() {
     setVideoDuration(5)
     setContentType('photo')
     setBatchCount(1)
+    setAdvancedOpen(false)
+    setOutputAspectRatio('3:4')
   }, [])
 
   const userWishesForApi = useMemo(() => {
@@ -140,6 +146,7 @@ export default function CreateProductPhotoFlow() {
         product_name: name,
         product_category: category,
         quantity: 1,
+        aspect_ratio: outputAspectRatio,
       }
 
       const { data: genRes } = await photoFlowApi.startGeneration(projectId, payload)
@@ -183,6 +190,7 @@ export default function CreateProductPhotoFlow() {
         product_category: category,
         quantity: batchCount,
         ...(contentType === 'video' ? { video_duration_seconds: videoDuration } : {}),
+        ...(contentType === 'photo' || contentType === 'card' ? { aspect_ratio: outputAspectRatio } : {}),
       }
 
       const { data: genRes } = await photoFlowApi.startGeneration(projectId, payload)
@@ -273,6 +281,34 @@ export default function CreateProductPhotoFlow() {
             </div>
 
             <p className="text-xs text-gray-500 mt-4 leading-relaxed">{t('photoFlow.templateMode.hint')}</p>
+
+            <div className="mt-6 rounded-2xl border border-white/10 bg-gray-900/30 overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setAdvancedOpen((o) => !o)}
+                aria-expanded={advancedOpen}
+                className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left text-sm font-semibold text-white hover:bg-white/5 transition-colors"
+              >
+                <span>{t('photoFlow.advanced.title')}</span>
+                <ChevronDown
+                  className={`w-5 h-5 shrink-0 text-gray-400 transition-transform duration-200 ${advancedOpen ? 'rotate-180' : ''}`}
+                  aria-hidden
+                />
+              </button>
+              {advancedOpen && (
+                <div className="border-t border-white/10 px-4 pb-4 pt-1">
+                  <p id="photo-flow-template-format-label" className="text-sm font-semibold text-white mb-3">
+                    {t('photoFlow.advanced.formatLabel')}
+                  </p>
+                  <p className="text-xs text-gray-500 mb-3">{t('photoFlow.advanced.formatHint')}</p>
+                  <AspectRatioSelector
+                    labelId="photo-flow-template-format-label"
+                    value={outputAspectRatio}
+                    onChange={setOutputAspectRatio}
+                  />
+                </div>
+              )}
+            </div>
 
             <button
               type="button"
@@ -486,6 +522,36 @@ export default function CreateProductPhotoFlow() {
                 <p className="text-xs text-gray-600 text-right mt-1">{videoDescription.length}/2000</p>
               </div>
             </section>
+          )}
+
+          {(contentType === 'photo' || contentType === 'card') && (
+            <div className="mb-6 rounded-2xl border border-white/10 bg-gray-900/30 overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setAdvancedOpen((o) => !o)}
+                aria-expanded={advancedOpen}
+                className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left text-sm font-semibold text-white hover:bg-white/5 transition-colors"
+              >
+                <span>{t('photoFlow.advanced.title')}</span>
+                <ChevronDown
+                  className={`w-5 h-5 shrink-0 text-gray-400 transition-transform duration-200 ${advancedOpen ? 'rotate-180' : ''}`}
+                  aria-hidden
+                />
+              </button>
+              {advancedOpen && (
+                <div className="border-t border-white/10 px-4 pb-4 pt-1">
+                  <p id="photo-flow-format-label" className="text-sm font-semibold text-white mb-3">
+                    {t('photoFlow.advanced.formatLabel')}
+                  </p>
+                  <p className="text-xs text-gray-500 mb-3">{t('photoFlow.advanced.formatHint')}</p>
+                  <AspectRatioSelector
+                    labelId="photo-flow-format-label"
+                    value={outputAspectRatio}
+                    onChange={setOutputAspectRatio}
+                  />
+                </div>
+              )}
+            </div>
           )}
 
           <div className="flex flex-row gap-2 items-stretch">
