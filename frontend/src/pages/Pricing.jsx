@@ -1,68 +1,56 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Check, Zap, Star, Sparkles, Crown } from 'lucide-react'
+import { Check, Zap, Star, Building2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import LandingNav from '../components/layout/LandingNav'
 import LandingFooter from '../components/layout/LandingFooter'
 import SeoHead from '../components/seo/SeoHead'
 
-// Статические данные плана (цены, иконки, стили) — не переводятся
+// Static plan meta (EUR). Yearly = monthly × 10/12 (two months free). Video counts assume 10 cr per 5s video.
 const PLAN_META = [
   {
     id: 'starter',
     icon: Zap,
-    monthlyPrice: 14,
-    yearlyPrice: 9,
-    perCredit: '0.15',
+    monthlyPrice: 9,
+    yearlyPrice: 8,
+    perCredit: '0.09',
     credits: 100,
     color: 'from-gray-700 to-gray-600',
     popular: false,
     featureKeys: ['creditsMonth', 'videosUpTo', 'imagesAtOnce', 'videosConcurrent', 'basicTemplates', 'cancelAnytime'],
-    featureParams: [{ count: 100 }, { count: 20 }, { count: 2 }, { count: 1 }, {}, {}],
+    featureParams: [{ count: 100 }, { count: 10 }, { count: 2 }, { count: 1 }, {}, {}],
   },
   {
-    id: 'plus',
+    id: 'pro',
     icon: Star,
     monthlyPrice: 24,
-    yearlyPrice: 16,
-    perCredit: '0.08',
-    credits: 300,
+    yearlyPrice: 20,
+    perCredit: '0.069',
+    credits: 350,
     color: 'from-brand-600 to-purple-600',
     popular: true,
     featureKeys: ['creditsMonth', 'videosUpTo', 'imagesAtOnce', 'videosConcurrent', 'allTemplates', 'prioritySupport', 'cancelAnytime'],
-    featureParams: [{ count: 300 }, { count: 60 }, { count: 5 }, { count: 2 }, {}, {}, {}],
+    featureParams: [{ count: 350 }, { count: 35 }, { count: 5 }, { count: 2 }, {}, {}, {}],
   },
   {
-    id: 'creator',
-    icon: Sparkles,
-    monthlyPrice: 49,
-    yearlyPrice: 33,
-    perCredit: '0.05',
+    id: 'business',
+    icon: Building2,
+    monthlyPrice: 59,
+    yearlyPrice: 49,
+    perCredit: '0.059',
     credits: 1000,
     color: 'from-violet-600 to-indigo-600',
     popular: false,
     featureKeys: ['creditsMonth', 'videosUpTo', 'imagesAtOnce', 'videosConcurrent', 'allPremiumTemplates', 'prioritySupport', 'noWatermark', 'cancelAnytime'],
-    featureParams: [{ count: 1000 }, { count: 200 }, { count: 7 }, { count: 3 }, {}, {}, {}, {}],
-  },
-  {
-    id: 'ultimate',
-    icon: Crown,
-    monthlyPrice: 124,
-    yearlyPrice: 82,
-    perCredit: '0.04',
-    credits: 3000,
-    color: 'from-amber-500 to-orange-500',
-    popular: false,
-    featureKeys: ['creditsMonth', 'videosUpTo', 'imagesAtOnce', 'videosConcurrent', 'exclusiveTemplates', 'personalSupport', 'noWatermark', 'apiAccess', 'cancelAnytime'],
-    featureParams: [{ count: 3000 }, { count: 600 }, { count: 10 }, { count: 5 }, {}, {}, {}, {}, {}],
+    featureParams: [{ count: 1000 }, { count: 100 }, { count: 7 }, { count: 3 }, {}, {}, {}, {}],
   },
 ]
 
 const PACKAGES = [
-  { credits: 50,   price: 9.99,  labelKey: 'trial' },
-  { credits: 150,  price: 24.99, labelKey: 'start', bonus: 25 },
-  { credits: 350,  price: 49.99, labelKey: 'pro',   bonus: 100 },
-  { credits: 1000, price: 99.99, labelKey: 'max',   bonus: 500 },
+  { credits: 50, price: 5.99, labelKey: 'trial' },
+  { credits: 150, price: 24.99, labelKey: 'start', bonus: 25 },
+  { credits: 350, price: 49.99, labelKey: 'pro', bonus: 100 },
+  { credits: 1000, price: 99.99, labelKey: 'max', bonus: 500 },
 ]
 
 export default function Pricing() {
@@ -123,7 +111,7 @@ export default function Pricing() {
 
       {/* Plans grid */}
       <div className="relative z-10 max-w-6xl mx-auto px-6 pb-20">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">
           {PLAN_META.map((plan) => {
             const Icon = plan.icon
             const price = yearly ? plan.yearlyPrice : plan.monthlyPrice
@@ -158,11 +146,11 @@ export default function Pricing() {
 
                   {/* Price */}
                   <div className="mb-1">
-                    <span className="text-4xl font-extrabold text-white">{price}</span>
+                    <span className="text-4xl font-extrabold text-white">€{price}</span>
                     <span className="text-gray-400 text-sm ml-1">{t('pricing.perMonth')}</span>
                   </div>
                   <p className="text-xs text-gray-500 mb-6">
-                    {plan.perCredit} {t('pricing.perCredit')}
+                    €{plan.perCredit} {t('pricing.perCredit')}
                   </p>
 
                   {/* CTA */}
@@ -206,7 +194,7 @@ export default function Pricing() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {PACKAGES.map((pkg) => (
             <div
-              key={pkg.credits}
+              key={`${pkg.labelKey}-${pkg.credits}`}
               className="bg-gray-900/60 border border-white/10 hover:border-brand-500/40 rounded-2xl p-5 text-center transition-all duration-200 cursor-pointer"
             >
               <div className="text-xs text-gray-500 font-medium uppercase tracking-wide mb-2">
@@ -219,7 +207,7 @@ export default function Pricing() {
                 </div>
               )}
               <div className="text-xs text-gray-400 mb-4">{t('pricing.packages.credits')}</div>
-              <div className="font-bold text-white">${pkg.price}</div>
+              <div className="font-bold text-white">€{pkg.price}</div>
             </div>
           ))}
         </div>

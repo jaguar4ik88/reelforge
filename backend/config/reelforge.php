@@ -40,7 +40,7 @@ return [
     ],
 
     'credits' => [
-        'welcome_bonus'               => (int) env('REELFORGE_WELCOME_CREDITS', 5),
+        'welcome_bonus'               => (int) env('REELFORGE_WELCOME_CREDITS', 10),
         'default_video_cost'          => (int) env('REELFORGE_DEFAULT_VIDEO_CREDIT_COST', 10),
         'default_photo_guided_cost'   => (int) env('REELFORGE_DEFAULT_PHOTO_GUIDED_CREDIT_COST', 5),
         'require_for_generation'      => filter_var(env('REELFORGE_CREDITS_REQUIRE_FOR_GENERATION', true), FILTER_VALIDATE_BOOLEAN),

@@ -16,7 +16,7 @@ export default function LandingNav() {
   ]
 
   return (
-    <nav className="relative z-10 max-w-6xl mx-auto px-6 py-5">
+    <nav className="relative z-10 w-full max-w-6xl mx-auto px-6 py-5">
       <div className="flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
