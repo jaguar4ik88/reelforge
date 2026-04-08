@@ -3,8 +3,9 @@ import { useTranslation } from 'react-i18next'
 import { useSite } from '../../context/SiteContext'
 
 const footerNav = [
-  { to: '/privacy', labelKey: 'navLinks.privacy' },
   { to: '/terms', labelKey: 'navLinks.terms' },
+  { to: '/privacy', labelKey: 'navLinks.privacy' },
+  { to: '/refund', labelKey: 'navLinks.refund' },
   { to: '/pricing', labelKey: 'navLinks.pricing' },
   { to: '/blog', labelKey: 'navLinks.blog' },
 ]

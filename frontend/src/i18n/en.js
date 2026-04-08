@@ -1,3 +1,5 @@
+import legalEn from './legalEn'
+
 export default {
   translation: {
     nav: {
@@ -33,10 +35,12 @@ export default {
       privacyDescription: 'How {{siteName}} collects, uses, and protects your data.',
       termsTitle:         'Terms — {{siteName}}',
       termsDescription:   'Terms of use for {{siteName}}.',
+      refundTitle:        'Refund Policy — {{siteName}}',
+      refundDescription:  'Refund, cancellation, and chargeback rules for {{siteName}}.',
       loginTitle:         'Sign in — {{siteName}}',
       loginDescription:   'Sign in to your {{siteName}} account.',
       registerTitle:      'Create account — {{siteName}}',
-      registerDescription: 'Start with 5 free credits. No credit card required.',
+      registerDescription: 'Start with 10 free credits. No credit card required.',
       forgotPasswordTitle: 'Reset password — {{siteName}}',
       forgotPasswordDescription: 'Request a password reset link for your {{siteName}} account.',
       resetPasswordTitle: 'Set new password — {{siteName}}',
@@ -285,7 +289,7 @@ export default {
           },
           yearlyDiscount: {
             q: 'Is there a discount for annual billing?',
-            a: "Yes — choosing an annual plan saves you 50%. The price is locked for the entire year and won't change even if we update our pricing.",
+            a: "Yes — annual billing saves about 17% (equivalent to two months free). The price is locked for the entire year and won't change even if we update our pricing.",
           },
           teams: {
             q: 'Do you support teams and companies?',
@@ -293,7 +297,7 @@ export default {
           },
           videoQuality: {
             q: 'What video quality is available on each plan?',
-            a: 'HD (1080×1920) is available on all plans. 4K is available from the Creator plan. For 8K, contact us.',
+            a: 'HD (1080×1920) is available on all plans. 4K is available from the Business plan. For 8K, contact us.',
           },
           paymentMethods: {
             q: 'What payment methods are supported?',
@@ -302,7 +306,7 @@ export default {
         },
       },
       ctaTitle:   'Ready to refresh your catalog?',
-      ctaSub:     'Free start with 5 credits. No credit card required.',
+      ctaSub:     'Free start with 10 credits. No credit card required.',
       ctaBtn:     'Create your first project',
       footer:         '© {{year}} {{siteName}}. All rights reserved.',
       footerNavLabel: 'Legal and site links',
@@ -656,18 +660,17 @@ export default {
       subtitle:     'Flexible plans for everyone — from your first reel to full-scale production.',
       monthly:      'Monthly',
       yearly:       'Yearly',
-      discount:     '−50%',
-      saveNote:     'Save 50% with an annual plan.',
-      perMonth:     '$/mo',
-      perCredit:    '$ per credit',
+      discount:     '−17%',
+      saveNote:     'Save ~17% with annual billing (2 months free).',
+      perMonth:     '/mo',
+      perCredit:    'per credit',
       startBtn:     'Get started',
       popular:      'POPULAR',
       note:         'All plans include HD 9:16 video. No hidden fees. Cancel anytime.',
       plans: {
         starter:  { name: 'Starter' },
-        plus:     { name: 'Plus' },
-        creator:  { name: 'Creator' },
-        ultimate: { name: 'Ultimate' },
+        pro:      { name: 'Pro' },
+        business: { name: 'Business' },
       },
       features: {
         creditsMonth:       '{{count}} credits per month',
@@ -694,6 +697,7 @@ export default {
           start: 'Start',
           pro:   'Pro',
           max:   'Max',
+          topup: 'Top-up',
         },
       },
       cta: {
@@ -761,16 +765,10 @@ export default {
       blog:    'Blog',
       privacy: 'Privacy',
       terms:   'Terms',
+      refund:  'Refunds',
     },
 
-    legal: {
-      privacyTitle: 'Privacy Policy',
-      privacyBody:
-        'We are preparing the full text of our privacy policy. It will describe what data we collect, how we use it, and your rights.\n\nIf you have questions in the meantime, please contact support.',
-      termsTitle: 'Terms of Service',
-      termsBody:
-        'We are preparing the full terms of service. They will describe acceptable use of {{siteName}}, credits, subscriptions, and liability.\n\nIf you have questions in the meantime, please contact support.',
-    },
+    legal: legalEn,
 
     common: {
       allRightsReserved: 'All rights reserved.',
