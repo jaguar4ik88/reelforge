@@ -7,6 +7,7 @@ use App\Models\CreditCost;
 use App\Models\CreditPackage;
 use App\Models\CreditTransaction;
 use App\Models\GenerationJob;
+use App\Models\PaymentOrder;
 use App\Models\Project;
 use App\Models\User;
 use App\Models\UserCredit;
@@ -59,25 +60,25 @@ class CreditService
         $video = config('reelforge.credits.photo_flow.video_options', []);
 
         $basePhoto = (int) config('reelforge.credits.photo_flow.photo_per_image', 2);
-        $sceneMap  = config('reelforge.credits.photo_flow.photo_scene_credits', []);
+        $sceneMap = config('reelforge.credits.photo_flow.photo_scene_credits', []);
         $sceneCredits = is_array($sceneMap)
             ? [
                 'from_wishes' => (int) ($sceneMap['from_wishes'] ?? $basePhoto),
-                'in_use'      => (int) ($sceneMap['in_use'] ?? $basePhoto),
-                'studio'      => (int) ($sceneMap['studio'] ?? $basePhoto),
+                'in_use' => (int) ($sceneMap['in_use'] ?? $basePhoto),
+                'studio' => (int) ($sceneMap['studio'] ?? $basePhoto),
             ]
             : [
                 'from_wishes' => $basePhoto,
-                'in_use'      => $basePhoto,
-                'studio'      => $basePhoto,
+                'in_use' => $basePhoto,
+                'studio' => $basePhoto,
             ];
 
         return [
-            'improvement'          => (int) config('reelforge.credits.photo_flow.improvement', 1),
-            'photo_per_image'      => $basePhoto,
-            'photo_scene_credits'  => $sceneCredits,
-            'card_per_image'       => (int) config('reelforge.credits.photo_flow.card_per_image', 1),
-            'video'                => array_values(array_map(
+            'improvement' => (int) config('reelforge.credits.photo_flow.improvement', 1),
+            'photo_per_image' => $basePhoto,
+            'photo_scene_credits' => $sceneCredits,
+            'card_per_image' => (int) config('reelforge.credits.photo_flow.card_per_image', 1),
+            'video' => array_values(array_map(
                 fn (array $o): array => [
                     'seconds' => (int) ($o['seconds'] ?? 0),
                     'credits' => (int) ($o['credits'] ?? 0),
@@ -153,13 +154,13 @@ class CreditService
             $balanceAfter = (int) $wallet->fresh()->balance;
 
             return CreditTransaction::query()->create([
-                'user_id'        => $user->id,
-                'delta'          => -$cost,
-                'balance_after'  => $balanceAfter,
-                'kind'           => 'spend_generation',
-                'description'    => 'Video generation',
+                'user_id' => $user->id,
+                'delta' => -$cost,
+                'balance_after' => $balanceAfter,
+                'kind' => 'spend_generation',
+                'description' => 'Video generation',
                 'reference_type' => Project::class,
-                'reference_id'   => $project->id,
+                'reference_id' => $project->id,
             ]);
         });
     }
@@ -182,13 +183,13 @@ class CreditService
             $balanceAfter = (int) $wallet->fresh()->balance;
 
             return CreditTransaction::query()->create([
-                'user_id'          => $user->id,
-                'delta'            => -$cost,
-                'balance_after'    => $balanceAfter,
-                'kind'             => 'spend_photo_guided',
-                'description'      => 'Photo-guided generation',
-                'reference_type'   => GenerationJob::class,
-                'reference_id'     => $job->id,
+                'user_id' => $user->id,
+                'delta' => -$cost,
+                'balance_after' => $balanceAfter,
+                'kind' => 'spend_photo_guided',
+                'description' => 'Photo-guided generation',
+                'reference_type' => GenerationJob::class,
+                'reference_id' => $job->id,
             ]);
         });
     }
@@ -219,18 +220,18 @@ class CreditService
             $balanceAfter = (int) $wallet->fresh()->balance;
 
             CreditTransaction::query()->create([
-                'user_id'         => $userId,
-                'delta'           => $amount,
-                'balance_after'   => $balanceAfter,
-                'kind'            => 'refund_photo_guided',
-                'description'     => 'Photo-guided generation failed — credits refunded',
-                'reference_type'  => GenerationJob::class,
-                'reference_id'    => $job->id,
+                'user_id' => $userId,
+                'delta' => $amount,
+                'balance_after' => $balanceAfter,
+                'kind' => 'refund_photo_guided',
+                'description' => 'Photo-guided generation failed — credits refunded',
+                'reference_type' => GenerationJob::class,
+                'reference_id' => $job->id,
             ]);
 
             $locked->forceFill([
                 'credits_transaction_id' => null,
-                'credits_cost'             => null,
+                'credits_cost' => null,
             ])->save();
         });
     }
@@ -261,18 +262,18 @@ class CreditService
             $balanceAfter = (int) $wallet->fresh()->balance;
 
             CreditTransaction::query()->create([
-                'user_id'        => $userId,
-                'delta'          => $amount,
-                'balance_after'  => $balanceAfter,
-                'kind'           => 'refund_generation',
-                'description'    => 'Video generation failed — credits refunded',
+                'user_id' => $userId,
+                'delta' => $amount,
+                'balance_after' => $balanceAfter,
+                'kind' => 'refund_generation',
+                'description' => 'Video generation failed — credits refunded',
                 'reference_type' => Project::class,
-                'reference_id'   => $project->id,
+                'reference_id' => $project->id,
             ]);
 
             $locked->forceFill([
                 'credits_transaction_id' => null,
-                'credits_cost'           => null,
+                'credits_cost' => null,
             ])->save();
         });
     }
@@ -307,13 +308,85 @@ class CreditService
             $balanceAfter = (int) $wallet->fresh()->balance;
 
             return CreditTransaction::query()->create([
-                'user_id'           => $user->id,
-                'delta'             => $amount,
-                'balance_after'     => $balanceAfter,
-                'kind'              => 'purchase_stub',
-                'description'       => 'Credit package (stub)',
+                'user_id' => $user->id,
+                'delta' => $amount,
+                'balance_after' => $balanceAfter,
+                'kind' => 'purchase_stub',
+                'description' => 'Credit package (stub)',
                 'credit_package_id' => $package->id,
             ]);
+        });
+    }
+
+    /**
+     * Grant credits after successful WayForPay payment (idempotent per payment order).
+     */
+    public function grantCreditsForWayForPayOrder(PaymentOrder $order): ?CreditTransaction
+    {
+        return $this->grantCreditsForPaidPackageOrder(
+            $order,
+            'purchase_wayforpay',
+            'Credit package (WayForPay, UAH)'
+        );
+    }
+
+    /**
+     * Grant credits after successful FastSpring payment (idempotent per payment order).
+     */
+    public function grantCreditsForFastspringOrder(PaymentOrder $order): ?CreditTransaction
+    {
+        return $this->grantCreditsForPaidPackageOrder(
+            $order,
+            'purchase_fastspring',
+            'Credit package (FastSpring)'
+        );
+    }
+
+    private function grantCreditsForPaidPackageOrder(PaymentOrder $order, string $kind, string $description): ?CreditTransaction
+    {
+        return DB::transaction(function () use ($order, $kind, $description) {
+            /** @var PaymentOrder $locked */
+            $locked = PaymentOrder::query()->whereKey($order->id)->lockForUpdate()->firstOrFail();
+
+            if ($locked->status === 'completed') {
+                return CreditTransaction::query()
+                    ->where('user_id', $locked->user_id)
+                    ->where('reference_type', PaymentOrder::class)
+                    ->where('reference_id', $locked->id)
+                    ->first();
+            }
+
+            $user = User::query()->findOrFail($locked->user_id);
+            $package = CreditPackage::query()->findOrFail($locked->credit_package_id);
+
+            $this->getOrCreateWallet($user);
+
+            $wallet = UserCredit::query()
+                ->where('user_id', $user->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            $amount = (int) $package->credits_amount;
+            $wallet->increment('balance', $amount);
+            $balanceAfter = (int) $wallet->fresh()->balance;
+
+            $tx = CreditTransaction::query()->create([
+                'user_id' => $user->id,
+                'delta' => $amount,
+                'balance_after' => $balanceAfter,
+                'kind' => $kind,
+                'description' => $description,
+                'credit_package_id' => $package->id,
+                'reference_type' => PaymentOrder::class,
+                'reference_id' => $locked->id,
+            ]);
+
+            $locked->forceFill([
+                'status' => 'completed',
+                'meta' => array_merge($locked->meta ?? [], ['credit_transaction_id' => $tx->id]),
+            ])->save();
+
+            return $tx;
         });
     }
 }

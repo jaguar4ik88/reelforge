@@ -11,6 +11,7 @@ export default {
       newProject: 'New project',
       createFromPhoto: 'From product photo',
       createByTemplate: 'By template',
+      credits:    'Credits',
       profile:    'Profile',
       logout:     'Logout',
     },
@@ -47,6 +48,8 @@ export default {
       resetPasswordDescription: 'Choose a new password for your {{siteName}} account.',
       appAreaTitle:       '{{siteName}}',
       appAreaDescription: 'Create and manage product videos.',
+      creditsTitle:       'Credits — {{siteName}}',
+      creditsDescription: 'Top up your credit balance.',
       oauthTitle:         'Signing in — {{siteName}}',
       oauthDescription:   'Completing social sign-in.',
     },
@@ -119,6 +122,7 @@ export default {
         videos:  'Videos',
       },
       desc: {
+        credits:   'Top up your credit balance',
         templates: 'Photo & video inspiration',
         products:  'Your products and video projects',
         create:    'Chat and prompts for content generation',
@@ -690,6 +694,8 @@ export default {
       packages: {
         title:   'Or buy credits once',
         subtitle:'No subscription — just top up your balance when you need it.',
+        uahNote:
+          'Prices on this page are in USD. For Ukraine, checkout is in UAH on WayForPay at the current rate (see Credits after sign-in).',
         bonus:   '+{{count}} bonus',
         credits: 'credits',
         labels: {
@@ -705,6 +711,27 @@ export default {
         subtitle: 'Try for free — your first 10 credits are on us.',
         btn:      'Create a free account',
       },
+    },
+
+    credits: {
+      title:    'Credits',
+      subtitle: 'Top up your balance. Prices are shown in USD; card payment is in UAH on the WayForPay page.',
+      back:     'Back to dashboard',
+      payUah:   'Pay in UAH (WayForPay)',
+      chargeInUah: 'Charged at checkout: {{amount}} UAH',
+      wayforpayCheckoutNote:
+        'Approx. {{rate}} UAH per 1 USD ({{discount}}% UA discount). Exact amount is shown on WayForPay.',
+      wayforpayReturn: 'Payment received. If credits did not update, refresh in a minute.',
+      fastspringReturn:
+        'Order completed. Credits update shortly via webhook — refresh if your balance is unchanged.',
+      wayforpayDisabled: 'WayForPay is not available for this region or not configured.',
+      fastspringCheckoutNote:
+        'Checkout via FastSpring (cards, PayPal, etc.). Prices are shown in USD at checkout.',
+      payFastspring: 'Pay (FastSpring)',
+      fastspringDisabled: 'FastSpring is not configured or not available for this region.',
+      fastspringPopupBlocked:
+        'Allow pop-ups for this site to open the payment page in a new tab, or use your browser’s address bar icon.',
+      empty:    'No packages available.',
     },
 
     blog: {

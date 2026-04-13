@@ -6,10 +6,12 @@ const fallbackName = (import.meta.env.VITE_SITE_NAME || 'ReelForge').trim() || '
 const SiteContext = createContext({
   siteName: fallbackName,
   loading: true,
+  payments: null,
 })
 
 export function SiteProvider({ children }) {
   const [siteName, setSiteName] = useState(fallbackName)
+  const [payments, setPayments] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -17,9 +19,13 @@ export function SiteProvider({ children }) {
     api
       .get('/site')
       .then((res) => {
-        const name = res.data?.data?.site_name
+        const d = res.data?.data
+        const name = d?.site_name
         if (!cancelled && typeof name === 'string' && name.trim()) {
           setSiteName(name.trim())
+        }
+        if (!cancelled && d?.payments) {
+          setPayments(d.payments)
         }
       })
       .catch(() => {})
@@ -31,7 +37,7 @@ export function SiteProvider({ children }) {
     }
   }, [])
 
-  const value = useMemo(() => ({ siteName, loading }), [siteName, loading])
+  const value = useMemo(() => ({ siteName, loading, payments }), [siteName, loading, payments])
 
   return <SiteContext.Provider value={value}>{children}</SiteContext.Provider>
 }

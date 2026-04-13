@@ -17,6 +17,7 @@ import ProjectCard from '../components/ProjectCard'
 import Spinner from '../components/ui/Spinner'
 
 const shortcuts = [
+  { to: `${APP_BASE}/credits`, icon: Coins, key: 'credits', color: 'from-sky-600 to-cyan-600' },
   { to: `${APP_BASE}/templates`, icon: Layers, key: 'templates', color: 'from-violet-600 to-purple-600' },
   { to: `${APP_BASE}/create`, icon: MessageSquare, key: 'create', color: 'from-emerald-600 to-teal-600' },
   { to: `${APP_BASE}/gallery`, icon: Images, key: 'gallery', color: 'from-amber-600 to-orange-600' },

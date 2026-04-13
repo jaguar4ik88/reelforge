@@ -142,4 +142,11 @@ export const generationApi = {
   status: (predictionId) => api.get(`/generate/${predictionId}`),
 }
 
+// ── Payments (WayForPay / FastSpring) ───────────────────────────────────────────
+export const paymentsApi = {
+  checkoutContext: () => api.get('/payments/checkout-context'),
+  wayforpayInvoice: (slug) => api.post('/payments/wayforpay/invoice', { slug }),
+  fastspringSession: (slug) => api.post('/payments/fastspring/session', { slug }),
+}
+
 export default api
