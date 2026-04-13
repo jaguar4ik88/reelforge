@@ -20,12 +20,12 @@ class CreditPackageSeeder extends Seeder
             CreditPackage::query()->updateOrCreate(
                 ['slug' => $p['slug']],
                 [
-                    'name'           => $p['name'],
+                    'name' => $p['name'],
                     'credits_amount' => $p['credits_amount'],
-                    'price_cents'    => $p['price_cents'],
-                    'currency'       => 'EUR',
-                    'is_active'      => true,
-                    'sort_order'     => $p['sort_order'],
+                    'price_cents' => $p['price_cents'],
+                    'currency' => 'USD',
+                    'is_active' => true,
+                    'sort_order' => $p['sort_order'],
                 ]
             );
         }

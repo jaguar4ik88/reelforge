@@ -119,6 +119,20 @@ export default function AppLayout() {
           </NavLink>
 
           <NavLink
+            to={`${APP_BASE}/credits`}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                isActive
+                  ? 'bg-brand-600/20 text-brand-300 border border-brand-500/30'
+                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+              }`
+            }
+          >
+            <Coins className="w-4 h-4" />
+            {t('nav.credits')}
+          </NavLink>
+
+          <NavLink
             to={`${APP_BASE}/profile`}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
@@ -161,7 +175,7 @@ export default function AppLayout() {
                 <p className="text-xs text-amber-400/90 mt-2">{t('layout.lowCredits')}</p>
               )}
               <p className="text-xs text-gray-500 mt-2">
-                <Link to="/pricing" className="text-brand-400 hover:underline">
+                <Link to={`${APP_BASE}/credits`} className="text-brand-400 hover:underline">
                   {t('layout.getCredits')}
                 </Link>
                 {user.plan === 'free' && (

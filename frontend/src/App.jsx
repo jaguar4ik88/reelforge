@@ -23,6 +23,7 @@ import Gallery       from './pages/Gallery'
 import CreateProductPhotoFlow from './pages/CreateProductPhotoFlow'
 import ProjectView   from './pages/ProjectView'
 import Profile       from './pages/Profile'
+import Credits       from './pages/Credits'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminTemplates from './pages/admin/AdminTemplates'
 import AdminTemplateEdit from './pages/admin/AdminTemplateEdit'
@@ -105,6 +106,7 @@ export default function App() {
           <Route path="projects/new-photo" element={<CreateProductPhotoFlow />} />
           <Route path="projects/:id"     element={<ProjectView />} />
           <Route path="profile"     element={<Profile />} />
+          <Route path="credits"     element={<Credits />} />
         </Route>
 
         <Route path="/admin" element={<StaffRoute><AdminLayout /></StaffRoute>}>

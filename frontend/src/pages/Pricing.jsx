@@ -6,7 +6,7 @@ import LandingNav from '../components/layout/LandingNav'
 import LandingFooter from '../components/layout/LandingFooter'
 import SeoHead from '../components/seo/SeoHead'
 
-// Static plan meta (EUR). Yearly = monthly × 10/12 (two months free). Video counts assume 10 cr per 5s video.
+// Static plan meta (USD). Yearly = monthly × 10/12 (two months free). Video counts assume 10 cr per 5s video.
 const PLAN_META = [
   {
     id: 'starter',
@@ -146,11 +146,11 @@ export default function Pricing() {
 
                   {/* Price */}
                   <div className="mb-1">
-                    <span className="text-4xl font-extrabold text-white">€{price}</span>
+                    <span className="text-4xl font-extrabold text-white">${price}</span>
                     <span className="text-gray-400 text-sm ml-1">{t('pricing.perMonth')}</span>
                   </div>
                   <p className="text-xs text-gray-500 mb-6">
-                    €{plan.perCredit} {t('pricing.perCredit')}
+                    ${plan.perCredit} {t('pricing.perCredit')}
                   </p>
 
                   {/* CTA */}
@@ -190,6 +190,7 @@ export default function Pricing() {
         <div className="text-center mb-10">
           <h2 className="text-3xl font-bold mb-3">{t('pricing.packages.title')}</h2>
           <p className="text-gray-400">{t('pricing.packages.subtitle')}</p>
+          <p className="text-sm text-amber-200/80 mt-3 max-w-lg mx-auto">{t('pricing.packages.uahNote')}</p>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {PACKAGES.map((pkg) => (
@@ -207,7 +208,7 @@ export default function Pricing() {
                 </div>
               )}
               <div className="text-xs text-gray-400 mb-4">{t('pricing.packages.credits')}</div>
-              <div className="font-bold text-white">€{pkg.price}</div>
+              <div className="font-bold text-white">${pkg.price}</div>
             </div>
           ))}
         </div>

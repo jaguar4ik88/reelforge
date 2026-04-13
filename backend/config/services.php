@@ -22,7 +22,15 @@ return [
     'google' => [
         'client_id'     => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
-        'redirect'      => env('GOOGLE_REDIRECT_URI'),
+        /*
+         * Must exactly match an Authorized redirect URI in Google Cloud Console.
+         * If GOOGLE_REDIRECT_URI is unset, derive from APP_URL (same host as production).
+         */
+        'redirect'      => env('GOOGLE_REDIRECT_URI') ?: (function (): string {
+            $base = rtrim((string) env('APP_URL', ''), '/');
+
+            return $base !== '' ? $base.'/auth/google/callback' : '';
+        })(),
     ],
 
     'replicate' => [
@@ -46,7 +54,11 @@ return [
     'apple' => [
         'client_id'     => env('APPLE_CLIENT_ID'),
         'client_secret' => env('APPLE_CLIENT_SECRET'),
-        'redirect'      => env('APPLE_REDIRECT_URI'),
+        'redirect'      => env('APPLE_REDIRECT_URI') ?: (function (): string {
+            $base = rtrim((string) env('APP_URL', ''), '/');
+
+            return $base !== '' ? $base.'/auth/apple/callback' : '';
+        })(),
         'team_id'       => env('APPLE_TEAM_ID'),
         'key_id'        => env('APPLE_KEY_ID'),
         // Relative to backend base_path(); absolute paths (/) or Windows drive paths work as-is.

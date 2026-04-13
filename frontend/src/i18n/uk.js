@@ -12,6 +12,7 @@ export default {
       newProject:  'Новий проєкт',
       createFromPhoto: 'З фото товару',
       createByTemplate: 'За шаблоном',
+      credits:     'Кредити',
       profile:     'Профіль',
       logout:      'Вийти',
     },
@@ -48,6 +49,8 @@ export default {
       resetPasswordDescription: 'Встановіть новий пароль для акаунту {{siteName}}.',
       appAreaTitle:       '{{siteName}}',
       appAreaDescription: 'Створення та керування відео товару.',
+      creditsTitle:       'Кредити — {{siteName}}',
+      creditsDescription: 'Поповнення балансу кредитів.',
       oauthTitle:         'Вхід — {{siteName}}',
       oauthDescription:   'Завершення входу через соцмережі.',
     },
@@ -120,6 +123,7 @@ export default {
         videos:  'Відео',
       },
       desc: {
+        credits:   'Поповнити баланс кредитів',
         templates: 'Приклади фото та відео для натхнення',
         products:  'Ваші товари та відео-проєкти',
         create:    'Чат і промпти для генерації контенту',
@@ -703,6 +707,8 @@ export default {
       packages: {
         title:     'Або купіть кредити разово',
         subtitle:  'Немає підписки — просто поповніть баланс, коли потрібно.',
+        uahNote:
+          'Ціни на сайті в USD. Оплата для України — у гривнях на сторінці WayForPay за поточним курсом (див. розділ «Кредити» після входу).',
         bonus:     '+{{count}} бонус',
         credits:   'кредитів',
         labels: {
@@ -718,6 +724,27 @@ export default {
         subtitle: 'Спробуйте безкоштовно — перші 10 кредитів у подарунок.',
         btn:      'Створити акаунт безкоштовно',
       },
+    },
+
+    credits: {
+      title:    'Кредити',
+      subtitle: 'Поповніть баланс. Ціни в USD; оплата карткою — у гривнях на сторінці WayForPay.',
+      back:     'Назад до головної',
+      payUah:   'Оплатити в ₴ (WayForPay)',
+      chargeInUah: 'До списання: {{amount}} ₴',
+      wayforpayCheckoutNote:
+        'Курс орієнтовно {{rate}} UAH за 1 USD (знижка {{discount}}%). Точна сума на касі WayForPay.',
+      wayforpayReturn: 'Платіж оброблено. Якщо кредити не з’явились — оновіть сторінку через хвилину.',
+      fastspringReturn:
+        'Замовлення завершено. Кредити надійдуть через webhook — оновіть сторінку, якщо баланс не змінився.',
+      wayforpayDisabled: 'Оплата WayForPay недоступна для цього регіону або не налаштована.',
+      fastspringCheckoutNote:
+        'Оплата через FastSpring (картки, PayPal тощо). Ціни в USD на сторінці каси.',
+      payFastspring: 'Оплатити (FastSpring)',
+      fastspringDisabled: 'FastSpring не налаштовано або недоступно для цього регіону.',
+      fastspringPopupBlocked:
+        'Дозвольте спливаючі вікна для цього сайту, щоб оплата відкрилась у новій вкладці.',
+      empty:    'Немає доступних пакетів.',
     },
 
     // Blog
