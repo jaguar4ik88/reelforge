@@ -93,7 +93,12 @@ export default function Credits() {
       return
     }
     setPayingSlug(slug)
-    const win = window.open('', '_blank', 'noopener,noreferrer')
+    /*
+     * Do NOT pass noopener on window.open() here: with noopener, many browsers return null while still
+     * opening a blank tab, so we never assign checkout_url and the tab stays empty.
+     * Open a blank tab without noopener, then navigate it after the API returns.
+     */
+    const win = window.open('about:blank', '_blank')
     if (!win) {
       toast.error(t('credits.fastspringPopupBlocked'))
       setPayingSlug(null)
@@ -103,7 +108,7 @@ export default function Credits() {
       const res = await paymentsApi.fastspringSession(slug)
       const url = res.data?.data?.checkout_url
       if (typeof url === 'string' && url) {
-        win.location.href = url
+        win.location.replace(url)
         return
       }
       win.close()

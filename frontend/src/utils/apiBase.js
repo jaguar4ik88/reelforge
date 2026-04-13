@@ -15,13 +15,38 @@ export function getOAuthRedirectUrl(provider) {
 }
 
 /**
- * App subdomain base URL (e.g. https://app.reelforge.com).
- * If not set — falls back to current origin (local dev stays on same domain).
+ * True when hostname is typical local dev (Vite / Laravel).
+ */
+function isLoopbackHostname(hostname) {
+  return (
+    hostname === 'localhost' ||
+    hostname === '127.0.0.1' ||
+    hostname === '[::1]'
+  )
+}
+
+/**
+ * App base URL for post-login redirects (e.g. https://app.example.com).
+ * If VITE_APP_URL is unset → current origin.
+ * If the build was made with a loopback VITE_APP_URL but the user is on a real host,
+ * use current origin so production is not redirected to localhost:5173.
  */
 export function getAppUrl() {
   const raw = import.meta.env.VITE_APP_URL
   if (!raw) return window.location.origin
-  return String(raw).replace(/\/$/, '')
+  const configured = String(raw).replace(/\/$/, '')
+  let configuredOrigin
+  try {
+    configuredOrigin = new URL(
+      /^https?:\/\//i.test(configured) ? configured : `https://${configured}`
+    ).origin
+  } catch {
+    return window.location.origin
+  }
+  if (!isLoopbackHostname(window.location.hostname) && isLoopbackHostname(new URL(configuredOrigin).hostname)) {
+    return window.location.origin
+  }
+  return configured
 }
 
 /**
