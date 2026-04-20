@@ -11,6 +11,7 @@ import Blog          from './pages/Blog'
 import Privacy       from './pages/Privacy'
 import Terms         from './pages/Terms'
 import Refund        from './pages/Refund'
+import SellerContacts from './pages/SellerContacts'
 import Login         from './pages/Login'
 import Register      from './pages/Register'
 import OAuthCallback   from './pages/OAuthCallback'
@@ -87,6 +88,7 @@ export default function App() {
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms"   element={<Terms />} />
         <Route path="/refund"  element={<Refund />} />
+        <Route path="/contacts" element={<SellerContacts />} />
 
         <Route element={<GuestRoute><AuthLayout /></GuestRoute>}>
           <Route path="/login"    element={<Login />} />

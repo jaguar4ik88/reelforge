@@ -38,6 +38,9 @@ export default {
       termsDescription:   'Terms of use for {{siteName}}.',
       refundTitle:        'Refund Policy — {{siteName}}',
       refundDescription:  'Refund, cancellation, and chargeback rules for {{siteName}}.',
+      sellerContactsTitle: 'Seller contacts — {{siteName}}',
+      sellerContactsDescription:
+        'Legal name, tax ID, addresses, phone and email of the seller (service operator).',
       loginTitle:         'Sign in — {{siteName}}',
       loginDescription:   'Sign in to your {{siteName}} account.',
       registerTitle:      'Create account — {{siteName}}',
@@ -314,6 +317,17 @@ export default {
       ctaBtn:     'Create your first project',
       footer:         '© {{year}} {{siteName}}. All rights reserved.',
       footerNavLabel: 'Legal and site links',
+      sellerSectionTitle: 'Seller (legal entity)',
+      sellerPageTitle: 'Seller — legal & contact details',
+      sellerCompanyName: 'Full legal name',
+      sellerTaxId: 'Tax ID (ІПН / ЄДРПОУ)',
+      sellerLegalAddress: 'Legal address',
+      sellerPhysicalAddress: 'Physical (actual) address',
+      sellerPhone: 'Phone',
+      sellerEmail: 'Email',
+      sellerNotConfigured:
+        'Seller legal details are not published on this deployment yet. The site operator can add them in the server environment file (e.g. seller company name, tax ID, addresses, phone, email).',
+      developedBy: 'Developed by',
     },
 
     auth: {
@@ -828,6 +842,7 @@ export default {
       privacy: 'Privacy',
       terms:   'Terms',
       refund:  'Refunds',
+      sellerContacts: 'Seller contacts',
     },
 
     legal: legalEn,

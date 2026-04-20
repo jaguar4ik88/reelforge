@@ -37,6 +37,7 @@ Route::get('/site', function () {
         'success' => true,
         'data' => [
             'site_name' => config('reelforge.site_name'),
+            'seller' => config('reelforge.seller'),
             'payments' => [
                 'default_provider' => filter_var(config('reelforge.payments.wayforpay_billing_global', false), FILTER_VALIDATE_BOOLEAN) && $wfp->enabled()
                     ? 'wayforpay'

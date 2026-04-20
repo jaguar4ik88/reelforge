@@ -224,8 +224,8 @@ export default function AppLayout() {
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 overflow-auto">
-        <div className={fullBleed ? 'min-h-full p-6 lg:p-8' : 'max-w-6xl mx-auto p-8'}>
+      <main className="flex-1 overflow-auto flex flex-col">
+        <div className={`flex-1 ${fullBleed ? 'p-6 lg:p-8' : 'max-w-6xl mx-auto p-8 w-full'}`}>
           <Outlet />
         </div>
       </main>

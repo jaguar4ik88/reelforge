@@ -72,6 +72,8 @@ jspm_packages/
 /backend/storage/*.key
 /backend/.env
 /backend/.env.backup
+# Never commit — contains resolved secrets from .env (php artisan config:cache)
+/backend/bootstrap/cache/config.php
 /backend/.phpunit.result.cache
 /backend/Homestead.json
 /backend/Homestead.yaml

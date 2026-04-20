@@ -7,6 +7,19 @@ return [
      */
     'site_name' => env('REELFORGE_SITE_NAME', env('APP_NAME', 'ReelForge')),
 
+    /*
+     * Public seller / legal entity (WayForPay & UA consumer law: visible on the storefront).
+     * Set all that apply; empty strings are omitted in the UI.
+     */
+    'seller' => [
+        'company_name' => env('SELLER_COMPANY_NAME', env('REELFORGE_SELLER_COMPANY_NAME', '')),
+        'tax_id' => env('SELLER_TAX_ID', env('REELFORGE_SELLER_TAX_ID', '')),
+        'legal_address' => env('SELLER_LEGAL_ADDRESS', env('REELFORGE_SELLER_LEGAL_ADDRESS', '')),
+        'physical_address' => env('SELLER_PHYSICAL_ADDRESS', env('REELFORGE_SELLER_PHYSICAL_ADDRESS', '')),
+        'phone' => env('SELLER_PHONE', env('REELFORGE_SELLER_PHONE', '')),
+        'email' => env('SELLER_EMAIL', env('REELFORGE_SELLER_EMAIL', '')),
+    ],
+
     /** SPA origin — keep in sync with config('app.frontend_url'). No trailing slash. */
     'frontend_url' => rtrim((string) (env('FRONTEND_URL') ?: (env('APP_ENV') === 'local'
         ? 'http://localhost:5173'

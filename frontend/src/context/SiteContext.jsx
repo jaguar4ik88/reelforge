@@ -7,11 +7,13 @@ const SiteContext = createContext({
   siteName: fallbackName,
   loading: true,
   payments: null,
+  seller: null,
 })
 
 export function SiteProvider({ children }) {
   const [siteName, setSiteName] = useState(fallbackName)
   const [payments, setPayments] = useState(null)
+  const [seller, setSeller] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -27,6 +29,9 @@ export function SiteProvider({ children }) {
         if (!cancelled && d?.payments) {
           setPayments(d.payments)
         }
+        if (!cancelled && d?.seller && typeof d.seller === 'object') {
+          setSeller(d.seller)
+        }
       })
       .catch(() => {})
       .finally(() => {
@@ -37,7 +42,7 @@ export function SiteProvider({ children }) {
     }
   }, [])
 
-  const value = useMemo(() => ({ siteName, loading, payments }), [siteName, loading, payments])
+  const value = useMemo(() => ({ siteName, loading, payments, seller }), [siteName, loading, payments, seller])
 
   return <SiteContext.Provider value={value}>{children}</SiteContext.Provider>
 }
