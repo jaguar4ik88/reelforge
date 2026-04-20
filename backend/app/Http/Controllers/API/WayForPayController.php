@@ -265,11 +265,42 @@ class WayForPayController extends Controller
         return $appUrl.'/api/payments/wayforpay/callback';
     }
 
+    /**
+     * Successful charge — only this status grants credits for Purchase.
+     *
+     * @see https://wiki.wayforpay.com/en/view/852131
+     */
+    private function isWayForPayApproved(string $status): bool
+    {
+        return strcasecmp(trim($status), 'Approved') === 0;
+    }
+
+    /**
+     * Terminal failure only. Do NOT treat inProcessing / Pending / WaitingAuthComplete as failed —
+     * WayForPay may send those before the final Approved callback.
+     *
+     * @see https://wiki.wayforpay.com/en/view/852131
+     */
+    private function isWayForPayTerminalFailure(string $status): bool
+    {
+        $s = trim($status);
+        if ($s === '') {
+            return false;
+        }
+
+        return match (true) {
+            strcasecmp($s, 'Declined') === 0,
+            strcasecmp($s, 'Expired') === 0,
+            strcasecmp($s, 'Refunded/Voided') === 0 => true,
+            default => false,
+        };
+    }
+
     private function handleCreditPackageOrderCallback(PaymentOrder $order, array $data, string $status): Response|JsonResponse
     {
-        if ($status === 'Approved') {
+        if ($this->isWayForPayApproved($status)) {
             $this->creditService->grantCreditsForWayForPayOrder($order);
-        } elseif (in_array($order->status, ['pending'], true)) {
+        } elseif ($order->status === 'pending' && $this->isWayForPayTerminalFailure($status)) {
             $order->forceFill([
                 'status' => 'failed',
                 'meta' => array_merge($order->meta ?? [], ['wayforpay' => $data]),
@@ -283,14 +314,14 @@ class WayForPayController extends Controller
 
     private function handleSubscriptionOrderCallback(PaymentOrder $order, array $data, string $status): Response|JsonResponse
     {
-        if ($status === 'Approved') {
+        if ($this->isWayForPayApproved($status)) {
             $this->creditService->grantCreditsForWayForPaySubscriptionOrder($order);
             $this->creditService->attachWayForPaySubscriptionAfterPayment($order, $data);
             $order->refresh();
             $order->forceFill([
                 'meta' => array_merge($order->meta ?? [], ['wayforpay' => $data]),
             ])->save();
-        } elseif (in_array($order->status, ['pending'], true)) {
+        } elseif ($order->status === 'pending' && $this->isWayForPayTerminalFailure($status)) {
             $order->forceFill([
                 'status' => 'failed',
                 'meta' => array_merge($order->meta ?? [], ['wayforpay' => $data]),
@@ -305,7 +336,7 @@ class WayForPayController extends Controller
     private function handleSubscriptionRenewalCallback(array $data, string $status): Response|JsonResponse
     {
         $recToken = $data['recToken'] ?? null;
-        if (! is_string($recToken) || $recToken === '' || $status !== 'Approved') {
+        if (! is_string($recToken) || $recToken === '' || ! $this->isWayForPayApproved($status)) {
             $ref = (string) ($data['orderReference'] ?? '');
 
             return response()->json($this->wayForPay->buildServiceAcceptResponse($ref !== '' ? $ref : 'unknown'));
