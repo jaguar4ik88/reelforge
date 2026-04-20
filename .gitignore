@@ -57,6 +57,15 @@ jspm_packages/
 
 # Laravel specific
 /backend/vendor/
+# Runtime: compiled Blade, sessions, cache (keep only .gitignore placeholders — see Laravel storage/framework/*/.gitignore)
+/backend/storage/framework/views/*
+!/backend/storage/framework/views/.gitignore
+/backend/storage/framework/sessions/*
+!/backend/storage/framework/sessions/.gitignore
+/backend/storage/framework/cache/data/*
+!/backend/storage/framework/cache/data/.gitignore
+/backend/storage/logs/*
+!/backend/storage/logs/.gitignore
 # Vite build copied into public on deploy (not committed)
 /backend/public/index.html
 /backend/public/assets/

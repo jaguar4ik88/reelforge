@@ -11,6 +11,7 @@ class PaymentOrder extends Model
         'order_reference',
         'user_id',
         'credit_package_id',
+        'subscription_plan_id',
         'provider',
         'amount_uah',
         'amount_usd_cents',
@@ -34,5 +35,10 @@ class PaymentOrder extends Model
     public function creditPackage(): BelongsTo
     {
         return $this->belongsTo(CreditPackage::class);
+    }
+
+    public function subscriptionPlan(): BelongsTo
+    {
+        return $this->belongsTo(SubscriptionPlan::class);
     }
 }

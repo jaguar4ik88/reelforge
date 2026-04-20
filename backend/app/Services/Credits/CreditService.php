@@ -9,8 +9,10 @@ use App\Models\CreditTransaction;
 use App\Models\GenerationJob;
 use App\Models\PaymentOrder;
 use App\Models\Project;
+use App\Models\SubscriptionPlan;
 use App\Models\User;
 use App\Models\UserCredit;
+use App\Models\UserSubscription;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -328,6 +330,151 @@ class CreditService
             'purchase_wayforpay',
             'Credit package (WayForPay, UAH)'
         );
+    }
+
+    /**
+     * First subscription charge after WayForPay Purchase + regularMode (idempotent per payment order).
+     */
+    public function grantCreditsForWayForPaySubscriptionOrder(PaymentOrder $order): ?CreditTransaction
+    {
+        return DB::transaction(function () use ($order) {
+            /** @var PaymentOrder $locked */
+            $locked = PaymentOrder::query()->whereKey($order->id)->lockForUpdate()->firstOrFail();
+
+            if ($locked->status === 'completed') {
+                return CreditTransaction::query()
+                    ->where('user_id', $locked->user_id)
+                    ->where('reference_type', PaymentOrder::class)
+                    ->where('reference_id', $locked->id)
+                    ->first();
+            }
+
+            $user = User::query()->findOrFail($locked->user_id);
+            $plan = SubscriptionPlan::query()->findOrFail($locked->subscription_plan_id);
+
+            $this->getOrCreateWallet($user);
+
+            $wallet = UserCredit::query()
+                ->where('user_id', $user->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            $amount = (int) $plan->monthly_credits;
+            $wallet->increment('balance', $amount);
+            $balanceAfter = (int) $wallet->fresh()->balance;
+
+            $tx = CreditTransaction::query()->create([
+                'user_id' => $user->id,
+                'delta' => $amount,
+                'balance_after' => $balanceAfter,
+                'kind' => 'subscription_wayforpay',
+                'description' => 'Subscription (WayForPay, UAH)',
+                'credit_package_id' => null,
+                'reference_type' => PaymentOrder::class,
+                'reference_id' => $locked->id,
+                'meta' => ['subscription_plan_slug' => $plan->slug],
+            ]);
+
+            $locked->forceFill([
+                'status' => 'completed',
+                'meta' => array_merge($locked->meta ?? [], ['credit_transaction_id' => $tx->id]),
+            ])->save();
+
+            return $tx;
+        });
+    }
+
+    /**
+     * Store WayForPay subscription metadata after successful first charge (recToken for renewals).
+     */
+    public function attachWayForPaySubscriptionAfterPayment(PaymentOrder $order, array $data): void
+    {
+        if ($order->subscription_plan_id === null) {
+            return;
+        }
+
+        $order->loadMissing('subscriptionPlan');
+        $plan = $order->subscriptionPlan;
+        if ($plan === null) {
+            return;
+        }
+
+        $user = User::query()->findOrFail($order->user_id);
+
+        $recToken = isset($data['recToken']) && is_string($data['recToken']) && $data['recToken'] !== ''
+            ? $data['recToken']
+            : null;
+
+        DB::transaction(function () use ($user, $plan, $order, $recToken) {
+            UserSubscription::query()
+                ->where('user_id', $user->id)
+                ->where('status', 'active')
+                ->update(['status' => 'cancelled']);
+
+            UserSubscription::query()->updateOrCreate(
+                [
+                    'user_id' => $user->id,
+                    'wayforpay_order_reference' => $order->order_reference,
+                ],
+                [
+                    'subscription_plan_id' => $plan->id,
+                    'status' => 'active',
+                    'current_period_end' => now()->addMonth(),
+                    'rec_token' => $recToken,
+                ]
+            );
+
+            $user->forceFill(['subscription_status' => 'active'])->save();
+        });
+    }
+
+    /**
+     * Monthly renewal charge (orderReference differs from the first PaymentOrder; matched by recToken).
+     */
+    public function grantCreditsForWayForPaySubscriptionRenewal(
+        User $user,
+        SubscriptionPlan $plan,
+        string $wayforpayOrderReference,
+        array $data
+    ): ?CreditTransaction {
+        $dup = CreditTransaction::query()
+            ->where('user_id', $user->id)
+            ->where('kind', 'subscription_wayforpay_renewal')
+            ->where('meta->wayforpay_order_reference', $wayforpayOrderReference)
+            ->first();
+
+        if ($dup !== null) {
+            return $dup;
+        }
+
+        return DB::transaction(function () use ($user, $plan, $wayforpayOrderReference, $data) {
+            $this->getOrCreateWallet($user);
+
+            $wallet = UserCredit::query()
+                ->where('user_id', $user->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            $amount = (int) $plan->monthly_credits;
+            $wallet->increment('balance', $amount);
+            $balanceAfter = (int) $wallet->fresh()->balance;
+
+            return CreditTransaction::query()->create([
+                'user_id' => $user->id,
+                'delta' => $amount,
+                'balance_after' => $balanceAfter,
+                'kind' => 'subscription_wayforpay_renewal',
+                'description' => 'Subscription renewal (WayForPay)',
+                'credit_package_id' => null,
+                'reference_type' => null,
+                'reference_id' => null,
+                'meta' => [
+                    'wayforpay_order_reference' => $wayforpayOrderReference,
+                    'subscription_plan_slug' => $plan->slug,
+                    'wayforpay' => $data,
+                ],
+            ]);
+        });
     }
 
     /**

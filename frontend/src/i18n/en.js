@@ -716,12 +716,24 @@ export default {
     credits: {
       title:    'Credits',
       subtitle: 'Top up your balance. Prices are shown in USD; card payment is in UAH on the WayForPay page.',
+      subscriptionsTitle: 'Monthly subscriptions',
+      subscriptionsSubtitle:
+        'Recurring billing on WayForPay (monthly). Credits are added after each successful charge.',
+      oneTimeTitle: 'One-time credit packs',
+      perMonth: '/ month',
+      monthlyCredits: '{{count}} credits / month',
       back:     'Back to dashboard',
       payUah:   'Pay in UAH (WayForPay)',
       chargeInUah: 'Charged at checkout: {{amount}} UAH',
       wayforpayCheckoutNote:
         'Approx. {{rate}} UAH per 1 USD ({{discount}}% UA discount). Exact amount is shown on WayForPay.',
-      wayforpayReturn: 'Payment received. If credits did not update, refresh in a minute.',
+      wayforpayReturnSuccess: 'Payment completed. Your balance has been updated.',
+      wayforpayReturnFailed: 'Payment was not completed. No charge was applied.',
+      wayforpayReturnPending:
+        'Payment is still processing. Wait a moment and refresh the page if credits do not appear.',
+      wayforpayReturnUnknown:
+        'Returned from payment. If your balance did not update, open Credits again or refresh in a minute.',
+      wayforpayReturnCheckFailed: 'Could not verify payment status. Check your balance or try again later.',
       fastspringReturn:
         'Order completed. Credits update shortly via webhook — refresh if your balance is unchanged.',
       wayforpayDisabled: 'WayForPay is not available for this region or not configured.',
@@ -732,6 +744,29 @@ export default {
       fastspringPopupBlocked:
         'Allow pop-ups for this site to open the payment page in a new tab, or use your browser’s address bar icon.',
       empty:    'No packages available.',
+      purchaseHistoryTitle: 'Purchase history',
+      purchaseHistorySubtitle:
+        'Orders from your account. «Pending» means our server has not yet received the payment gateway callback — credits are applied only after that.',
+      purchaseHistoryPendingExplain:
+        'Waiting for the server-to-server callback (WayForPay service URL / FastSpring webhook). On localhost without a public HTTPS URL, the gateway cannot reach your API, so the status may stay pending even after you pay in the bank UI.',
+      purchaseHistoryAwaitingCallback: 'Callback not received yet',
+      purchaseHistoryEmpty: 'No purchases yet.',
+      purchaseHistoryDate: 'Date',
+      purchaseHistoryItem: 'Item',
+      purchaseHistoryCredits: 'Credits',
+      purchaseHistoryAmount: 'Amount',
+      purchaseHistoryStatus: 'Status',
+      purchaseHistoryRef: 'Order ref',
+      purchaseKind: {
+        package: 'One-time pack',
+        subscription: 'Subscription (first charge)',
+        subscription_renewal: 'Subscription renewal',
+      },
+      purchaseStatus: {
+        pending: 'Pending',
+        completed: 'Completed',
+        failed: 'Failed',
+      },
     },
 
     blog: {

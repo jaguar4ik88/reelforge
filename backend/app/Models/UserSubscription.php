@@ -13,6 +13,8 @@ class UserSubscription extends Model
         'status',
         'current_period_end',
         'stripe_subscription_id',
+        'wayforpay_order_reference',
+        'rec_token',
     ];
 
     protected function casts(): array
