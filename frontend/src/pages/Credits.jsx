@@ -9,12 +9,15 @@ import { useSite } from '../context/SiteContext'
 import { useAuthContext } from '../context/AuthContext'
 import { setWayForPayOrderReference, useWayForPayReturn } from '../hooks/useWayForPayReturn'
 import { APP_BASE } from '../constants/routes'
+import SubscriptionPlanCardsGrid from '../components/billing/SubscriptionPlanCardsGrid'
+
+const PURCHASE_HISTORY_PER_PAGE = 10
 
 /**
  * Nested route under AppLayout — must not wrap with AppLayout again.
  */
 export default function Credits() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { payments } = useSite()
   const { refreshUser } = useAuthContext()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -25,38 +28,73 @@ export default function Credits() {
   const [payingSubSlug, setPayingSubSlug] = useState(null)
   const [checkout, setCheckout] = useState(null)
   const [purchases, setPurchases] = useState([])
+  const [purchaseMeta, setPurchaseMeta] = useState({
+    current_page: 1,
+    last_page: 1,
+    per_page: PURCHASE_HISTORY_PER_PAGE,
+    total: 0,
+  })
+  const [historyLoading, setHistoryLoading] = useState(false)
   const formRef = useRef(null)
 
-  const loadPurchases = useCallback(async () => {
+  const loadPurchasesPage = useCallback(async (page = 1) => {
+    setHistoryLoading(true)
     try {
-      const res = await api.get('/credits/purchases')
+      const res = await api.get('/credits/purchases', { params: { page, per_page: PURCHASE_HISTORY_PER_PAGE } })
       setPurchases(res.data?.data ?? [])
+      const meta = res.data?.meta
+      if (meta && typeof meta === 'object') {
+        setPurchaseMeta({
+          current_page: meta.current_page ?? page,
+          last_page: meta.last_page ?? 1,
+          per_page: meta.per_page ?? PURCHASE_HISTORY_PER_PAGE,
+          total: meta.total ?? 0,
+        })
+      }
     } catch {
       setPurchases([])
+    } finally {
+      setHistoryLoading(false)
     }
   }, [])
 
-  useWayForPayReturn({ onSettled: loadPurchases })
+  useWayForPayReturn({ onSettled: () => loadPurchasesPage(1) })
 
   useEffect(() => {
     let cancelled = false
-    Promise.all([
-      api.get('/credits/packages'),
-      api.get('/credits/subscription-plans'),
-      paymentsApi.checkoutContext(),
-      api.get('/credits/purchases').catch(() => ({ data: { data: [] } })),
-    ])
-      .then(([pkgRes, subRes, ctxRes, purRes]) => {
+    ;(async () => {
+      try {
+        const [pkgRes, subRes, ctxRes] = await Promise.all([
+          api.get('/credits/packages'),
+          api.get('/credits/subscription-plans'),
+          paymentsApi.checkoutContext(),
+        ])
         if (cancelled) return
         setPackages(pkgRes.data?.data ?? [])
         setSubscriptionPlans(subRes.data?.data ?? [])
         setCheckout(ctxRes.data?.data ?? null)
+        const purRes = await api
+          .get('/credits/purchases', { params: { page: 1, per_page: PURCHASE_HISTORY_PER_PAGE } })
+          .catch(() => ({
+          data: { data: [], meta: {} },
+        }))
+        if (cancelled) return
         setPurchases(purRes.data?.data ?? [])
-      })
-      .catch(() => toast.error(t('common.error')))
-      .finally(() => {
+        const meta = purRes.data?.meta
+        if (meta && typeof meta === 'object') {
+          setPurchaseMeta({
+            current_page: meta.current_page ?? 1,
+            last_page: meta.last_page ?? 1,
+            per_page: meta.per_page ?? PURCHASE_HISTORY_PER_PAGE,
+            total: meta.total ?? 0,
+          })
+        }
+      } catch {
+        if (!cancelled) toast.error(t('common.error'))
+      } finally {
         if (!cancelled) setLoading(false)
-      })
+      }
+    })()
     return () => {
       cancelled = true
     }
@@ -192,8 +230,8 @@ export default function Credits() {
         : t('common.loading')
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <SeoHead titleKey="seo.creditsTitle" descriptionKey="seo.creditsDescription" noindex />
+    <div className="max-w-6xl mx-auto px-4 py-8">
+      <SeoHead titleKey="seo.creditsAndSubsTitle" descriptionKey="seo.creditsAndSubsDescription" noindex />
       <form ref={formRef} className="hidden" aria-hidden />
 
       <div className="mb-8">
@@ -206,9 +244,9 @@ export default function Credits() {
         </Link>
         <h1 className="text-3xl font-bold text-white flex items-center gap-3">
           <Coins className="w-8 h-8 text-brand-400" />
-          {t('credits.title')}
+          {t('credits.pageTitle')}
         </h1>
-        <p className="text-gray-400 mt-2">{t('credits.subtitle')}</p>
+        <p className="text-gray-400 mt-2">{t('credits.pageSubtitle')}</p>
         {checkout?.billing_provider === 'wayforpay' && checkout?.wayforpay_available && (
           <p className="text-sm text-amber-200/90 mt-3 border border-amber-500/30 rounded-xl px-4 py-3 bg-amber-950/30">
             {t('credits.wayforpayCheckoutNote', {
@@ -228,49 +266,31 @@ export default function Credits() {
         <div className="text-gray-400">{t('common.loading')}</div>
       ) : (
         <>
-          {subscriptionPlans.length > 0 &&
-            checkout?.billing_provider === 'wayforpay' &&
-            checkout?.wayforpay_available && (
-              <div className="mb-10">
-                <h2 className="text-xl font-semibold text-white mb-2">{t('credits.subscriptionsTitle')}</h2>
-                <p className="text-gray-400 text-sm mb-4">{t('credits.subscriptionsSubtitle')}</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {subscriptionPlans.map((plan) => (
-                    <div
-                      key={plan.slug}
-                      className="rounded-2xl border border-brand-500/30 bg-brand-950/20 p-6 flex flex-col"
-                    >
-                      <div className="text-lg font-bold text-white mb-1">{plan.name}</div>
-                      <div className="text-3xl font-extrabold text-white mb-1">
-                        ${Number(plan.price_usd).toFixed(2)}{' '}
-                        <span className="text-sm font-normal text-gray-500">USD</span>
-                        <span className="text-sm font-normal text-gray-500"> {t('credits.perMonth')}</span>
-                      </div>
-                      <div className="text-gray-400 text-sm mb-4">
-                        {t('credits.monthlyCredits', { count: plan.monthly_credits })}
-                      </div>
-                      {plan.amount_uah && (
-                        <div className="text-brand-300 text-sm mb-4">
-                          {t('credits.chargeInUah', { amount: plan.amount_uah })}
-                        </div>
-                      )}
-                      <button
-                        type="button"
-                        disabled={!checkout || payingSubSlug === plan.slug}
-                        onClick={() => startWayForPaySubscription(plan.slug)}
-                        className="mt-auto btn-primary py-3 disabled:opacity-40 disabled:cursor-not-allowed"
-                      >
-                        {payingSubSlug === plan.slug ? t('common.loading') : payLabel}
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+          {subscriptionPlans.length > 0 && (
+            <div className="mb-12">
+              <h2 className="text-xl font-semibold text-white mb-2">{t('credits.subscriptionsTitle')}</h2>
+              <p className="text-gray-400 text-sm mb-4">{t('credits.subscriptionsSubtitle')}</p>
+              {!(checkout?.billing_provider === 'wayforpay' && checkout?.wayforpay_available) && (
+                <p className="text-sm text-amber-200/85 mb-6 border border-amber-500/25 rounded-xl px-4 py-3 bg-amber-950/25 max-w-3xl">
+                  {t('credits.subscriptionsWayforpayOnly')}
+                </p>
+              )}
+              <SubscriptionPlanCardsGrid
+                plans={subscriptionPlans}
+                language={i18n.language}
+                mode="checkout"
+                payLabel={payLabel}
+                canPay={Boolean(checkout && checkout?.billing_provider === 'wayforpay' && checkout?.wayforpay_available)}
+                payingSubSlug={payingSubSlug}
+                onPay={(slug) => startWayForPaySubscription(slug)}
+              />
+            </div>
+          )}
 
           {packages.length > 0 && (
             <>
-              <h2 className="text-xl font-semibold text-white mb-4">{t('credits.oneTimeTitle')}</h2>
+              <h2 className="text-xl font-semibold text-white mb-2">{t('credits.oneTimeTitle')}</h2>
+              <p className="text-gray-500 text-sm mb-6">{t('credits.oneTimeSubtitle')}</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {packages.map((pkg) => (
             <div
@@ -314,11 +334,8 @@ export default function Credits() {
               <History className="w-5 h-5 text-brand-400" />
               {t('credits.purchaseHistoryTitle')}
             </h2>
-            <p className="text-gray-500 text-sm mb-2">{t('credits.purchaseHistorySubtitle')}</p>
-            <p className="text-gray-500 text-sm mb-4 border-l-2 border-amber-500/50 pl-3 py-1">
-              {t('credits.purchaseHistoryPendingExplain')}
-            </p>
-            {loading ? (
+            <p className="text-gray-500 text-sm mb-4">{t('credits.purchaseHistorySubtitle')}</p>
+            {historyLoading ? (
               <p className="text-gray-500 text-sm">{t('common.loading')}</p>
             ) : purchases.length === 0 ? (
               <p className="text-gray-500">{t('credits.purchaseHistoryEmpty')}</p>
@@ -332,7 +349,6 @@ export default function Credits() {
                       <th className="px-4 py-3 font-medium text-right">{t('credits.purchaseHistoryCredits')}</th>
                       <th className="px-4 py-3 font-medium text-right">{t('credits.purchaseHistoryAmount')}</th>
                       <th className="px-4 py-3 font-medium">{t('credits.purchaseHistoryStatus')}</th>
-                      <th className="px-4 py-3 font-medium hidden sm:table-cell">{t('credits.purchaseHistoryRef')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -351,10 +367,6 @@ export default function Credits() {
                       const statusKey = `credits.purchaseStatus.${row.status}`
                       const kindLabel = t(kindKey, row.kind)
                       const statusLabel = t(statusKey, row.status)
-                      const refShort =
-                        typeof row.order_reference === 'string' && row.order_reference.length > 14
-                          ? `${row.order_reference.slice(0, 10)}…`
-                          : row.order_reference ?? '—'
 
                       return (
                         <tr key={`${row.source}-${row.id}`} className="border-b border-white/5 text-gray-200">
@@ -390,14 +402,40 @@ export default function Credits() {
                               </div>
                             )}
                           </td>
-                          <td className="px-4 py-3 font-mono text-xs text-gray-500 hidden sm:table-cell">
-                            {refShort}
-                          </td>
                         </tr>
                       )
                     })}
                   </tbody>
                 </table>
+              </div>
+            )}
+            {!historyLoading && purchaseMeta.total > 0 && purchaseMeta.last_page > 1 && (
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-4 text-sm text-gray-400">
+                <p>
+                  {t('credits.purchaseHistoryPage', {
+                    current: purchaseMeta.current_page,
+                    last: purchaseMeta.last_page,
+                    total: purchaseMeta.total,
+                  })}
+                </p>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    disabled={purchaseMeta.current_page <= 1 || historyLoading}
+                    onClick={() => loadPurchasesPage(purchaseMeta.current_page - 1)}
+                    className="px-3 py-1.5 rounded-lg border border-white/15 bg-gray-900/60 text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-800/80"
+                  >
+                    {t('credits.purchaseHistoryPrev')}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={purchaseMeta.current_page >= purchaseMeta.last_page || historyLoading}
+                    onClick={() => loadPurchasesPage(purchaseMeta.current_page + 1)}
+                    className="px-3 py-1.5 rounded-lg border border-white/15 bg-gray-900/60 text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-800/80"
+                  >
+                    {t('credits.purchaseHistoryNext')}
+                  </button>
+                </div>
               </div>
             )}
           </div>

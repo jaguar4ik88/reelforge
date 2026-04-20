@@ -1,5 +1,5 @@
 import { Outlet, NavLink, Link, useNavigate } from 'react-router-dom'
-import { Film, LayoutDashboard, LayoutTemplate, LogOut } from 'lucide-react'
+import { Film, LayoutDashboard, LayoutTemplate, LogOut, Repeat } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useAuthContext } from '../context/AuthContext'
 import { useSite } from '../context/SiteContext'
@@ -60,6 +60,19 @@ export default function AdminLayout() {
           >
             <LayoutTemplate className="w-4 h-4" />
             {t('admin.nav.templates')}
+          </NavLink>
+          <NavLink
+            to={`${ADMIN_BASE}/subscription-plans`}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                isActive
+                  ? 'bg-amber-600/20 text-amber-300 border border-amber-500/30'
+                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+              }`
+            }
+          >
+            <Repeat className="w-4 h-4" />
+            {t('admin.nav.subscriptionPlans')}
           </NavLink>
         </nav>
         <div className="p-4 border-t border-white/10 flex-shrink-0 mt-auto">

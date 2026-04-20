@@ -61,7 +61,8 @@ class CreditsController extends Controller
     public function purchases(Request $request): JsonResponse
     {
         $user = $request->user();
-        $limit = min(max((int) $request->query('limit', 50), 1), 100);
+        $perPage = min(max((int) $request->query('per_page', 10), 1), 100);
+        $page = max(1, (int) $request->query('page', 1));
 
         $orders = PaymentOrder::query()
             ->where('user_id', $user->id)
@@ -70,7 +71,6 @@ class CreditsController extends Controller
                 'subscriptionPlan:id,slug,name,monthly_credits',
             ])
             ->orderByDesc('created_at')
-            ->limit(100)
             ->get();
 
         $orderIdsWithCreditGrant = $orders->isEmpty()
@@ -123,7 +123,6 @@ class CreditsController extends Controller
             ->where('user_id', $user->id)
             ->where('kind', 'subscription_wayforpay_renewal')
             ->orderByDesc('created_at')
-            ->limit(100)
             ->get();
 
         $planBySlug = SubscriptionPlan::query()
@@ -161,13 +160,26 @@ class CreditsController extends Controller
 
         $merged = $orderRows->concat($renewalRows)
             ->sortByDesc(fn (array $row) => $row['created_at'])
-            ->values()
-            ->take($limit);
+            ->values();
+
+        $total = $merged->count();
+        $lastPage = $perPage > 0 ? (int) max(1, (int) ceil($total / $perPage)) : 1;
+        if ($page > $lastPage) {
+            $page = $lastPage;
+        }
+        $offset = ($page - 1) * $perPage;
+        $pageItems = $merged->slice($offset, $perPage)->values();
 
         return response()->json([
             'success' => true,
             'message' => '',
-            'data' => $merged,
+            'data' => $pageItems,
+            'meta' => [
+                'current_page' => $page,
+                'per_page' => $perPage,
+                'total' => $total,
+                'last_page' => $lastPage,
+            ],
         ]);
     }
 
