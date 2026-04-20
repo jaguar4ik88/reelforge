@@ -19,12 +19,12 @@ class SubscriptionPlanSeeder extends Seeder
             SubscriptionPlan::query()->updateOrCreate(
                 ['slug' => $p['slug']],
                 [
-                    'name'             => $p['name'],
-                    'monthly_credits'  => $p['monthly_credits'],
-                    'price_cents'      => $p['price_cents'],
-                    'currency'         => 'EUR',
-                    'is_active'        => true,
-                    'sort_order'       => $p['sort_order'],
+                    'name' => $p['name'],
+                    'monthly_credits' => $p['monthly_credits'],
+                    'price_cents' => $p['price_cents'],
+                    'currency' => 'USD',
+                    'is_active' => true,
+                    'sort_order' => $p['sort_order'],
                 ]
             );
         }

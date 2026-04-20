@@ -81,6 +81,7 @@ class FastSpringController extends Controller
             'order_reference' => $orderReference,
             'user_id' => $user->id,
             'credit_package_id' => $package->id,
+            'subscription_plan_id' => null,
             'provider' => 'fastspring',
             'amount_uah' => null,
             'amount_usd_cents' => $usdCents,

@@ -7,8 +7,10 @@ return [
      */
     'site_name' => env('REELFORGE_SITE_NAME', env('APP_NAME', 'ReelForge')),
 
-    /** SPA origin (checkout returnUrl). No trailing slash. */
-    'frontend_url' => rtrim((string) env('FRONTEND_URL', ''), '/'),
+    /** SPA origin — keep in sync with config('app.frontend_url'). No trailing slash. */
+    'frontend_url' => rtrim((string) (env('FRONTEND_URL') ?: (env('APP_ENV') === 'local'
+        ? 'http://localhost:5173'
+        : env('APP_URL', 'http://localhost'))), '/'),
 
     'ffmpeg_binaries' => env('FFMPEG_BINARIES', '/usr/bin/ffmpeg'),
     'ffprobe_binaries' => env('FFPROBE_BINARIES', '/usr/bin/ffprobe'),
@@ -75,6 +77,12 @@ return [
     'payments' => [
         /** When true and request country is UA, prefer WayForPay (if WayForPay is also enabled). */
         'wayforpay_for_ukraine_enabled' => filter_var(env('WAYFORPAY_FOR_UKRAINE_ENABLED', true), FILTER_VALIDATE_BOOLEAN),
+
+        /**
+         * When true, all regions use WayForPay checkout if WAYFORPAY_* is configured (ignores UA-only rule).
+         * Use for WayForPay-only deployments.
+         */
+        'wayforpay_billing_global' => filter_var(env('WAYFORPAY_BILLING_GLOBAL', false), FILTER_VALIDATE_BOOLEAN),
 
         'wayforpay' => [
             'enabled' => filter_var(env('WAYFORPAY_ENABLED', false), FILTER_VALIDATE_BOOLEAN),

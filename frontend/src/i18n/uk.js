@@ -729,12 +729,24 @@ export default {
     credits: {
       title:    'Кредити',
       subtitle: 'Поповніть баланс. Ціни в USD; оплата карткою — у гривнях на сторінці WayForPay.',
+      subscriptionsTitle: 'Місячні підписки',
+      subscriptionsSubtitle:
+        'Регулярне списання в WayForPay (щомісяця). Кредити нараховуються після кожного успішного платежу.',
+      oneTimeTitle: 'Разові пакети кредитів',
+      perMonth: '/ міс.',
+      monthlyCredits: '{{count}} кредитів / міс.',
       back:     'Назад до головної',
       payUah:   'Оплатити в ₴ (WayForPay)',
       chargeInUah: 'До списання: {{amount}} ₴',
       wayforpayCheckoutNote:
         'Курс орієнтовно {{rate}} UAH за 1 USD (знижка {{discount}}%). Точна сума на касі WayForPay.',
-      wayforpayReturn: 'Платіж оброблено. Якщо кредити не з’явились — оновіть сторінку через хвилину.',
+      wayforpayReturnSuccess: 'Оплату завершено. Баланс оновлено.',
+      wayforpayReturnFailed: 'Оплату не завершено. Списання не виконувалось.',
+      wayforpayReturnPending:
+        'Платіж ще обробляється. Зачекайте або оновіть сторінку, якщо кредити не з’явились.',
+      wayforpayReturnUnknown:
+        'Повернення з оплати. Якщо баланс не змінився — відкрийте Кредити знову або оновіть сторінку за хвилину.',
+      wayforpayReturnCheckFailed: 'Не вдалося перевірити статус оплати. Перевірте баланс або спробуйте пізніше.',
       fastspringReturn:
         'Замовлення завершено. Кредити надійдуть через webhook — оновіть сторінку, якщо баланс не змінився.',
       wayforpayDisabled: 'Оплата WayForPay недоступна для цього регіону або не налаштована.',
@@ -745,6 +757,29 @@ export default {
       fastspringPopupBlocked:
         'Дозвольте спливаючі вікна для цього сайту, щоб оплата відкрилась у новій вкладці.',
       empty:    'Немає доступних пакетів.',
+      purchaseHistoryTitle: 'Історія покупок',
+      purchaseHistorySubtitle:
+        'Замовлення з акаунту. «Очікує» — сервер ще не отримав callback від платіжної системи; кредити нараховуються лише після цього.',
+      purchaseHistoryPendingExplain:
+        'Очікується service-to-server запит (WayForPay service URL / webhook FastSpring). На localhost без публічного HTTPS платіжна система не зможе достукатися до вашого API — статус може лишатися «Очікує» навіть після оплати в банку.',
+      purchaseHistoryAwaitingCallback: 'Callback ще не надійшов',
+      purchaseHistoryEmpty: 'Покупок ще немає.',
+      purchaseHistoryDate: 'Дата',
+      purchaseHistoryItem: 'Товар',
+      purchaseHistoryCredits: 'Кредити',
+      purchaseHistoryAmount: 'Сума',
+      purchaseHistoryStatus: 'Статус',
+      purchaseHistoryRef: 'Номер замовлення',
+      purchaseKind: {
+        package: 'Разовий пакет',
+        subscription: 'Підписка (перше списання)',
+        subscription_renewal: 'Продовження підписки',
+      },
+      purchaseStatus: {
+        pending: 'Очікує',
+        completed: 'Завершено',
+        failed: 'Відхилено',
+      },
     },
 
     // Blog

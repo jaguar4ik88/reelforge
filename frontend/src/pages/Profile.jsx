@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuthContext } from '../context/AuthContext'
 import { useLocale } from '../hooks/useLocale'
+import { useWayForPayReturn } from '../hooks/useWayForPayReturn'
 import { profileApi } from '../services/api'
 import FormField from '../components/ui/FormField'
 import Spinner from '../components/ui/Spinner'
@@ -14,6 +15,7 @@ export default function Profile() {
   const { t }                         = useTranslation()
   const { user, refreshUser }         = useAuthContext()
   const { locale, changeLocale }      = useLocale()
+  useWayForPayReturn()
 
   // Profile form
   const [profileForm, setProfileForm] = useState({ name: '', email: '', locale: 'uk' })

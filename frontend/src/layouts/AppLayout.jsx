@@ -41,7 +41,7 @@ export default function AppLayout() {
       {/* Sidebar */}
       <aside className="w-64 flex-shrink-0 border-r border-white/10 bg-gray-900/50 backdrop-blur-sm flex flex-col h-[100dvh] min-h-0 sticky top-0 self-start">
         <div className="p-6 border-b border-white/10 flex-shrink-0">
-          <Link to={`${APP_BASE}/dashboard`} className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2">
             <Film className="w-7 h-7 text-brand-400" />
             <span className="text-white font-bold text-xl gradient-text">{siteName}</span>
           </Link>

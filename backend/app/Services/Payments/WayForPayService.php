@@ -3,6 +3,7 @@
 namespace App\Services\Payments;
 
 use App\Models\CreditPackage;
+use App\Models\SubscriptionPlan;
 
 class WayForPayService
 {
@@ -189,6 +190,68 @@ class WayForPayService
             'productPrice' => $prices,
             'returnUrl' => $returnUrl,
             'serviceUrl' => $serviceUrl,
+        ];
+
+        if ($clientEmail !== null && $clientEmail !== '') {
+            $fields['clientEmail'] = $clientEmail;
+        }
+
+        return $fields;
+    }
+
+    /**
+     * POST fields for subscription (monthly regular payment) — same /pay URL as one-off purchase.
+     *
+     * @return array<string, string|array<int, string>>
+     */
+    public function buildSubscriptionPurchaseFormFields(
+        string $orderReference,
+        SubscriptionPlan $plan,
+        string $amountUah,
+        ?string $clientEmail,
+        string $returnUrl,
+        string $serviceUrl,
+        string $clientAccountId,
+    ): array {
+        $orderDate = (string) time();
+        $currency = 'UAH';
+        $label = $plan->name.' — '.$plan->monthly_credits.' credits / mo';
+        $names = [$label];
+        $counts = [1];
+        $prices = [$amountUah];
+
+        $signature = $this->signPurchaseRequest(
+            $orderReference,
+            $orderDate,
+            $amountUah,
+            $currency,
+            $names,
+            $counts,
+            $prices,
+        );
+
+        $fields = [
+            'merchantAccount' => $this->merchantAccount(),
+            'merchantAuthType' => 'SimpleSignature',
+            'merchantDomainName' => $this->merchantDomainName(),
+            'merchantTransactionSecureType' => 'AUTO',
+            'merchantSignature' => $signature,
+            'apiVersion' => '1',
+            'language' => 'UA',
+            'orderReference' => $orderReference,
+            'orderDate' => $orderDate,
+            'amount' => $amountUah,
+            'currency' => $currency,
+            'productName' => $names,
+            'productCount' => $counts,
+            'productPrice' => $prices,
+            'returnUrl' => $returnUrl,
+            'serviceUrl' => $serviceUrl,
+            'regularMode' => 'monthly',
+            'regularAmount' => $amountUah,
+            'regularBehavior' => 'preset',
+            'regularOn' => '1',
+            'clientAccountId' => $clientAccountId,
         ];
 
         if ($clientEmail !== null && $clientEmail !== '') {

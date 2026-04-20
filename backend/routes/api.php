@@ -25,6 +25,7 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::get('/credits/packages', [CreditsController::class, 'packages']);
+Route::get('/credits/subscription-plans', [CreditsController::class, 'subscriptionPlans']);
 Route::get('/credits/costs', [CreditsController::class, 'costs']);
 
 /** Public SPA config (brand name per deployment / domain). */
@@ -37,8 +38,11 @@ Route::get('/site', function () {
         'data' => [
             'site_name' => config('reelforge.site_name'),
             'payments' => [
-                'default_provider' => 'fastspring',
+                'default_provider' => filter_var(config('reelforge.payments.wayforpay_billing_global', false), FILTER_VALIDATE_BOOLEAN) && $wfp->enabled()
+                    ? 'wayforpay'
+                    : 'fastspring',
                 'wayforpay_for_ukraine_enabled' => filter_var(config('reelforge.payments.wayforpay_for_ukraine_enabled', true), FILTER_VALIDATE_BOOLEAN),
+                'wayforpay_billing_global' => filter_var(config('reelforge.payments.wayforpay_billing_global', false), FILTER_VALIDATE_BOOLEAN),
                 'wayforpay_enabled' => $wfp->enabled(),
                 'fastspring_enabled' => $fs->enabled(),
                 'display_currency' => 'USD',
@@ -82,9 +86,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/credits/balance', [CreditsController::class, 'balance']);
     Route::get('/credits/transactions', [CreditsController::class, 'transactions']);
+    Route::get('/credits/purchases', [CreditsController::class, 'purchases']);
     Route::post('/credits/purchase-stub/{slug}', [CreditsController::class, 'purchaseStub']);
     Route::get('/payments/checkout-context', [FastSpringController::class, 'checkoutContext']);
     Route::post('/payments/wayforpay/invoice', [WayForPayController::class, 'invoice']);
+    Route::post('/payments/wayforpay/subscription-invoice', [WayForPayController::class, 'subscriptionInvoice']);
+    Route::get('/payments/wayforpay/order-status', [WayForPayController::class, 'orderStatus']);
     Route::post('/payments/fastspring/session', [FastSpringController::class, 'session']);
 
     // Profile

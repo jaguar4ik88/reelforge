@@ -146,6 +146,10 @@ export const generationApi = {
 export const paymentsApi = {
   checkoutContext: () => api.get('/payments/checkout-context'),
   wayforpayInvoice: (slug) => api.post('/payments/wayforpay/invoice', { slug }),
+  wayforpaySubscriptionInvoice: (slug) =>
+    api.post('/payments/wayforpay/subscription-invoice', { slug }),
+  wayforpayOrderStatus: (orderReference) =>
+    api.get('/payments/wayforpay/order-status', { params: { order_reference: orderReference } }),
   fastspringSession: (slug) => api.post('/payments/fastspring/session', { slug }),
 }
 

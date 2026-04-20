@@ -27,11 +27,15 @@ class PaymentGatewayResolver
 
     public function shouldUseWayForPay(Request $request): bool
     {
-        if (! filter_var(config('reelforge.payments.wayforpay_for_ukraine_enabled', true), FILTER_VALIDATE_BOOLEAN)) {
+        if (! $this->wayForPay->enabled()) {
             return false;
         }
 
-        if (! $this->wayForPay->enabled()) {
+        if (filter_var(config('reelforge.payments.wayforpay_billing_global', false), FILTER_VALIDATE_BOOLEAN)) {
+            return true;
+        }
+
+        if (! filter_var(config('reelforge.payments.wayforpay_for_ukraine_enabled', true), FILTER_VALIDATE_BOOLEAN)) {
             return false;
         }
 
