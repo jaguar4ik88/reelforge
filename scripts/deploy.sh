@@ -18,7 +18,8 @@ log() { printf '\n[%s] %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*"; }
 if [[ "${SKIP_GIT_PULL:-0}" != "1" ]]; then
   log "Git: fetch and align with origin/main"
   git fetch origin main
-  git checkout -B main "origin/main"
+  # -f: discard local edits to tracked files (e.g. storage/logs) so checkout never aborts
+  git checkout -f -B main origin/main
 else
   log "Git: skipped (SKIP_GIT_PULL=1)"
 fi
