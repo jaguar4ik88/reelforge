@@ -183,7 +183,11 @@ class WayForPayController extends Controller
      */
     public function callback(Request $request): Response|JsonResponse
     {
+        $rawBody = $request->getContent();
+
         if (! $this->wayForPay->isConfigured()) {
+            Log::warning('WayForPay callback: not configured (check WAYFORPAY_* and .env on server)');
+
             return response()->json(['message' => 'Not configured'], 503);
         }
 
@@ -192,7 +196,25 @@ class WayForPayController extends Controller
             $data = $request->all();
         }
 
+        if ($data === [] && strlen($rawBody) > 0) {
+            Log::warning('WayForPay callback: body not empty but parsed as empty (encoding / JSON?)', [
+                'content_type' => $request->header('Content-Type'),
+                'raw_preview' => substr($rawBody, 0, 800),
+            ]);
+        }
+
+        Log::info('WayForPay callback: incoming', [
+            'content_type' => $request->header('Content-Type'),
+            'body_length' => strlen($rawBody),
+            'payload' => $this->sanitizeWayForPayCallbackForLog($data),
+        ]);
+
         if (! $this->wayForPay->verifyServiceCallback($data)) {
+            Log::warning('WayForPay callback: invalid merchantSignature', [
+                'payload' => $this->sanitizeWayForPayCallbackForLog($data),
+                'hint' => 'Compare WAYFORPAY_SECRET_KEY and merchant account with WayForPay cabinet.',
+            ]);
+
             return response()->json(['message' => 'Invalid signature'], 403);
         }
 
@@ -203,15 +225,20 @@ class WayForPayController extends Controller
 
         if ($order !== null) {
             if ($order->provider !== 'wayforpay') {
+                Log::warning('WayForPay callback: order provider mismatch', [
+                    'order_reference' => $orderReference,
+                    'provider' => $order->provider,
+                ]);
+
                 return response()->json(['message' => 'Invalid order provider'], 422);
             }
 
             $amountStr = isset($data['amount']) ? $this->normalizeAmountString($data['amount']) : null;
             if ($amountStr !== null && ! $this->amountsMatch($amountStr, (string) $order->amount_uah)) {
-                Log::warning('WayForPay callback amount mismatch', [
+                Log::warning('WayForPay callback: amount mismatch', [
                     'order_reference' => $orderReference,
-                    'expected' => (string) $order->amount_uah,
-                    'got' => $amountStr,
+                    'expected_uah' => (string) $order->amount_uah,
+                    'got_uah' => $amountStr,
                 ]);
 
                 return response()->json(['message' => 'Amount mismatch'], 422);
@@ -224,7 +251,37 @@ class WayForPayController extends Controller
             return $this->handleCreditPackageOrderCallback($order, $data, $status);
         }
 
+        Log::info('WayForPay callback: no PaymentOrder row, trying renewal handler', [
+            'order_reference' => $orderReference,
+            'transactionStatus' => $status,
+        ]);
+
         return $this->handleSubscriptionRenewalCallback($data, $status);
+    }
+
+    /**
+     * WayForPay serviceUrl fields — safe for logs (no full card data).
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    private function sanitizeWayForPayCallbackForLog(array $data): array
+    {
+        $out = [
+            'merchantAccount' => $data['merchantAccount'] ?? null,
+            'orderReference' => $data['orderReference'] ?? null,
+            'amount' => $data['amount'] ?? null,
+            'currency' => $data['currency'] ?? null,
+            'authCode' => $data['authCode'] ?? null,
+            'transactionStatus' => $data['transactionStatus'] ?? null,
+            'reasonCode' => $data['reasonCode'] ?? null,
+            'recToken' => isset($data['recToken']) ? 'present' : null,
+        ];
+        if (isset($data['cardPan'])) {
+            $out['cardPan'] = '***masked***';
+        }
+
+        return $out;
     }
 
     /**
@@ -299,12 +356,39 @@ class WayForPayController extends Controller
     private function handleCreditPackageOrderCallback(PaymentOrder $order, array $data, string $status): Response|JsonResponse
     {
         if ($this->isWayForPayApproved($status)) {
-            $this->creditService->grantCreditsForWayForPayOrder($order);
+            try {
+                $this->creditService->grantCreditsForWayForPayOrder($order);
+                Log::info('WayForPay: package order completed, credits granted', [
+                    'payment_order_id' => $order->id,
+                    'order_reference' => $order->order_reference,
+                ]);
+            } catch (\Throwable $e) {
+                Log::error('WayForPay: grantCreditsForWayForPayOrder failed', [
+                    'payment_order_id' => $order->id,
+                    'order_reference' => $order->order_reference,
+                    'exception' => $e->getMessage(),
+                ]);
+                throw $e;
+            }
         } elseif ($order->status === 'pending' && $this->isWayForPayTerminalFailure($status)) {
             $order->forceFill([
                 'status' => 'failed',
                 'meta' => array_merge($order->meta ?? [], ['wayforpay' => $data]),
             ])->save();
+            Log::warning('WayForPay: package order marked failed (terminal status)', [
+                'payment_order_id' => $order->id,
+                'order_reference' => $order->order_reference,
+                'transactionStatus' => $status,
+                'reasonCode' => $data['reasonCode'] ?? null,
+            ]);
+        } else {
+            Log::info('WayForPay: package order unchanged (intermediate or duplicate callback)', [
+                'payment_order_id' => $order->id,
+                'order_reference' => $order->order_reference,
+                'order_status' => $order->status,
+                'transactionStatus' => $status,
+                'reasonCode' => $data['reasonCode'] ?? null,
+            ]);
         }
 
         $response = $this->wayForPay->buildServiceAcceptResponse($order->order_reference);
@@ -315,17 +399,44 @@ class WayForPayController extends Controller
     private function handleSubscriptionOrderCallback(PaymentOrder $order, array $data, string $status): Response|JsonResponse
     {
         if ($this->isWayForPayApproved($status)) {
-            $this->creditService->grantCreditsForWayForPaySubscriptionOrder($order);
-            $this->creditService->attachWayForPaySubscriptionAfterPayment($order, $data);
-            $order->refresh();
-            $order->forceFill([
-                'meta' => array_merge($order->meta ?? [], ['wayforpay' => $data]),
-            ])->save();
+            try {
+                $this->creditService->grantCreditsForWayForPaySubscriptionOrder($order);
+                $this->creditService->attachWayForPaySubscriptionAfterPayment($order, $data);
+                $order->refresh();
+                $order->forceFill([
+                    'meta' => array_merge($order->meta ?? [], ['wayforpay' => $data]),
+                ])->save();
+                Log::info('WayForPay: subscription first charge completed', [
+                    'payment_order_id' => $order->id,
+                    'order_reference' => $order->order_reference,
+                ]);
+            } catch (\Throwable $e) {
+                Log::error('WayForPay: subscription first charge failed', [
+                    'payment_order_id' => $order->id,
+                    'order_reference' => $order->order_reference,
+                    'exception' => $e->getMessage(),
+                ]);
+                throw $e;
+            }
         } elseif ($order->status === 'pending' && $this->isWayForPayTerminalFailure($status)) {
             $order->forceFill([
                 'status' => 'failed',
                 'meta' => array_merge($order->meta ?? [], ['wayforpay' => $data]),
             ])->save();
+            Log::warning('WayForPay: subscription order marked failed (terminal status)', [
+                'payment_order_id' => $order->id,
+                'order_reference' => $order->order_reference,
+                'transactionStatus' => $status,
+                'reasonCode' => $data['reasonCode'] ?? null,
+            ]);
+        } else {
+            Log::info('WayForPay: subscription order unchanged (intermediate or duplicate callback)', [
+                'payment_order_id' => $order->id,
+                'order_reference' => $order->order_reference,
+                'order_status' => $order->status,
+                'transactionStatus' => $status,
+                'reasonCode' => $data['reasonCode'] ?? null,
+            ]);
         }
 
         $response = $this->wayForPay->buildServiceAcceptResponse($order->order_reference);
@@ -338,6 +449,11 @@ class WayForPayController extends Controller
         $recToken = $data['recToken'] ?? null;
         if (! is_string($recToken) || $recToken === '' || ! $this->isWayForPayApproved($status)) {
             $ref = (string) ($data['orderReference'] ?? '');
+            Log::info('WayForPay renewal: skipped (not Approved or no recToken)', [
+                'order_reference' => $ref !== '' ? $ref : null,
+                'transactionStatus' => $status,
+                'has_rec_token' => is_string($recToken) && $recToken !== '',
+            ]);
 
             return response()->json($this->wayForPay->buildServiceAcceptResponse($ref !== '' ? $ref : 'unknown'));
         }
