@@ -3,12 +3,13 @@ import { useTranslation } from 'react-i18next'
 import { useSite } from '../../context/SiteContext'
 import { hasSellerProfile } from './SellerLegalBlock'
 
-const footerNavBase = [
+/** Pricing & Blog first; legal links; optional Contacts last */
+const footerNavCore = [
+  { to: '/pricing', labelKey: 'navLinks.pricing' },
+  { to: '/blog', labelKey: 'navLinks.blog' },
   { to: '/terms', labelKey: 'navLinks.terms' },
   { to: '/privacy', labelKey: 'navLinks.privacy' },
   { to: '/refund', labelKey: 'navLinks.refund' },
-  { to: '/pricing', labelKey: 'navLinks.pricing' },
-  { to: '/blog', labelKey: 'navLinks.blog' },
 ]
 
 export default function LandingFooter() {
@@ -16,8 +17,8 @@ export default function LandingFooter() {
   const { siteName, seller } = useSite()
 
   const footerNav = hasSellerProfile(seller)
-    ? [{ to: '/contacts', labelKey: 'navLinks.sellerContacts' }, ...footerNavBase]
-    : footerNavBase
+    ? [...footerNavCore, { to: '/contacts', labelKey: 'navLinks.contacts' }]
+    : footerNavCore
 
   return (
     <footer className="relative z-10 border-t border-white/10 py-10 px-6">

@@ -857,7 +857,7 @@ export default {
       privacy: 'Конфіденційність',
       terms:   'Умови',
       refund:  'Повернення коштів',
-      sellerContacts: 'Контакти продавця',
+      contacts: 'Контакти',
     },
 
     legal: legalUk,

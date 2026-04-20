@@ -842,7 +842,7 @@ export default {
       privacy: 'Privacy',
       terms:   'Terms',
       refund:  'Refunds',
-      sellerContacts: 'Seller contacts',
+      contacts: 'Contacts',
     },
 
     legal: legalEn,
