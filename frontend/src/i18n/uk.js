@@ -39,6 +39,9 @@ export default {
       termsDescription:   'Умови користування {{siteName}}.',
       refundTitle:        'Повернення коштів — {{siteName}}',
       refundDescription:  'Правила повернень, скасування підписок і оскарження платежів для {{siteName}}.',
+      sellerContactsTitle: 'Контакти продавця — {{siteName}}',
+      sellerContactsDescription:
+        'Повне найменування, ІПН/ЄДРПОУ, юридична та фактична адреси, телефон і email продавця (надавача послуг).',
       loginTitle:         'Вхід — {{siteName}}',
       loginDescription:   'Увійдіть до акаунту {{siteName}}.',
       registerTitle:      'Реєстрація — {{siteName}}',
@@ -316,6 +319,17 @@ export default {
       ctaBtn:      'Створити перший проєкт',
       footer:         '© {{year}} {{siteName}}. Всі права захищені.',
       footerNavLabel: 'Юридичні посилання та розділи сайту',
+      sellerSectionTitle: 'Продавець (суб’єкт господарювання)',
+      sellerPageTitle: 'Продавець — реквізити та контакти',
+      sellerCompanyName: 'Повне фірмове найменування',
+      sellerTaxId: 'ІПН / ЄДРПОУ',
+      sellerLegalAddress: 'Юридична адреса',
+      sellerPhysicalAddress: 'Фактична адреса',
+      sellerPhone: 'Телефон',
+      sellerEmail: 'Електронна пошта',
+      sellerNotConfigured:
+        'Реквізити продавця на цьому середовищі ще не опубліковані. Оператор сайту може додати їх у файлі середовища на сервері (найменування, ІПН/ЄДРПОУ, адреси, телефон, email).',
+      developedBy: 'Розроблено',
     },
 
     // Auth
@@ -843,6 +857,7 @@ export default {
       privacy: 'Конфіденційність',
       terms:   'Умови',
       refund:  'Повернення коштів',
+      sellerContacts: 'Контакти продавця',
     },
 
     legal: legalUk,
