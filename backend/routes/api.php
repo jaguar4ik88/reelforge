@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\Admin\AdminSubscriptionPlanController;
 use App\Http\Controllers\API\Admin\AdminTemplateController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CreditsController;
@@ -76,6 +77,12 @@ Route::middleware('auth:sanctum')->group(function () {
         // POST (not PUT) so multipart preview uploads work reliably on all PHP stacks.
         Route::post('templates/{template}', [AdminTemplateController::class, 'update']);
         Route::delete('templates/{template}', [AdminTemplateController::class, 'destroy']);
+
+        Route::get('subscription-plans', [AdminSubscriptionPlanController::class, 'index']);
+        Route::post('subscription-plans', [AdminSubscriptionPlanController::class, 'store']);
+        Route::get('subscription-plans/{subscriptionPlan}', [AdminSubscriptionPlanController::class, 'show']);
+        Route::put('subscription-plans/{subscriptionPlan}', [AdminSubscriptionPlanController::class, 'update']);
+        Route::delete('subscription-plans/{subscriptionPlan}', [AdminSubscriptionPlanController::class, 'destroy']);
     });
 
     // Images

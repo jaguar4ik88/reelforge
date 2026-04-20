@@ -119,6 +119,14 @@ export const adminTemplatesApi = {
   remove: (id) => api.delete(`/admin/templates/${id}`),
 }
 
+export const adminSubscriptionPlansApi = {
+  list: () => api.get('/admin/subscription-plans'),
+  get: (id) => api.get(`/admin/subscription-plans/${id}`),
+  create: (body) => api.post('/admin/subscription-plans', body),
+  update: (id, body) => api.put(`/admin/subscription-plans/${id}`, body),
+  remove: (id) => api.delete(`/admin/subscription-plans/${id}`),
+}
+
 // ── Profile ───────────────────────────────────────────────────────────────────
 export const homeApi = {
   /** Authenticated: plan, credits, image/video counts, last 4 projects */

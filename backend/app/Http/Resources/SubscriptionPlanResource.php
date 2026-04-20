@@ -18,15 +18,27 @@ class SubscriptionPlanResource extends JsonResource
         $wfp = app(WayForPayService::class);
         $usdCents = (int) $this->price_cents;
 
+        $features = is_array($this->features) ? $this->features : [];
+
         return [
+            'id' => $this->id,
             'slug' => $this->slug,
             'name' => $this->name,
+            'description_en' => $this->description_en,
+            'description_uk' => $this->description_uk,
             'monthly_credits' => (int) $this->monthly_credits,
+            'features' => $features,
             'price_cents' => $usdCents,
             'price_usd' => round($usdCents / 100, 2),
+            'per_credit_usd' => $this->monthly_credits > 0
+                ? round(($usdCents / 100) / $this->monthly_credits, 4)
+                : null,
             'currency' => $this->currency,
             'amount_uah' => $wfp->enabled() ? $wfp->usdCentsToAmountUah($usdCents) : null,
             'sort_order' => (int) $this->sort_order,
+            'is_active' => (bool) $this->is_active,
+            'is_featured' => (bool) $this->is_featured,
+            'display_variant' => $this->display_variant,
         ];
     }
 }

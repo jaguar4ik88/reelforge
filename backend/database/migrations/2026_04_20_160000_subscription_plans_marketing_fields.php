@@ -1,0 +1,32 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::table('subscription_plans', function (Blueprint $table) {
+            $table->text('description_en')->nullable()->after('name');
+            $table->text('description_uk')->nullable()->after('description_en');
+            $table->json('features')->nullable()->after('monthly_credits');
+            $table->boolean('is_featured')->default(false)->after('is_active');
+            $table->string('display_variant', 32)->nullable()->after('is_featured');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('subscription_plans', function (Blueprint $table) {
+            $table->dropColumn([
+                'description_en',
+                'description_uk',
+                'features',
+                'is_featured',
+                'display_variant',
+            ]);
+        });
+    }
+};

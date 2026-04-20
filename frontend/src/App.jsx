@@ -28,6 +28,8 @@ import Credits       from './pages/Credits'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminTemplates from './pages/admin/AdminTemplates'
 import AdminTemplateEdit from './pages/admin/AdminTemplateEdit'
+import AdminSubscriptionPlans from './pages/admin/AdminSubscriptionPlans'
+import AdminSubscriptionPlanEdit from './pages/admin/AdminSubscriptionPlanEdit'
 
 /** Authenticated clients only — staff is redirected to /admin. */
 function ClientAppRoute({ children }) {
@@ -117,6 +119,9 @@ export default function App() {
           <Route path="templates" element={<AdminTemplates />} />
           <Route path="templates/new" element={<AdminTemplateEdit />} />
           <Route path="templates/:id/edit" element={<AdminTemplateEdit />} />
+          <Route path="subscription-plans" element={<AdminSubscriptionPlans />} />
+          <Route path="subscription-plans/new" element={<AdminSubscriptionPlanEdit />} />
+          <Route path="subscription-plans/:id/edit" element={<AdminSubscriptionPlanEdit />} />
         </Route>
 
         {/* Old URLs → /app/... */}
