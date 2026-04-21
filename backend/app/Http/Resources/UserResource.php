@@ -17,6 +17,7 @@ class UserResource extends JsonResource
         $creditService = app(CreditService::class);
         /** @var SubscriptionEntitlementService $entitlements */
         $entitlements = app(SubscriptionEntitlementService::class);
+        $photoGuidedVideoCode = $entitlements->photoGuidedVideoRestrictionCode($this->resource);
 
         return [
             'id'                => $this->id,
@@ -44,6 +45,11 @@ class UserResource extends JsonResource
                 'max_batch_quantity'   => $entitlements->maxBatchQuantityPerGeneration($this->resource),
             ],
             'has_active_subscription' => $entitlements->activeSubscriptionPlan($this->resource) !== null,
+            'photo_guided_video' => [
+                'allowed'     => $photoGuidedVideoCode === null,
+                'min_balance' => (int) config('reelforge.credits.photo_guided_video.min_balance', 10),
+                'code'        => $photoGuidedVideoCode,
+            ],
             'created_at'        => $this->created_at->toISOString(),
         ];
     }

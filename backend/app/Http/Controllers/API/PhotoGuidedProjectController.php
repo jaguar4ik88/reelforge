@@ -120,6 +120,25 @@ class PhotoGuidedProjectController extends Controller
 
         $validated = $request->validated();
 
+        if (($validated['content_type'] ?? '') === 'video') {
+            $code = $this->subscriptionEntitlements->photoGuidedVideoRestrictionCode($request->user());
+            if ($code !== null) {
+                $min = (int) config('reelforge.credits.photo_guided_video.min_balance', 10);
+                $message = match ($code) {
+                    'low_credits' => __('messages.photo_guided.video_blocked_low_credits', ['min' => $min]),
+                    'no_subscription' => __('messages.photo_guided.video_blocked_no_subscription'),
+                    'starter_plan' => __('messages.photo_guided.video_blocked_starter_plan'),
+                    default => __('messages.photo_guided.video_blocked_no_subscription'),
+                };
+
+                return response()->json([
+                    'success' => false,
+                    'message' => $message,
+                    'errors'  => ['content_type' => [$message]],
+                ], 422);
+            }
+        }
+
         $maxBatch = $this->subscriptionEntitlements->maxBatchQuantityPerGeneration($request->user());
         $quantity = max(1, min($maxBatch, (int) ($validated['quantity'] ?? 1)));
         $validated['quantity'] = $quantity;

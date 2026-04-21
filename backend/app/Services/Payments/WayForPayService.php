@@ -100,32 +100,72 @@ class WayForPayService
             return false;
         }
 
-        $string = implode(';', [
-            (string) ($data['merchantAccount'] ?? ''),
-            (string) ($data['orderReference'] ?? ''),
-            $this->normalizeAmountForSignature($data['amount'] ?? null),
-            (string) ($data['currency'] ?? ''),
-            (string) ($data['authCode'] ?? ''),
-            (string) ($data['cardPan'] ?? ''),
-            (string) ($data['transactionStatus'] ?? ''),
-            (string) ($data['reasonCode'] ?? ''),
-        ]);
+        $merchantAccount = (string) ($data['merchantAccount'] ?? '');
+        $orderReference = (string) ($data['orderReference'] ?? '');
+        $currency = (string) ($data['currency'] ?? '');
+        $authCode = (string) ($data['authCode'] ?? '');
+        $cardPan = (string) ($data['cardPan'] ?? '');
+        $transactionStatus = (string) ($data['transactionStatus'] ?? '');
+        $reasonCode = (string) ($data['reasonCode'] ?? '');
 
-        $calc = hash_hmac('md5', $string, $this->secretKey());
+        foreach ($this->amountCandidatesForServiceCallbackSignature($data['amount'] ?? null) as $amountPart) {
+            $string = implode(';', [
+                $merchantAccount,
+                $orderReference,
+                $amountPart,
+                $currency,
+                $authCode,
+                $cardPan,
+                $transactionStatus,
+                $reasonCode,
+            ]);
+            $calc = hash_hmac('md5', $string, $this->secretKey());
+            if (hash_equals(strtolower($calc), strtolower($expected))) {
+                return true;
+            }
+        }
 
-        return hash_equals(strtolower($calc), strtolower($expected));
+        return false;
     }
 
-    private function normalizeAmountForSignature(mixed $amount): string
+    /**
+     * WayForPay signs serviceUrl callbacks with amount exactly as sent (see wiki examples: 100, 1547.36).
+     * PHP/Laravel may coerce "396" to int/float; forcing "396.00" breaks HMAC vs their "396".
+     *
+     * @return list<string>
+     */
+    private function amountCandidatesForServiceCallbackSignature(mixed $amount): array
     {
         if ($amount === null || $amount === '') {
-            return '0.00';
-        }
-        if (is_numeric($amount)) {
-            return number_format((float) $amount, 2, '.', '');
+            return ['0.00'];
         }
 
-        return (string) $amount;
+        if (is_string($amount)) {
+            $s = trim(str_replace(',', '.', $amount));
+            if ($s === '' || ! is_numeric($s)) {
+                return [$s !== '' ? $s : '0.00'];
+            }
+            if (! str_contains($s, '.')) {
+                $two = number_format((float) $s, 2, '.', '');
+
+                return array_values(array_unique([$s, $two]));
+            }
+
+            return [number_format((float) $s, 2, '.', '')];
+        }
+
+        if (is_numeric($amount)) {
+            $f = (float) $amount;
+            $two = number_format($f, 2, '.', '');
+            $candidates = [$two];
+            if (abs($f - round($f)) < 1.0e-9) {
+                $candidates[] = (string) (int) round($f);
+            }
+
+            return array_values(array_unique($candidates));
+        }
+
+        return [(string) $amount];
     }
 
     /**
