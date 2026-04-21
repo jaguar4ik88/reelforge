@@ -39,6 +39,8 @@ export default function CreateProductPhotoFlow() {
   const maxBatchQuantity = Math.max(1, user?.generation_limits?.max_batch_quantity ?? 1)
   const creditBalance = user?.credits?.balance ?? 0
   const hasActiveSubscription = user?.has_active_subscription === true
+  const photoGuidedVideoGate = user?.photo_guided_video
+  const videoTabAllowed = photoGuidedVideoGate?.allowed !== false
 
   const templateState = location.state
   const templateId = templateState?.templateId
@@ -66,6 +68,12 @@ export default function CreateProductPhotoFlow() {
   useEffect(() => {
     setBatchCount((c) => Math.min(Math.max(1, c), maxBatchQuantity))
   }, [maxBatchQuantity])
+
+  useEffect(() => {
+    if (contentType === 'video' && !videoTabAllowed) {
+      setContentType('photo')
+    }
+  }, [contentType, videoTabAllowed])
   const [advancedOpen, setAdvancedOpen] = useState(false)
   /** FLUX Kontext output aspect ratio (photo & product card). */
   const [outputAspectRatio, setOutputAspectRatio] = useState('3:4')
@@ -125,9 +133,27 @@ export default function CreateProductPhotoFlow() {
     return m?.studio ?? pricing.photo_per_image
   }, [pricing])
 
+  const videoBlockBannerLine = useMemo(() => {
+    if (videoTabAllowed || !photoGuidedVideoGate?.code) return null
+    const min = photoGuidedVideoGate.min_balance ?? 10
+    switch (photoGuidedVideoGate.code) {
+      case 'low_credits':
+        return t('photoFlow.videoTabBlockedLowCredits', { min })
+      case 'no_subscription':
+        return t('photoFlow.videoTabBlockedNoSubscription')
+      case 'starter_plan':
+        return t('photoFlow.videoTabBlockedStarter')
+      default:
+        return t('photoFlow.videoTabBlockedGeneric')
+    }
+  }, [videoTabAllowed, photoGuidedVideoGate, t])
+
   const templateGenerateAllowed =
     hasActiveSubscription && templateSceneCost >= 1 && creditBalance >= templateSceneCost
-  const standardGenerateAllowed = generationCost >= 1 && creditBalance >= generationCost
+  const standardGenerateAllowed =
+    generationCost >= 1 &&
+    creditBalance >= generationCost &&
+    (contentType !== 'video' || videoTabAllowed)
 
   const handleTemplateGenerate = async () => {
     if (files.length < 1) {
@@ -192,6 +218,20 @@ export default function CreateProductPhotoFlow() {
     }
     if (creditBalance < generationCost) {
       toast.error(t('photoFlow.generateBlockedNoCreditsToast', { count: generationCost }))
+      return
+    }
+    if (contentType === 'video' && !videoTabAllowed) {
+      const min = photoGuidedVideoGate?.min_balance ?? 10
+      const code = photoGuidedVideoGate?.code
+      if (code === 'low_credits') {
+        toast.error(t('photoFlow.videoTabBlockedLowCredits', { min }))
+      } else if (code === 'starter_plan') {
+        toast.error(t('photoFlow.videoTabBlockedStarter'))
+      } else if (code === 'no_subscription') {
+        toast.error(t('photoFlow.videoTabBlockedNoSubscription'))
+      } else {
+        toast.error(t('photoFlow.videoTabBlockedGeneric'))
+      }
       return
     }
 
@@ -443,13 +483,17 @@ export default function CreateProductPhotoFlow() {
               {contentTypes.map(({ id, labelKey }) => {
                 const Icon = CONTENT_ICONS[id]
                 const active = contentType === id
+                const disabled = id === 'video' && !videoTabAllowed
                 return (
                   <button
                     key={id}
                     type="button"
-                    onClick={() => setContentType(id)}
+                    disabled={disabled}
+                    title={disabled ? t('photoFlow.videoTabDisabledTitle') : undefined}
+                    onClick={() => !disabled && setContentType(id)}
                     className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-1 rounded-lg text-sm font-medium transition-all min-w-0
-                      ${active ? 'bg-white text-gray-950 shadow' : 'text-gray-400 hover:text-white'}`}
+                      ${disabled ? 'opacity-45 cursor-not-allowed text-gray-500' : ''}
+                      ${active && !disabled ? 'bg-white text-gray-950 shadow' : !disabled ? 'text-gray-400 hover:text-white' : ''}`}
                   >
                     <Icon className="w-4 h-4 shrink-0" />
                     <span className="truncate">{t(labelKey)}</span>
@@ -457,6 +501,14 @@ export default function CreateProductPhotoFlow() {
                 )
               })}
             </div>
+            {step1Ready && videoBlockBannerLine && (
+              <p className="mt-3 text-xs text-amber-100/90 rounded-xl border border-amber-500/25 bg-amber-950/25 px-3 py-2 leading-relaxed">
+                {videoBlockBannerLine}{' '}
+                <Link to={`${APP_BASE}/credits`} className="text-brand-400 hover:text-brand-300 underline underline-offset-2 font-medium">
+                  {t('photoFlow.topUpCreditsLink')}
+                </Link>
+              </p>
+            )}
           </section>
 
           {contentType === 'photo' && (

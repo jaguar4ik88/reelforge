@@ -617,6 +617,11 @@ export default {
         formatHint:
           'Output aspect ratio for the generated image (photo or card). Wider options suit banners; tall options suit stories.',
       },
+      videoTabBlockedLowCredits: 'Video needs at least {{min}} credits on your balance.',
+      videoTabBlockedNoSubscription: 'Video requires an active subscription.',
+      videoTabBlockedStarter: 'Video is not available on the Starter plan — upgrade to a higher tier.',
+      videoTabBlockedGeneric: 'Video is not available for your account right now.',
+      videoTabDisabledTitle: 'Not available for your current plan or balance',
       content: {
         photo: 'Photo',
         card:  'Card',

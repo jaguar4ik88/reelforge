@@ -82,6 +82,16 @@ return [
                 ['seconds' => 20, 'credits' => (int) env('REELFORGE_VIDEO_20S_CREDIT_COST', 20)],
             ],
         ],
+        /*
+         * Photo-flow «Video» tab: require active subscription (not starter), min credit balance.
+         */
+        'photo_guided_video' => [
+            'min_balance' => (int) env('REELFORGE_PHOTO_GUIDED_VIDEO_MIN_BALANCE', 10),
+            'blocked_plan_slugs' => array_values(array_filter(array_map(
+                'trim',
+                explode(',', (string) env('REELFORGE_PHOTO_GUIDED_VIDEO_BLOCKED_PLANS', 'starter-monthly'))
+            ))),
+        ],
     ],
 
     /*

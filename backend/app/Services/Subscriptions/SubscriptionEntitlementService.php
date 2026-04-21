@@ -5,6 +5,7 @@ namespace App\Services\Subscriptions;
 use App\Models\SubscriptionPlan;
 use App\Models\User;
 use App\Models\UserSubscription;
+use App\Services\Credits\CreditService;
 
 class SubscriptionEntitlementService
 {
@@ -47,5 +48,37 @@ class SubscriptionEntitlementService
             4 => 3,
             default => 1,
         };
+    }
+
+    /**
+     * Whether the user may use photo-flow content type "video" (tab + API).
+     */
+    public function photoGuidedVideoAllowed(User $user): bool
+    {
+        return $this->photoGuidedVideoRestrictionCode($user) === null;
+    }
+
+    /**
+     * @return 'low_credits'|'no_subscription'|'starter_plan'|null null = allowed
+     */
+    public function photoGuidedVideoRestrictionCode(User $user): ?string
+    {
+        $min = (int) config('reelforge.credits.photo_guided_video.min_balance', 10);
+        $balance = app(CreditService::class)->balance($user);
+        if ($balance < $min) {
+            return 'low_credits';
+        }
+
+        $plan = $this->activeSubscriptionPlan($user);
+        if ($plan === null) {
+            return 'no_subscription';
+        }
+
+        $blocked = config('reelforge.credits.photo_guided_video.blocked_plan_slugs', ['starter-monthly']);
+        if (in_array($plan->slug, $blocked, true)) {
+            return 'starter_plan';
+        }
+
+        return null;
     }
 }
