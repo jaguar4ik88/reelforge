@@ -10,6 +10,9 @@ import toast from 'react-hot-toast'
 import {
   User, Mail, Globe, Lock, Camera, Calendar, Zap, Coins,
 } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { APP_BASE } from '../constants/routes'
+import { userHasPaidPlanHighlight } from '../utils/billingPlanLabel'
 
 export default function Profile() {
   const { t }                         = useTranslation()
@@ -131,11 +134,15 @@ export default function Profile() {
             <p className="text-white font-semibold text-lg">{user?.name}</p>
             <p className="text-gray-400 text-sm">{user?.email}</p>
             <span className={`mt-2 status-badge ${
-              user?.plan === 'pro'
+              userHasPaidPlanHighlight(user)
                 ? 'bg-brand-600/20 text-brand-300 border border-brand-500/30'
                 : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
             }`}>
-              {user?.plan === 'pro' ? t('profile.pro') : t('profile.free')}
+              {user?.subscription?.name?.trim()
+                ? user.subscription.name
+                : user?.plan === 'pro'
+                  ? t('profile.pro')
+                  : t('profile.free')}
             </span>
           </div>
 
@@ -148,10 +155,31 @@ export default function Profile() {
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400">{t('profile.currentPlan')}</span>
-                <span className="text-white font-medium capitalize">
-                  {user?.plan === 'pro' ? t('profile.pro') : t('profile.free')}
+                <span className="text-white font-medium text-right">
+                  {user?.subscription?.name?.trim()
+                    ? user.subscription.name
+                    : user?.plan === 'pro'
+                      ? t('profile.pro')
+                      : t('profile.free')}
                 </span>
               </div>
+              {user?.subscription?.current_period_end && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-400">{t('profile.subscriptionRenews')}</span>
+                  <span className="text-white font-medium tabular-nums text-right">
+                    {new Date(user.subscription.current_period_end).toLocaleDateString(locale, {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric',
+                    })}
+                  </span>
+                </div>
+              )}
+              {user?.subscription?.monthly_credits != null && (
+                <p className="text-xs text-gray-500">
+                  {t('profile.subscriptionCreditsHint', { count: user.subscription.monthly_credits })}
+                </p>
+              )}
               <div>
                 <div className="flex justify-between text-sm mb-1.5">
                   <span className="text-gray-400">{t('profile.videosUsed')}</span>
@@ -180,10 +208,13 @@ export default function Profile() {
                   {t('profile.creditsPerVideoHint', { count: user.credits.video_generation_cost })}
                 </p>
               )}
-              {user?.plan === 'free' && (
-                <button className="btn-primary w-full text-sm py-2 mt-2">
+              {!user?.has_active_subscription && user?.plan === 'free' && (
+                <Link
+                  to={`${APP_BASE}/credits`}
+                  className="btn-primary w-full text-sm py-2 mt-2 inline-block text-center"
+                >
                   {t('profile.upgradePro')}
-                </button>
+                </Link>
               )}
             </div>
           </div>

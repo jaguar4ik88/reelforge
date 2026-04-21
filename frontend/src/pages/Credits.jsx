@@ -19,7 +19,7 @@ const PURCHASE_HISTORY_PER_PAGE = 10
 export default function Credits() {
   const { t, i18n } = useTranslation()
   const { payments } = useSite()
-  const { refreshUser } = useAuthContext()
+  const { refreshUser, user } = useAuthContext()
   const [searchParams, setSearchParams] = useSearchParams()
   const [packages, setPackages] = useState([])
   const [subscriptionPlans, setSubscriptionPlans] = useState([])
@@ -276,6 +276,7 @@ export default function Credits() {
                 payLabel={payLabel}
                 canPay={Boolean(checkout && checkout?.billing_provider === 'wayforpay' && checkout?.wayforpay_available)}
                 payingSubSlug={payingSubSlug}
+                activeSubscriptionSlug={user?.subscription?.slug ?? null}
                 onPay={(slug) => startWayForPaySubscription(slug)}
               />
             </div>

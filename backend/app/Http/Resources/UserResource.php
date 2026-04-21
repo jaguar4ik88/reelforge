@@ -18,6 +18,7 @@ class UserResource extends JsonResource
         /** @var SubscriptionEntitlementService $entitlements */
         $entitlements = app(SubscriptionEntitlementService::class);
         $photoGuidedVideoCode = $entitlements->photoGuidedVideoRestrictionCode($this->resource);
+        $subscriptionSummary = $entitlements->activeSubscriptionSummary($this->resource);
 
         return [
             'id'                => $this->id,
@@ -44,7 +45,8 @@ class UserResource extends JsonResource
                 'subscription_tier'    => $entitlements->subscriptionTier($this->resource),
                 'max_batch_quantity'   => $entitlements->maxBatchQuantityPerGeneration($this->resource),
             ],
-            'has_active_subscription' => $entitlements->activeSubscriptionPlan($this->resource) !== null,
+            'subscription'            => $subscriptionSummary,
+            'has_active_subscription' => $subscriptionSummary !== null,
             'photo_guided_video' => [
                 'allowed'     => $photoGuidedVideoCode === null,
                 'min_balance' => (int) config('reelforge.credits.photo_guided_video.min_balance', 10),

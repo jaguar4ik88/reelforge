@@ -30,12 +30,15 @@ class ReplicateService
     /**
      * Create a new prediction and return its ID + initial status.
      *
+     * @param  string  $modelId  Replicate "version" string: official `owner/name`, or community `owner/name:64_char_version_id`, or raw version id.
      * @return array{id: string, status: string}
      */
     public function createPrediction(string $modelId, array $input): array
     {
-        $response = $this->http->post('/models/' . $modelId . '/predictions', [
-            'input' => $input,
+        // Community models 404 on POST /models/{owner}/{name}/predictions — use predictions.create for all.
+        $response = $this->http->post('/predictions', [
+            'version' => $modelId,
+            'input'   => $input,
         ]);
 
         if ($response->failed()) {

@@ -23,6 +23,7 @@ export const SUBSCRIPTION_VARIANT_MAP = {
  *   payLabel?: string,
  *   canPay?: boolean,
  *   payingSubSlug?: string | null,
+ *   activeSubscriptionSlug?: string | null,
  *   onPay?: (slug: string) => void,
  * }} props
  */
@@ -34,6 +35,7 @@ export default function SubscriptionPlanCardsGrid({
   payLabel = '',
   canPay = false,
   payingSubSlug = null,
+  activeSubscriptionSlug = null,
   onPay,
 }) {
   const { t } = useTranslation()
@@ -53,6 +55,10 @@ export default function SubscriptionPlanCardsGrid({
           plan.per_credit_usd != null && Number.isFinite(Number(plan.per_credit_usd))
             ? Number(plan.per_credit_usd).toFixed(3)
             : ''
+        const isCurrentPlan =
+          typeof activeSubscriptionSlug === 'string' &&
+          activeSubscriptionSlug !== '' &&
+          activeSubscriptionSlug === slug
 
         return (
           <div
@@ -105,7 +111,7 @@ export default function SubscriptionPlanCardsGrid({
               ) : (
                 <button
                   type="button"
-                  disabled={!canPay || payingSubSlug === slug}
+                  disabled={!canPay || payingSubSlug === slug || isCurrentPlan}
                   onClick={() => onPay?.(slug)}
                   className={`mb-6 w-full font-semibold py-3 rounded-xl transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
                     plan.is_featured
@@ -113,7 +119,11 @@ export default function SubscriptionPlanCardsGrid({
                       : 'bg-white/10 hover:bg-white/15 text-white border border-white/15'
                   }`}
                 >
-                  {payingSubSlug === slug ? t('common.loading') : payLabel}
+                  {isCurrentPlan
+                    ? t('credits.currentSubscriptionPlan')
+                    : payingSubSlug === slug
+                      ? t('common.loading')
+                      : payLabel}
                 </button>
               )}
 

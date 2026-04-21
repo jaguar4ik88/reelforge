@@ -63,6 +63,9 @@ function PhotoGuidedProjectBody({ project, t }) {
   const hasResult      = Boolean(project.result_url)
   const genSettings    = project.generation?.settings ?? {}
   const contentType    = genSettings.content_type ?? 'photo'
+  const resultUrl      = project.result_url || ''
+  const showAsVideoPlayer =
+    isDone && hasResult && contentType === 'video' && /\.mp4(\?|$)/i.test(String(resultUrl))
   const showCreateVideo =
     isDone && hasResult && (contentType === 'photo' || contentType === 'card')
 
@@ -83,19 +86,30 @@ function PhotoGuidedProjectBody({ project, t }) {
       <div>
         <div className="rounded-2xl overflow-hidden bg-gray-900/50 border border-white/10">
           {isDone && hasResult ? (
-            <div className="relative overflow-hidden rounded-2xl bg-black/40">
-              <ZoomableImage
-                src={project.result_url}
-                alt=""
-                className="block w-full"
-                imageClassName="max-h-[min(70vh,720px)] w-full object-contain"
-              />
-            </div>
+            showAsVideoPlayer ? (
+              <div className="relative overflow-hidden rounded-2xl bg-black shadow-2xl shadow-brand-900/40 ring-4 ring-white/10">
+                <video
+                  src={resultUrl}
+                  controls
+                  className="w-full max-h-[min(70vh,720px)]"
+                  playsInline
+                />
+              </div>
+            ) : (
+              <div className="relative overflow-hidden rounded-2xl bg-black/40">
+                <ZoomableImage
+                  src={project.result_url}
+                  alt=""
+                  className="block w-full"
+                  imageClassName="max-h-[min(70vh,720px)] w-full object-contain"
+                />
+              </div>
+            )
           ) : isProcessing ? (
             <ProcessingAnimation
-              variant="photo"
-              label={t('project.processingPhoto')}
-              sub={t('project.processingPhotoSub')}
+              variant={contentType === 'video' ? 'film' : 'photo'}
+              label={contentType === 'video' ? t('project.processingVideo') : t('project.processingPhoto')}
+              sub={contentType === 'video' ? t('project.processingVideoSub') : t('project.processingPhotoSub')}
             />
           ) : (
             <div className="aspect-[4/5] max-h-[min(70vh,640px)] flex flex-col items-center justify-center gap-3 px-6">
@@ -244,9 +258,14 @@ export default function ProjectView() {
 
   const downloadUrl = project.result_url || project.video_url || null
   const canDownload   = isDone && Boolean(downloadUrl)
-  const downloadName  = project.video_url
-    ? `reelforge-${project.id}.mp4`
-    : `reelforge-${project.id}.png`
+  const downloadName = (() => {
+    const u = downloadUrl || ''
+    if (/\.mp4(\?|$)/i.test(u)) return `reelforge-${project.id}.mp4`
+    if (/\.webm(\?|$)/i.test(u)) return `reelforge-${project.id}.webm`
+    if (/\.jpe?g(\?|$)/i.test(u)) return `reelforge-${project.id}.jpg`
+    if (/\.webp(\?|$)/i.test(u)) return `reelforge-${project.id}.webp`
+    return `reelforge-${project.id}.png`
+  })()
 
   const handleShare = async () => {
     const url = window.location.href

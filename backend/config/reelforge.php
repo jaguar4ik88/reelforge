@@ -55,6 +55,19 @@ return [
      */
     'photo_guided' => [
         'wishes_enrichment' => filter_var(env('REELFORGE_WISHES_ENRICHMENT', false), FILTER_VALIDATE_BOOLEAN),
+        /*
+         * Photo-flow «Video» tab: image-to-video on Replicate (not FLUX — FLUX only outputs stills).
+         * @see https://replicate.com/aicapcut/stable-video-diffusion-img2vid-xt-optimized
+         */
+        'video_i2v' => [
+            // Use ?: so an empty .env value does not wipe the default. Community models need owner/name:version_id (see Replicate predictions.create).
+            'model_id' => env('REELFORGE_VIDEO_I2V_MODEL') ?: 'aicapcut/stable-video-diffusion-img2vid-xt-optimized:7b595c69ca428904c1907155b93a5580653d1e9dcd407612142595908650dd67',
+            'num_inference_steps' => (int) (env('REELFORGE_VIDEO_I2V_STEPS') ?: 25),
+            'num_frames' => (int) (env('REELFORGE_VIDEO_I2V_FRAMES') ?: 25),
+            /** 0 = omit (model infers from image). Set only if your Replicate model requires explicit size. */
+            'width' => (int) (env('REELFORGE_VIDEO_I2V_WIDTH') ?: 0),
+            'height' => (int) (env('REELFORGE_VIDEO_I2V_HEIGHT') ?: 0),
+        ],
     ],
 
     'credits' => [

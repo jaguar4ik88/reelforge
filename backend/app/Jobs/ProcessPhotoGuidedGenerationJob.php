@@ -11,6 +11,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -46,6 +47,8 @@ class ProcessPhotoGuidedGenerationJob implements ShouldQueue
         }
 
         $quantity = max(1, min(10, (int) ($job->settings_json['quantity'] ?? 1)));
+        $contentType = (string) ($job->settings_json['content_type'] ?? 'photo');
+        $maxPolls = $contentType === 'video' ? 100 : self::MAX_POLLS;
 
         /** @var ReplicateService $replicate */
         $replicate        = app(ReplicateService::class);
@@ -60,13 +63,14 @@ class ProcessPhotoGuidedGenerationJob implements ShouldQueue
                 'iteration'         => $index + 1,
                 'of'                => $quantity,
                 'model'             => $modelId,
+                'content_type'      => $contentType,
                 'prompt_length'     => strlen($prompt),
             ]);
 
             $prediction = $replicate->createPrediction($modelId, $input);
             $predictionIds[] = $prediction['id'];
 
-            $resultUrl = $this->pollUntilDone($replicate, $prediction['id'], $job);
+            $resultUrl = $this->pollUntilDone($replicate, $prediction['id'], $maxPolls);
 
             $storedPaths[] = $this->downloadAndStore($resultUrl, $job, $index);
         }
@@ -107,6 +111,12 @@ class ProcessPhotoGuidedGenerationJob implements ShouldQueue
      */
     private function buildModelInput(GenerationJob $job, string $prompt): array
     {
+        $contentType = (string) ($job->settings_json['content_type'] ?? 'photo');
+
+        if ($contentType === 'video') {
+            return $this->buildVideoImageToVideoInput($job);
+        }
+
         $imageBase64 = $this->loadReferenceImageBase64($job);
 
         if ($imageBase64 !== null) {
@@ -150,6 +160,46 @@ class ProcessPhotoGuidedGenerationJob implements ShouldQueue
     }
 
     /**
+     * Short product clip from reference photo (Stable Video Diffusion–class models on Replicate).
+     * User "duration" mainly affects pricing; frame count is capped by the model.
+     *
+     * @return array{0: string, 1: array<string, mixed>}
+     */
+    private function buildVideoImageToVideoInput(GenerationJob $job): array
+    {
+        $imageUri = $this->loadReferenceImageBase64($job);
+        if ($imageUri === null) {
+            throw new RuntimeException('Video generation requires a reference product image.');
+        }
+
+        $cfg = config('reelforge.photo_guided.video_i2v', []);
+        $modelId = trim((string) ($cfg['model_id'] ?? ''));
+        if ($modelId === '') {
+            $modelId = 'aicapcut/stable-video-diffusion-img2vid-xt-optimized:7b595c69ca428904c1907155b93a5580653d1e9dcd407612142595908650dd67';
+        }
+
+        $frames = (int) ($cfg['num_frames'] ?? 25);
+        $frames = max(14, min(100, $frames));
+
+        $input = [
+            'image'               => $imageUri,
+            'num_frames'          => $frames,
+            'num_inference_steps' => max(1, (int) ($cfg['num_inference_steps'] ?? 25)),
+        ];
+
+        $width  = (int) ($cfg['width'] ?? 0);
+        $height = (int) ($cfg['height'] ?? 0);
+        if ($width > 0) {
+            $input['width'] = max(256, $width);
+        }
+        if ($height > 0) {
+            $input['height'] = max(256, $height);
+        }
+
+        return [$modelId, $input];
+    }
+
+    /**
      * Загружает первое изображение проекта как base64 data URI.
      * Возвращает null, если изображение не найдено или недоступно.
      */
@@ -182,9 +232,9 @@ class ProcessPhotoGuidedGenerationJob implements ShouldQueue
         return 'data:' . $mime . ';base64,' . base64_encode($bytes);
     }
 
-    private function pollUntilDone(ReplicateService $replicate, string $predictionId, GenerationJob $job): string
+    private function pollUntilDone(ReplicateService $replicate, string $predictionId, int $maxPolls): string
     {
-        for ($i = 0; $i < self::MAX_POLLS; $i++) {
+        for ($i = 0; $i < $maxPolls; $i++) {
             sleep(self::POLL_INTERVAL_SEC);
 
             $prediction = $replicate->getPrediction($predictionId);
@@ -204,7 +254,7 @@ class ProcessPhotoGuidedGenerationJob implements ShouldQueue
                     throw new RuntimeException('Replicate returned empty output.');
                 }
 
-                return $url;
+                return is_string($url) ? $url : (string) $url;
             }
 
             if ($prediction['status'] === 'failed') {
@@ -212,25 +262,56 @@ class ProcessPhotoGuidedGenerationJob implements ShouldQueue
             }
         }
 
-        throw new RuntimeException('Replicate polling timeout after ' . (self::MAX_POLLS * self::POLL_INTERVAL_SEC) . ' seconds.');
+        throw new RuntimeException('Replicate polling timeout after ' . ($maxPolls * self::POLL_INTERVAL_SEC) . ' seconds.');
     }
 
-    private function downloadAndStore(string $imageUrl, GenerationJob $job, int $index = 0): string
+    private function downloadAndStore(string $mediaUrl, GenerationJob $job, int $index = 0): string
     {
-        $response = Http::timeout(30)->get($imageUrl);
+        $response = Http::timeout(180)->get($mediaUrl);
 
         if ($response->failed()) {
-            throw new RuntimeException('Failed to download generated image from: ' . $imageUrl);
+            throw new RuntimeException('Failed to download generated media from: ' . $mediaUrl);
         }
 
         $disk      = ReelForgeStorage::contentDisk();
-        $extension = 'png';
+        $extension = $this->guessMediaExtension($response, $mediaUrl);
         $path      = ReelForgeStorage::userContentPrefix()
             . "/{$job->user_id}/projects/{$job->project_id}/generated_{$job->id}_{$index}.{$extension}";
 
         Storage::disk($disk)->put($path, $response->body());
 
         return $path;
+    }
+
+    private function guessMediaExtension(Response $response, string $url): string
+    {
+        $ct = strtolower((string) $response->header('Content-Type'));
+        if (str_contains($ct, 'video/mp4')) {
+            return 'mp4';
+        }
+        if (str_contains($ct, 'video/webm')) {
+            return 'webm';
+        }
+        if (str_contains($ct, 'image/jpeg') || str_contains($ct, 'image/jpg')) {
+            return 'jpg';
+        }
+        if (str_contains($ct, 'image/png')) {
+            return 'png';
+        }
+        if (str_contains($ct, 'image/webp')) {
+            return 'webp';
+        }
+
+        $path  = (string) (parse_url($url, PHP_URL_PATH) ?? '');
+        $guess = strtolower((string) pathinfo($path, PATHINFO_EXTENSION));
+        if ($guess === 'jpeg') {
+            return 'jpg';
+        }
+        if (in_array($guess, ['mp4', 'jpg', 'png', 'webp', 'webm'], true)) {
+            return $guess;
+        }
+
+        return 'bin';
     }
 
     public function failed(Throwable $exception): void
