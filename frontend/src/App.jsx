@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate, useParams } from 'react-router-dom'
 import { AuthProvider, useAuthContext } from './context/AuthContext'
 import { getAppUrl } from './utils/apiBase'
-import { postLoginPath, isStaffRole, APP_BASE, ADMIN_BASE } from './constants/routes'
+import { postLoginPath, isStaffRole, isAdminRole, APP_BASE, ADMIN_BASE } from './constants/routes'
 import AppLayout from './layouts/AppLayout'
 import AdminLayout from './layouts/AdminLayout'
 import AuthLayout from './layouts/AuthLayout'
@@ -30,6 +30,8 @@ import AdminTemplates from './pages/admin/AdminTemplates'
 import AdminTemplateEdit from './pages/admin/AdminTemplateEdit'
 import AdminSubscriptionPlans from './pages/admin/AdminSubscriptionPlans'
 import AdminSubscriptionPlanEdit from './pages/admin/AdminSubscriptionPlanEdit'
+import AdminUsers from './pages/admin/AdminUsers'
+import AdminUserDetail from './pages/admin/AdminUserDetail'
 
 /** Authenticated clients only — staff is redirected to /admin. */
 function ClientAppRoute({ children }) {
@@ -49,6 +51,20 @@ function StaffRoute({ children }) {
   if (!user) return <Navigate to="/login" replace />
   if (!isStaffRole(user.role)) {
     return <Navigate to={`${APP_BASE}/dashboard`} replace />
+  }
+  return children
+}
+
+/** Platform admin only (not managers). */
+function AdminOnlyRoute({ children }) {
+  const { user, loading } = useAuthContext()
+  if (loading) return <FullScreenSpinner />
+  if (!user) return <Navigate to="/login" replace />
+  if (!isStaffRole(user.role)) {
+    return <Navigate to={`${APP_BASE}/dashboard`} replace />
+  }
+  if (!isAdminRole(user.role)) {
+    return <Navigate to={`${ADMIN_BASE}/dashboard`} replace />
   }
   return children
 }
@@ -116,6 +132,22 @@ export default function App() {
         <Route path="/admin" element={<StaffRoute><AdminLayout /></StaffRoute>}>
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<AdminDashboard />} />
+          <Route
+            path="users"
+            element={
+              <AdminOnlyRoute>
+                <AdminUsers />
+              </AdminOnlyRoute>
+            }
+          />
+          <Route
+            path="users/:id"
+            element={
+              <AdminOnlyRoute>
+                <AdminUserDetail />
+              </AdminOnlyRoute>
+            }
+          />
           <Route path="templates" element={<AdminTemplates />} />
           <Route path="templates/new" element={<AdminTemplateEdit />} />
           <Route path="templates/:id/edit" element={<AdminTemplateEdit />} />

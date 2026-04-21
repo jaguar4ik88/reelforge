@@ -230,22 +230,16 @@ export default function Credits() {
         : t('common.loading')
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      <SeoHead titleKey="seo.creditsAndSubsTitle" descriptionKey="seo.creditsAndSubsDescription" noindex />
-      <form ref={formRef} className="hidden" aria-hidden />
-
-      <div className="mb-8">
-        <Link
-          to={`${APP_BASE}/dashboard`}
-          className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-white mb-4"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          {t('credits.back')}
-        </Link>
-        <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+    <div className="max-w-6xl mx-auto space-y-6">
+      <h1 className="text-3xl font-bold text-white flex items-center gap-3">
           <Coins className="w-8 h-8 text-brand-400" />
           {t('credits.pageTitle')}
         </h1>
+      <SeoHead titleKey="seo.creditsAndSubsTitle" descriptionKey="seo.creditsAndSubsDescription" noindex />
+      <form ref={formRef} className="hidden" aria-hidden />
+
+      <div className="mb-10">
+        
         <p className="text-gray-400 mt-2">{t('credits.pageSubtitle')}</p>
         {checkout?.billing_provider === 'wayforpay' && checkout?.wayforpay_available && (
           <p className="text-sm text-amber-200/90 mt-3 border border-amber-500/30 rounded-xl px-4 py-3 bg-amber-950/30">

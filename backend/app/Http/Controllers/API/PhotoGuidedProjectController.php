@@ -12,6 +12,7 @@ use App\Jobs\ProcessPhotoGuidedGenerationJob;
 use App\Models\GenerationJob;
 use App\Models\Project;
 use App\Services\Credits\CreditService;
+use App\Services\Subscriptions\SubscriptionEntitlementService;
 use App\Services\Product\ProductPromptBuilder;
 use App\Services\Product\WishesPromptEnrichmentService;
 use App\Services\Project\PhotoGuidedProjectService;
@@ -30,6 +31,7 @@ class PhotoGuidedProjectController extends Controller
         private readonly ProductPromptBuilder $promptBuilder,
         private readonly WishesPromptEnrichmentService $wishesEnrichment,
         private readonly CreditService $creditService,
+        private readonly SubscriptionEntitlementService $subscriptionEntitlements,
     ) {}
 
     public function store(StorePhotoProjectRequest $request): JsonResponse
@@ -41,6 +43,14 @@ class PhotoGuidedProjectController extends Controller
         $productName = $request->validated('product_name');
         $category    = $request->validated('category');
         $templateId  = $request->validated('template_id');
+
+        if ($templateId !== null && $this->subscriptionEntitlements->activeSubscriptionPlan($request->user()) === null) {
+            return response()->json([
+                'success' => false,
+                'message' => __('messages.photo_guided.template_requires_subscription'),
+                'errors'  => [],
+            ], 422);
+        }
 
         $project = $this->photoGuidedProjectService->createFromProductPhotos(
             $request->user(),
@@ -92,6 +102,14 @@ class PhotoGuidedProjectController extends Controller
         abort_if($project->status !== 'draft', 422, __('messages.photo_guided.project_locked'));
         abort_if($project->images()->count() < 1, 422, __('messages.photo_guided.need_reference_image'));
 
+        if ($project->template_id !== null && $this->subscriptionEntitlements->activeSubscriptionPlan($request->user()) === null) {
+            return response()->json([
+                'success' => false,
+                'message' => __('messages.photo_guided.template_requires_subscription'),
+                'errors'  => [],
+            ], 422);
+        }
+
         if ($project->generationJobs()->whereIn('status', ['pending', 'processing'])->exists()) {
             return response()->json([
                 'success' => false,
@@ -102,7 +120,8 @@ class PhotoGuidedProjectController extends Controller
 
         $validated = $request->validated();
 
-        $quantity = max(1, min(10, (int) ($validated['quantity'] ?? 1)));
+        $maxBatch = $this->subscriptionEntitlements->maxBatchQuantityPerGeneration($request->user());
+        $quantity = max(1, min($maxBatch, (int) ($validated['quantity'] ?? 1)));
         $validated['quantity'] = $quantity;
 
         $videoSeconds = ($validated['content_type'] ?? '') === 'video'
@@ -114,7 +133,14 @@ class PhotoGuidedProjectController extends Controller
             ($validated['content_type'] ?? '') === 'photo' ? ($validated['scene_style'] ?? 'from_wishes') : null
         );
         $cost = $unitCost * $quantity;
-        if (config('reelforge.credits.require_for_generation', true) && $cost > 0) {
+        if (config('reelforge.credits.require_for_generation', true)) {
+            if ($cost < 1) {
+                return response()->json([
+                    'success' => false,
+                    'message' => __('messages.photo_guided.generation_requires_credits'),
+                    'errors'  => [],
+                ], 422);
+            }
             if (! $this->creditService->canSpend($request->user(), $cost)) {
                 return response()->json([
                     'success' => false,

@@ -127,6 +127,18 @@ export const adminSubscriptionPlansApi = {
   remove: (id) => api.delete(`/admin/subscription-plans/${id}`),
 }
 
+export const adminStatsApi = {
+  overview: () => api.get('/admin/stats/overview'),
+}
+
+export const adminUsersApi = {
+  list: (params) => api.get('/admin/users', { params }),
+  get: (id) => api.get(`/admin/users/${id}`),
+  updateCredits: (id, body) => api.put(`/admin/users/${id}/credits`, body),
+  purchases: (id, params) => api.get(`/admin/users/${id}/purchases`, { params }),
+  remove: (id) => api.delete(`/admin/users/${id}`),
+}
+
 // ── Profile ───────────────────────────────────────────────────────────────────
 export const homeApi = {
   /** Authenticated: plan, credits, image/video counts, last 4 projects */

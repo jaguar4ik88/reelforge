@@ -18,3 +18,7 @@ export function postLoginPath(role) {
 export function isStaffRole(role) {
   return role === 'admin' || role === 'manager'
 }
+
+export function isAdminRole(role) {
+  return role === 'admin'
+}

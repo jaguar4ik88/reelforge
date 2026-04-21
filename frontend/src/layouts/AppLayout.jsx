@@ -160,11 +160,6 @@ export default function AppLayout() {
                   {creditBalance}
                 </span>
               </div>
-              <p className="text-[11px] text-gray-500 mb-2">
-                {t('layout.creditsPerVideoShort', { count: creditCost })}
-                {' · '}
-                {t('layout.creditsGenerationsApprox', { count: generationsLeft })}
-              </p>
               <div className="w-full bg-gray-800 rounded-full h-1.5">
                 <div
                   className="h-1.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-300 transition-all duration-500"
@@ -178,14 +173,6 @@ export default function AppLayout() {
                 <Link to={`${APP_BASE}/credits`} className="text-brand-400 hover:underline">
                   {t('layout.getCredits')}
                 </Link>
-                {user.plan === 'free' && (
-                  <>
-                    {' · '}
-                    <Link to={`${APP_BASE}/profile`} className="text-brand-400 hover:underline">
-                      {t('layout.upgrade')}
-                    </Link>
-                  </>
-                )}
               </p>
             </div>
 

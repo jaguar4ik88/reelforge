@@ -21,6 +21,7 @@ class SubscriptionPlan extends Model
         'is_featured',
         'display_variant',
         'sort_order',
+        'subscription_tier',
     ];
 
     protected function casts(): array
@@ -31,6 +32,7 @@ class SubscriptionPlan extends Model
             'is_active'       => 'boolean',
             'is_featured'     => 'boolean',
             'sort_order'      => 'integer',
+            'subscription_tier' => 'integer',
             'features'        => 'array',
         ];
     }

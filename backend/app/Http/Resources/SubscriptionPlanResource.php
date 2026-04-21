@@ -39,6 +39,7 @@ class SubscriptionPlanResource extends JsonResource
             'is_active' => (bool) $this->is_active,
             'is_featured' => (bool) $this->is_featured,
             'display_variant' => $this->display_variant,
+            'subscription_tier' => (int) ($this->subscription_tier ?? 1),
         ];
     }
 }
