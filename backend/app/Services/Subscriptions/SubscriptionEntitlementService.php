@@ -9,17 +9,60 @@ use App\Services\Credits\CreditService;
 
 class SubscriptionEntitlementService
 {
+    /**
+     * Per-request memo (same service instance resolves UserResource fields multiple times).
+     *
+     * @var array<int, array{sub: ?UserSubscription, plan: ?SubscriptionPlan}>
+     */
+    private array $resolvedActiveByUserId = [];
+
+    /**
+     * @return array{sub: ?UserSubscription, plan: ?SubscriptionPlan}
+     */
+    private function resolveActive(User $user): array
+    {
+        $id = $user->id;
+        if (! array_key_exists($id, $this->resolvedActiveByUserId)) {
+            $sub = UserSubscription::query()
+                ->where('user_id', $user->id)
+                ->where('status', 'active')
+                ->whereNotNull('subscription_plan_id')
+                ->with('subscriptionPlan')
+                ->orderByDesc('current_period_end')
+                ->first();
+            $this->resolvedActiveByUserId[$id] = [
+                'sub'  => $sub,
+                'plan' => $sub?->subscriptionPlan,
+            ];
+        }
+
+        return $this->resolvedActiveByUserId[$id];
+    }
+
     public function activeSubscriptionPlan(User $user): ?SubscriptionPlan
     {
-        $sub = UserSubscription::query()
-            ->where('user_id', $user->id)
-            ->where('status', 'active')
-            ->whereNotNull('subscription_plan_id')
-            ->with('subscriptionPlan')
-            ->orderByDesc('current_period_end')
-            ->first();
+        return $this->resolveActive($user)['plan'];
+    }
 
-        return $sub?->subscriptionPlan;
+    /**
+     * @return array{slug: string, name: string, monthly_credits: int, current_period_end: string|null, subscription_tier: int}|null
+     */
+    public function activeSubscriptionSummary(User $user): ?array
+    {
+        $row  = $this->resolveActive($user);
+        $sub  = $row['sub'];
+        $plan = $row['plan'];
+        if ($sub === null || $plan === null) {
+            return null;
+        }
+
+        return [
+            'slug'                 => (string) $plan->slug,
+            'name'                 => (string) $plan->name,
+            'monthly_credits'      => (int) $plan->monthly_credits,
+            'current_period_end'   => $sub->current_period_end?->toIso8601String(),
+            'subscription_tier'    => max(1, min(4, (int) ($plan->subscription_tier ?? 1))),
+        ];
     }
 
     /**

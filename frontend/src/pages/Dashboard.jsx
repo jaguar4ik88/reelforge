@@ -43,6 +43,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     let cancelled = false
+    setLoading(true)
     homeApi
       .dashboard()
       .then((res) => {
@@ -58,11 +59,14 @@ export default function Dashboard() {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [user?.subscription?.slug, user?.has_active_subscription])
 
   const planKey = home?.plan ? `common.plan.${home.plan}` : ''
-  const planLabel =
+  const legacyPlanLabel =
     planKey && t(planKey) !== planKey ? t(planKey) : home?.plan ?? '—'
+  const planLabel = home?.subscription?.name?.trim()
+    ? home.subscription.name
+    : legacyPlanLabel
 
   return (
     <div>

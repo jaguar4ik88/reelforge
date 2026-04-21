@@ -7,6 +7,7 @@ import LanguageSwitcher from '../components/ui/LanguageSwitcher'
 import SeoHead from '../components/seo/SeoHead'
 import toast from 'react-hot-toast'
 import { APP_BASE } from '../constants/routes'
+import { billingPlanLabel } from '../utils/billingPlanLabel'
 
 export default function AppLayout() {
   const { t } = useTranslation()
@@ -196,7 +197,7 @@ export default function AppLayout() {
               )}
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-white truncate">{user.name}</p>
-                <p className="text-xs text-gray-500 capitalize">{t(`common.plan.${user.plan}`)}</p>
+                <p className="text-xs text-gray-500">{billingPlanLabel(user, t)}</p>
               </div>
               <button
                 onClick={handleLogout}

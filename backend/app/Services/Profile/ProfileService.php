@@ -5,6 +5,7 @@ namespace App\Services\Profile;
 use App\Http\Resources\ProjectResource;
 use App\Models\Project;
 use App\Models\User;
+use App\Services\Subscriptions\SubscriptionEntitlementService;
 use App\Support\ReelForgeStorage;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -79,9 +80,12 @@ class ProfileService
             ->get();
 
         $request = request() instanceof Request ? request() : Request::create('/');
+        /** @var SubscriptionEntitlementService $subs */
+        $subs = app(SubscriptionEntitlementService::class);
 
         return [
             'plan'               => (string) ($user->plan ?? 'free'),
+            'subscription'       => $subs->activeSubscriptionSummary($user),
             'credits_balance'    => (int) ($user->creditWallet?->balance ?? 0),
             'images_generated'   => $this->countCompletedImageOutputs($user->id),
             'videos_generated'   => $this->countCompletedVideoOutputs($user->id),
