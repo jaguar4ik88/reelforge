@@ -42,6 +42,9 @@ return [
         'need_reference_image' => 'Upload a product reference image first.',
         'already_running'     => 'A generation is already pending or processing for this project.',
         'insufficient_credits' => 'Not enough credits for photo-guided generation.',
+        'template_requires_subscription' => 'Generation from a catalog template is available only with an active subscription.',
+        'generation_requires_credits' => 'Not enough credits to start generation.',
+        'quantity_max_plan'   => 'Your subscription allows at most :max items in one generation. Choose fewer or upgrade your plan.',
         'stub_quality_1'      => 'Product is visible in the frame',
         'stub_quality_2'      => 'Add an image-analysis API key for automatic descriptions',
     ],
@@ -53,5 +56,10 @@ return [
         'password_changed'    => 'Password changed.',
         'wrong_password'      => 'Current password is incorrect.',
         'password_oauth_only' => 'You signed in with Google or Apple. Set a password from account settings when that option is available, or continue using social login.',
+    ],
+    'admin' => [
+        'user_cannot_delete_self' => 'You cannot delete your own administrator account from here.',
+        'user_cannot_delete_admin' => 'Deleting administrator accounts from the panel is not allowed.',
+        'user_deleted' => 'User and related data were removed.',
     ],
 ];

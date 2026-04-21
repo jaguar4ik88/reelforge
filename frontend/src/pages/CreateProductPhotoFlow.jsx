@@ -36,6 +36,9 @@ export default function CreateProductPhotoFlow() {
   const location = useLocation()
   const { user } = useAuthContext()
   const pricing = user?.credits?.photo_flow ?? DEFAULT_PHOTO_FLOW
+  const maxBatchQuantity = Math.max(1, user?.generation_limits?.max_batch_quantity ?? 1)
+  const creditBalance = user?.credits?.balance ?? 0
+  const hasActiveSubscription = user?.has_active_subscription === true
 
   const templateState = location.state
   const templateId = templateState?.templateId
@@ -59,6 +62,10 @@ export default function CreateProductPhotoFlow() {
   const [videoDescription, setVideoDescription] = useState('')
   const [videoDuration, setVideoDuration] = useState(5)
   const [batchCount, setBatchCount] = useState(1)
+
+  useEffect(() => {
+    setBatchCount((c) => Math.min(Math.max(1, c), maxBatchQuantity))
+  }, [maxBatchQuantity])
   const [advancedOpen, setAdvancedOpen] = useState(false)
   /** FLUX Kontext output aspect ratio (photo & product card). */
   const [outputAspectRatio, setOutputAspectRatio] = useState('3:4')
@@ -118,6 +125,10 @@ export default function CreateProductPhotoFlow() {
     return m?.studio ?? pricing.photo_per_image
   }, [pricing])
 
+  const templateGenerateAllowed =
+    hasActiveSubscription && templateSceneCost >= 1 && creditBalance >= templateSceneCost
+  const standardGenerateAllowed = generationCost >= 1 && creditBalance >= generationCost
+
   const handleTemplateGenerate = async () => {
     if (files.length < 1) {
       toast.error(t('photoFlow.validation.photoRequired'))
@@ -129,6 +140,14 @@ export default function CreateProductPhotoFlow() {
       return
     }
     if (!templateId) return
+    if (!hasActiveSubscription) {
+      toast.error(t('photoFlow.templateMode.subscribersOnlyToast'))
+      return
+    }
+    if (creditBalance < templateSceneCost) {
+      toast.error(t('photoFlow.generateBlockedNoCreditsToast', { count: templateSceneCost }))
+      return
+    }
 
     setLoading(true)
     try {
@@ -169,6 +188,10 @@ export default function CreateProductPhotoFlow() {
     const name = productName.trim()
     if (!name) {
       toast.error(t('photoFlow.validation.nameRequired'))
+      return
+    }
+    if (creditBalance < generationCost) {
+      toast.error(t('photoFlow.generateBlockedNoCreditsToast', { count: generationCost }))
       return
     }
 
@@ -310,11 +333,25 @@ export default function CreateProductPhotoFlow() {
               )}
             </div>
 
+            {!hasActiveSubscription && (
+              <div className="mt-6 rounded-2xl border border-amber-500/30 bg-amber-950/25 px-4 py-3 text-sm text-amber-100/95">
+                {t('photoFlow.templateMode.subscribersOnly')}
+              </div>
+            )}
+            {hasActiveSubscription && templateReady && creditBalance < templateSceneCost && (
+              <div className="mt-6 rounded-2xl border border-red-500/25 bg-red-950/20 px-4 py-3 text-sm text-red-100/90">
+                {t('photoFlow.generateBlockedNoCreditsBanner', { count: templateSceneCost })}{' '}
+                <Link to={`${APP_BASE}/credits`} className="text-brand-400 hover:text-brand-300 underline underline-offset-2 font-medium">
+                  {t('photoFlow.topUpCreditsLink')}
+                </Link>
+              </div>
+            )}
+
             <button
               type="button"
               onClick={handleTemplateGenerate}
-              disabled={loading || !templateReady}
-              className="btn-primary w-full flex items-center justify-center gap-2 py-3.5 mt-6"
+              disabled={loading || !templateReady || !templateGenerateAllowed}
+              className="btn-primary w-full flex items-center justify-center gap-2 py-3.5 mt-6 disabled:opacity-45 disabled:cursor-not-allowed"
             >
               {loading && <Spinner size="sm" />}
               {loading
@@ -554,12 +591,21 @@ export default function CreateProductPhotoFlow() {
             </div>
           )}
 
+          {step1Ready && generationCost >= 1 && creditBalance < generationCost && (
+            <p className="text-sm text-amber-200/90 mb-3 rounded-xl border border-amber-500/20 bg-amber-950/20 px-3 py-2">
+              {t('photoFlow.generateBlockedNoCreditsBanner', { count: generationCost })}{' '}
+              <Link to={`${APP_BASE}/credits`} className="text-brand-400 hover:text-brand-300 underline underline-offset-2 font-medium">
+                {t('photoFlow.topUpCreditsLink')}
+              </Link>
+            </p>
+          )}
+
           <div className="flex flex-row gap-2 items-stretch">
             <button
               type="button"
               onClick={handleGenerate}
-              disabled={loading || !step1Ready}
-              className="btn-primary flex-1 flex items-center justify-center gap-2 py-3 min-w-0"
+              disabled={loading || !step1Ready || !standardGenerateAllowed}
+              className="btn-primary flex-1 flex items-center justify-center gap-2 py-3 min-w-0 disabled:opacity-45 disabled:cursor-not-allowed"
             >
               {loading && <Spinner size="sm" />}
               {loading ? t('photoFlow.creatingAndGenerating') : t('photoFlow.generateWithCredits', { count: generationCost })}
@@ -575,7 +621,7 @@ export default function CreateProductPhotoFlow() {
                 disabled={loading || !step1Ready}
                 className="input-field w-full py-3 min-h-[48px] text-center"
               >
-                {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
+                {Array.from({ length: maxBatchQuantity }, (_, i) => i + 1).map((n) => (
                   <option key={n} value={n}>
                     {t('photoFlow.quantityOption', { count: n })}
                   </option>

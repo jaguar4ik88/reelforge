@@ -19,6 +19,7 @@ const emptyForm = {
   is_featured: false,
   display_variant: 'starter',
   sort_order: 10,
+  subscription_tier: 1,
 }
 
 export default function AdminSubscriptionPlanEdit() {
@@ -55,6 +56,7 @@ export default function AdminSubscriptionPlanEdit() {
           is_featured: Boolean(row.is_featured),
           display_variant: row.display_variant ?? 'starter',
           sort_order: row.sort_order ?? 0,
+          subscription_tier: row.subscription_tier ?? 1,
         })
       } catch {
         toast.error(t('common.error'))
@@ -101,6 +103,7 @@ export default function AdminSubscriptionPlanEdit() {
       is_featured: form.is_featured,
       display_variant: form.display_variant || null,
       sort_order: Number(form.sort_order) || 0,
+      subscription_tier: Number(form.subscription_tier) || 1,
     }
 
     setSaving(true)
@@ -219,8 +222,24 @@ export default function AdminSubscriptionPlanEdit() {
               onChange={(e) => setForm((f) => ({ ...f, display_variant: e.target.value }))}
             >
               <option value="starter">{t('admin.subscriptionPlans.variantStarter')}</option>
+              <option value="creator">{t('admin.subscriptionPlans.variantCreator')}</option>
+              <option value="studio">{t('admin.subscriptionPlans.variantStudio')}</option>
               <option value="pro">{t('admin.subscriptionPlans.variantPro')}</option>
               <option value="business">{t('admin.subscriptionPlans.variantBusiness')}</option>
+            </select>
+          </div>
+          <div>
+            <label className="text-xs text-gray-500 block mb-1">{t('admin.subscriptionPlans.fieldSubscriptionTier')}</label>
+            <p className="text-xs text-gray-600 mb-2">{t('admin.subscriptionPlans.fieldSubscriptionTierHelp')}</p>
+            <select
+              className="w-full rounded-xl bg-gray-900 border border-white/10 px-3 py-2 text-white"
+              value={form.subscription_tier}
+              onChange={(e) => setForm((f) => ({ ...f, subscription_tier: Number(e.target.value) }))}
+            >
+              <option value={1}>1</option>
+              <option value={2}>2</option>
+              <option value={3}>3</option>
+              <option value={4}>4</option>
             </select>
           </div>
           <div>

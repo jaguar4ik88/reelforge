@@ -1,10 +1,10 @@
 import { Outlet, NavLink, Link, useNavigate } from 'react-router-dom'
-import { Film, LayoutDashboard, LayoutTemplate, LogOut, Repeat } from 'lucide-react'
+import { Film, LayoutDashboard, LayoutTemplate, LogOut, Repeat, Users } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useAuthContext } from '../context/AuthContext'
 import { useSite } from '../context/SiteContext'
 import toast from 'react-hot-toast'
-import { ADMIN_BASE } from '../constants/routes'
+import { ADMIN_BASE, isAdminRole } from '../constants/routes'
 import SeoHead from '../components/seo/SeoHead'
 
 export default function AdminLayout() {
@@ -48,6 +48,21 @@ export default function AdminLayout() {
             <LayoutDashboard className="w-4 h-4" />
             {t('admin.nav.dashboard')}
           </NavLink>
+          {isAdminRole(user?.role) && (
+            <NavLink
+              to={`${ADMIN_BASE}/users`}
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                  isActive
+                    ? 'bg-amber-600/20 text-amber-300 border border-amber-500/30'
+                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                }`
+              }
+            >
+              <Users className="w-4 h-4" />
+              {t('admin.nav.users')}
+            </NavLink>
+          )}
           <NavLink
             to={`${ADMIN_BASE}/templates`}
             className={({ isActive }) =>

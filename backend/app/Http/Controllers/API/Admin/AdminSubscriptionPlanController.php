@@ -107,13 +107,20 @@ class AdminSubscriptionPlanController extends Controller
             'currency' => ['nullable', 'string', 'size:3'],
             'is_active' => ['boolean'],
             'is_featured' => ['boolean'],
-            'display_variant' => ['nullable', 'string', 'max:32', Rule::in(['starter', 'pro', 'business'])],
+            'display_variant' => [
+                'nullable',
+                'string',
+                'max:32',
+                Rule::in(['starter', 'creator', 'pro', 'studio', 'business']),
+            ],
             'sort_order' => ['integer', 'min:0', 'max:999999'],
+            'subscription_tier' => ['nullable', 'integer', 'min:1', 'max:4'],
         ]);
 
         $validated['currency'] = strtoupper((string) ($validated['currency'] ?? 'USD'));
         $validated['is_active'] = (bool) ($validated['is_active'] ?? true);
         $validated['is_featured'] = (bool) ($validated['is_featured'] ?? false);
+        $validated['subscription_tier'] = (int) ($validated['subscription_tier'] ?? 1);
         $validated['features'] = isset($validated['features']) && is_array($validated['features'])
             ? array_values($validated['features'])
             : [];

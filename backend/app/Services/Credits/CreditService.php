@@ -536,4 +536,45 @@ class CreditService
             return $tx;
         });
     }
+
+    /**
+     * Set wallet balance from admin UI. Creates an admin_adjustment ledger row when balance changes.
+     */
+    public function adminSetBalance(User $target, int $newBalance, User $admin): ?CreditTransaction
+    {
+        if ($newBalance < 0) {
+            throw new \InvalidArgumentException('Balance cannot be negative.');
+        }
+
+        return DB::transaction(function () use ($target, $newBalance, $admin) {
+            $this->getOrCreateWallet($target);
+            $wallet = UserCredit::query()
+                ->where('user_id', $target->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            $previous = (int) $wallet->balance;
+            if ($previous === $newBalance) {
+                return null;
+            }
+
+            $delta = $newBalance - $previous;
+            $wallet->update(['balance' => $newBalance]);
+
+            return CreditTransaction::query()->create([
+                'user_id' => $target->id,
+                'delta' => $delta,
+                'balance_after' => $newBalance,
+                'kind' => 'admin_adjustment',
+                'description' => 'Balance adjusted by administrator',
+                'reference_type' => null,
+                'reference_id' => null,
+                'meta' => [
+                    'admin_user_id' => $admin->id,
+                    'admin_email' => $admin->email,
+                    'previous_balance' => $previous,
+                ],
+            ]);
+        });
+    }
 }

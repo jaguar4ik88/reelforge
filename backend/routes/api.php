@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\API\Admin\AdminStatsController;
 use App\Http\Controllers\API\Admin\AdminSubscriptionPlanController;
 use App\Http\Controllers\API\Admin\AdminTemplateController;
+use App\Http\Controllers\API\Admin\AdminUserController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CreditsController;
 use App\Http\Controllers\API\FastSpringController;
@@ -69,6 +71,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('projects/{project}/product-analysis', [PhotoGuidedProjectController::class, 'analyzeProduct']);
     Route::post('projects/{project}/photo-generations', [PhotoGuidedProjectController::class, 'startGeneration']);
     Route::apiResource('projects', ProjectController::class)->only(['index', 'show', 'update', 'destroy']);
+
+    Route::middleware(['admin'])->prefix('admin')->group(function () {
+        Route::get('stats/overview', [AdminStatsController::class, 'overview']);
+        Route::get('users', [AdminUserController::class, 'index']);
+        Route::get('users/{user}', [AdminUserController::class, 'show']);
+        Route::put('users/{user}/credits', [AdminUserController::class, 'updateCredits']);
+        Route::get('users/{user}/purchases', [AdminUserController::class, 'purchases']);
+        Route::delete('users/{user}', [AdminUserController::class, 'destroy']);
+    });
 
     Route::middleware('staff')->prefix('admin')->group(function () {
         Route::get('templates', [AdminTemplateController::class, 'index']);

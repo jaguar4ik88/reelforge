@@ -47,7 +47,7 @@ export default function Pricing() {
         <p className="text-gray-400 text-lg max-w-xl mx-auto">{t('pricing.subtitle')}</p>
       </div>
 
-      <div className="relative z-10 max-w-6xl mx-auto px-6 pb-20">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 pb-20">
         {loading ? (
           <p className="text-center text-gray-500">{t('common.loading')}</p>
         ) : subscriptionPlans.length === 0 ? (

@@ -1,12 +1,14 @@
 import { Link } from 'react-router-dom'
-import { Zap, Star, Building2 } from 'lucide-react'
+import { Zap, Sparkles, Layers, Building2, Star } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import SubscriptionPlanFeaturesList from './SubscriptionPlanFeaturesList'
 import { pickLocalizedDescription } from '../../utils/planMarketing'
 
 export const SUBSCRIPTION_VARIANT_MAP = {
   starter: { Icon: Zap, gradient: 'from-gray-700 to-gray-600' },
+  creator: { Icon: Sparkles, gradient: 'from-sky-600 to-cyan-600' },
   pro: { Icon: Star, gradient: 'from-brand-600 to-purple-600' },
+  studio: { Icon: Layers, gradient: 'from-brand-600 to-purple-600' },
   business: { Icon: Building2, gradient: 'from-violet-600 to-indigo-600' },
 }
 
@@ -40,7 +42,7 @@ export default function SubscriptionPlanCardsGrid({
   if (list.length === 0) return null
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-4 xl:gap-5 max-w-7xl mx-auto w-full min-w-0">
       {list.map((plan) => {
         const slug = String(plan.slug ?? '')
         const variant = SUBSCRIPTION_VARIANT_MAP[plan.display_variant] ?? SUBSCRIPTION_VARIANT_MAP.starter
@@ -55,7 +57,7 @@ export default function SubscriptionPlanCardsGrid({
         return (
           <div
             key={slug || plan.id}
-            className={`relative flex h-full flex-col rounded-3xl border transition-all duration-200 ${
+            className={`relative flex min-w-0 h-full flex-col rounded-3xl border transition-all duration-200 ${
               plan.is_featured
                 ? 'border-brand-500/60 bg-gray-900 shadow-2xl shadow-brand-900/40 scale-[1.02]'
                 : 'border-white/10 bg-gray-900/60 hover:border-white/20'
@@ -80,7 +82,7 @@ export default function SubscriptionPlanCardsGrid({
               <p className="text-sm text-gray-400 mb-4 text-left min-h-[2.5rem]">{pickLocalizedDescription(plan, language)}</p>
 
               <div className="mb-1">
-                <span className="text-4xl font-extrabold text-white">${displayPrice}</span>
+                <span className="text-3xl xl:text-4xl font-extrabold text-white tabular-nums">${displayPrice}</span>
                 <span className="text-gray-400 text-sm ml-1">{t('pricing.perMonth')}</span>
               </div>
               <div className="mb-4" />
