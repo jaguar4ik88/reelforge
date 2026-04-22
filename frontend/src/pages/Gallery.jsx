@@ -115,7 +115,6 @@ export default function Gallery() {
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 min-w-[160px] flex-1 sm:max-w-xs">
-          <label className="text-xs text-gray-500 uppercase tracking-wide shrink-0">{t('gallery.byProduct')}</label>
           <select
             value={productId}
             onChange={(e) => setProductId(e.target.value)}
@@ -131,7 +130,6 @@ export default function Gallery() {
         </div>
 
         <div className="flex flex-col gap-2 flex-1 min-w-0">
-          <span className="text-xs text-gray-500 uppercase tracking-wide">{t('gallery.byType')}</span>
           <div className="flex flex-wrap gap-2">
             {typeFilters.map(({ id, icon: Icon, label }) => (
               <button
