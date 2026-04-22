@@ -17,8 +17,20 @@ class WishesPromptEnrichmentService
         string $contentType,
         string $sceneStyle,
         string $rawWishes,
+        ?string $photoAnalysisJson = null,
+        ?string $cardTextsJson = null,
     ): string {
-        if (! filter_var(config('reelforge.photo_guided.wishes_enrichment', false), FILTER_VALIDATE_BOOLEAN)) {
+        if ($contentType === 'card' && $photoAnalysisJson !== null && $photoAnalysisJson !== '') {
+            return $this->enrichCardKontext(
+                $productName,
+                $category,
+                $rawWishes,
+                $photoAnalysisJson,
+                $cardTextsJson ?? '[]',
+            );
+        }
+
+        if (! filter_var(config('platform.photo_guided.wishes_enrichment', false), FILTER_VALIDATE_BOOLEAN)) {
             return '';
         }
 
@@ -59,6 +71,59 @@ class WishesPromptEnrichmentService
         }
 
         return $this->fallbackPlain($wishes);
+    }
+
+    /**
+     * Card + reference photo: English layout prompt using analysis JSON + verbatim Cyrillic labels.
+     * Runs when photo analysis is present, independent of APP_PLATFORM_WISHES_ENRICHMENT.
+     */
+    private function enrichCardKontext(
+        string $productName,
+        string $category,
+        string $rawWishes,
+        string $photoAnalysisJson,
+        string $cardTextsJson,
+    ): string {
+        $template = (string) config('prompts.wishes_processor.user_card_kontext', '');
+        if ($template === '') {
+            return '';
+        }
+
+        $user = str_replace(
+            [
+                '{product_name}',
+                '{category}',
+                '{photo_analysis}',
+                '{card_texts_json}',
+            ],
+            [
+                $productName,
+                $category,
+                $photoAnalysisJson,
+                $cardTextsJson,
+            ],
+            $template
+        );
+
+        $system = (string) config('prompts.wishes_processor.system', '');
+
+        $text = $this->callAnthropic($system, $user);
+        if ($text !== null) {
+            return $text;
+        }
+
+        $text = $this->callOpenAI($system, $user);
+        if ($text !== null) {
+            return $text;
+        }
+
+        return $this->fallbackCardKontext($rawWishes, $photoAnalysisJson);
+    }
+
+    private function fallbackCardKontext(string $rawWishes, string $photoAnalysisJson): string
+    {
+        return 'E-commerce product card layout. Photo analysis: '.$photoAnalysisJson
+            .'. On-card text (do not translate, render verbatim): '.trim($rawWishes);
     }
 
     /**

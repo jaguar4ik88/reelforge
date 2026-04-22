@@ -40,8 +40,8 @@ class FastSpringController extends Controller
                 'country_code' => $this->gatewayResolver->detectCountryCode($request),
                 'wayforpay_available' => $provider === 'wayforpay' && $wfp->enabled(),
                 'fastspring_available' => $provider === 'fastspring' && $this->fastSpring->enabled(),
-                'usd_to_uah' => (float) config('reelforge.payments.wayforpay.usd_to_uah', 42),
-                'ua_discount_percent' => (float) config('reelforge.payments.wayforpay.ua_discount_percent', 0),
+                'usd_to_uah' => (float) config('platform.payments.wayforpay.usd_to_uah', 42),
+                'ua_discount_percent' => (float) config('platform.payments.wayforpay.ua_discount_percent', 0),
             ],
         ]);
     }

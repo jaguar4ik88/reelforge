@@ -31,11 +31,11 @@ class PaymentGatewayResolver
             return false;
         }
 
-        if (filter_var(config('reelforge.payments.wayforpay_billing_global', false), FILTER_VALIDATE_BOOLEAN)) {
+        if (filter_var(config('platform.payments.wayforpay_billing_global', false), FILTER_VALIDATE_BOOLEAN)) {
             return true;
         }
 
-        if (! filter_var(config('reelforge.payments.wayforpay_for_ukraine_enabled', true), FILTER_VALIDATE_BOOLEAN)) {
+        if (! filter_var(config('platform.payments.wayforpay_for_ukraine_enabled', true), FILTER_VALIDATE_BOOLEAN)) {
             return false;
         }
 

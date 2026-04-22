@@ -10,7 +10,7 @@ class FastSpringService
 {
     public function enabled(): bool
     {
-        return filter_var(config('reelforge.payments.fastspring.enabled', true), FILTER_VALIDATE_BOOLEAN)
+        return filter_var(config('platform.payments.fastspring.enabled', true), FILTER_VALIDATE_BOOLEAN)
             && $this->apiUsername() !== ''
             && $this->apiPassword() !== ''
             && $this->checkoutPath() !== '';
@@ -18,17 +18,17 @@ class FastSpringService
 
     public function apiUsername(): string
     {
-        return (string) config('reelforge.payments.fastspring.api_username', '');
+        return (string) config('platform.payments.fastspring.api_username', '');
     }
 
     public function apiPassword(): string
     {
-        return (string) config('reelforge.payments.fastspring.api_password', '');
+        return (string) config('platform.payments.fastspring.api_password', '');
     }
 
     public function checkoutPath(): string
     {
-        $raw = trim((string) config('reelforge.payments.fastspring.checkout_path', ''), '/');
+        $raw = trim((string) config('platform.payments.fastspring.checkout_path', ''), '/');
 
         return $this->normalizeCheckoutPathConfig($raw);
     }
@@ -72,14 +72,14 @@ class FastSpringService
      */
     private function appendCatalogContinuationUrl(string $checkoutUrl): string
     {
-        if (! filter_var(config('reelforge.payments.fastspring.append_catalog_to_checkout_url', true), FILTER_VALIDATE_BOOLEAN)) {
+        if (! filter_var(config('platform.payments.fastspring.append_catalog_to_checkout_url', true), FILTER_VALIDATE_BOOLEAN)) {
             return $checkoutUrl;
         }
-        $base = rtrim((string) config('reelforge.frontend_url', ''), '/');
+        $base = rtrim((string) config('platform.frontend_url', ''), '/');
         if ($base === '') {
             return $checkoutUrl;
         }
-        $path = (string) config('reelforge.payments.fastspring.checkout_return_path', 'app/credits?payment=fastspring_return');
+        $path = (string) config('platform.payments.fastspring.checkout_return_path', 'app/credits?payment=fastspring_return');
         $path = ltrim($path, '/');
         $return = $base.'/'.$path;
         $sep = str_contains($checkoutUrl, '?') ? '&' : '?';
@@ -89,12 +89,12 @@ class FastSpringService
 
     public function webhookSecret(): string
     {
-        return (string) config('reelforge.payments.fastspring.webhook_hmac_secret', '');
+        return (string) config('platform.payments.fastspring.webhook_hmac_secret', '');
     }
 
     public function apiBaseUrl(): string
     {
-        return rtrim((string) config('reelforge.payments.fastspring.api_base_url', 'https://api.fastspring.com'), '/');
+        return rtrim((string) config('platform.payments.fastspring.api_base_url', 'https://api.fastspring.com'), '/');
     }
 
     /**
@@ -102,7 +102,7 @@ class FastSpringService
      */
     public function productPathForPackageSlug(string $slug): ?string
     {
-        $map = config('reelforge.payments.fastspring.credit_package_products', []);
+        $map = config('platform.payments.fastspring.credit_package_products', []);
 
         return isset($map[$slug]) && is_string($map[$slug]) && $map[$slug] !== ''
             ? $map[$slug]
@@ -138,7 +138,7 @@ class FastSpringService
         $url = $this->apiBaseUrl().'/v2/checkouts/'.rawurlencode($storeId).'/'.rawurlencode($checkoutId).'/sessions';
 
         $payload = [
-            'live' => filter_var(config('reelforge.payments.fastspring.live', true), FILTER_VALIDATE_BOOLEAN),
+            'live' => filter_var(config('platform.payments.fastspring.live', true), FILTER_VALIDATE_BOOLEAN),
             'orderTags' => [
                 'rf_order_ref' => $orderReference,
                 'rf_package_slug' => $packageSlug,

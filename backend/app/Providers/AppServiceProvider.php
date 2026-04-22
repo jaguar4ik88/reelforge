@@ -41,7 +41,7 @@ class AppServiceProvider extends ServiceProvider
             $event->extendSocialite('apple', \SocialiteProviders\Apple\Provider::class);
         });
         User::created(function (User $user): void {
-            $bonus = (int) config('reelforge.credits.welcome_bonus', 10);
+            $bonus = (int) config('platform.credits.welcome_bonus', 10);
 
             $wallet = UserCredit::query()->firstOrCreate(
                 ['user_id' => $user->id],

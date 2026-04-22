@@ -16,27 +16,27 @@ class WayForPayService
 
     public function enabled(): bool
     {
-        return (bool) config('reelforge.payments.wayforpay.enabled', false) && $this->isConfigured();
+        return (bool) config('platform.payments.wayforpay.enabled', false) && $this->isConfigured();
     }
 
     public function merchantAccount(): string
     {
-        return (string) config('reelforge.payments.wayforpay.merchant_account', '');
+        return (string) config('platform.payments.wayforpay.merchant_account', '');
     }
 
     public function secretKey(): string
     {
-        return (string) config('reelforge.payments.wayforpay.secret_key', '');
+        return (string) config('platform.payments.wayforpay.secret_key', '');
     }
 
     public function merchantDomainName(): string
     {
-        return (string) config('reelforge.payments.wayforpay.merchant_domain_name', '');
+        return (string) config('platform.payments.wayforpay.merchant_domain_name', '');
     }
 
     public function payUrl(): string
     {
-        return rtrim((string) config('reelforge.payments.wayforpay.pay_url', 'https://secure.wayforpay.com/pay'), '/');
+        return rtrim((string) config('platform.payments.wayforpay.pay_url', 'https://secure.wayforpay.com/pay'), '/');
     }
 
     /**
@@ -45,8 +45,8 @@ class WayForPayService
     public function usdCentsToAmountUah(int $usdCents): string
     {
         $usd = $usdCents / 100;
-        $rate = (float) config('reelforge.payments.wayforpay.usd_to_uah', 42.0);
-        $disc = (float) config('reelforge.payments.wayforpay.ua_discount_percent', 0);
+        $rate = (float) config('platform.payments.wayforpay.usd_to_uah', 42.0);
+        $disc = (float) config('platform.payments.wayforpay.ua_discount_percent', 0);
         $factor = max(0.0, 1.0 - ($disc / 100.0));
         $uah = $usd * $rate * $factor;
 

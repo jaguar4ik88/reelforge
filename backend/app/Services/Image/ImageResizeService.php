@@ -15,7 +15,7 @@ class ImageResizeService
 
     public function __construct(?int $maxDimension = null)
     {
-        $this->maxDimension = $maxDimension ?? (int) config('reelforge.image_max_dimension', 1024);
+        $this->maxDimension = $maxDimension ?? (int) config('platform.image_max_dimension', 1024);
     }
 
     /**

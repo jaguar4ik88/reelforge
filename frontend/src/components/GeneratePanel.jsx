@@ -114,7 +114,7 @@ export default function GeneratePanel({ productDescription = '' }) {
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                   <a
                     href={url}
-                    download={`reelforge-gen-${i + 1}.png`}
+                    download={`export-${i + 1}.png`}
                     target="_blank"
                     rel="noreferrer"
                     className="btn-primary flex items-center gap-2 text-sm"

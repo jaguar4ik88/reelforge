@@ -5,7 +5,17 @@ import toast from 'react-hot-toast'
 import { paymentsApi } from '../services/api'
 import { useAuthContext } from '../context/AuthContext'
 
-const ORDER_REF_KEY = 'reelforge_wfp_order_ref'
+const ORDER_REF_KEY = 'app_wfp_order_ref'
+const ORDER_REF_LEGACY = 'reelforge_wfp_order_ref'
+
+function getWayForPayOrderRef() {
+  return sessionStorage.getItem(ORDER_REF_KEY) || sessionStorage.getItem(ORDER_REF_LEGACY)
+}
+
+function clearWayForPayOrderRef() {
+  sessionStorage.removeItem(ORDER_REF_KEY)
+  sessionStorage.removeItem(ORDER_REF_LEGACY)
+}
 
 /** Call after invoice API returns, before POST to WayForPay. */
 export function setWayForPayOrderReference(orderReference) {
@@ -34,7 +44,7 @@ export function useWayForPayReturn(options = {}) {
   useEffect(() => {
     if (searchParams.get('payment') !== 'return') return
 
-    const ref = sessionStorage.getItem(ORDER_REF_KEY)
+    const ref = getWayForPayOrderRef()
     setSearchParams({}, { replace: true })
 
     if (!ref) {
@@ -76,7 +86,7 @@ export function useWayForPayReturn(options = {}) {
         await refreshUser?.()
         toast.error(t('credits.wayforpayReturnCheckFailed'))
       } finally {
-        sessionStorage.removeItem(ORDER_REF_KEY)
+        clearWayForPayOrderRef()
         onSettledRef.current?.({ status })
       }
     })()

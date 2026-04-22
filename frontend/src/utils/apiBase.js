@@ -53,7 +53,7 @@ export function getAppUrl() {
  * Redirect to the app subdomain after auth.
  *
  * - Same origin → React Router navigate (no full reload, better DX locally).
- * - Different origin → window.location.href (cross-domain, e.g. reelforge.com → app.reelforge.com).
+ * - Different origin → window.location.href (cross-domain, e.g. example.com → app.example.com).
  *
  * @param {string} path         e.g. '/app/dashboard'
  * @param {Function} navigate   React Router navigate function

@@ -9,22 +9,22 @@ class ReelForgeStorage
 {
     public static function contentDisk(): string
     {
-        return (string) config('reelforge.storage.content_disk');
+        return (string) config('platform.storage.content_disk');
     }
 
     public static function templatesDisk(): string
     {
-        return (string) config('reelforge.storage.templates_disk');
+        return (string) config('platform.storage.templates_disk');
     }
 
     public static function userContentPrefix(): string
     {
-        return trim((string) config('reelforge.storage.user_content_prefix', 'users'), '/');
+        return trim((string) config('platform.storage.user_content_prefix', 'users'), '/');
     }
 
     public static function templatesPathPrefix(): string
     {
-        return trim((string) config('reelforge.storage.templates_path_prefix', 'templates'), '/');
+        return trim((string) config('platform.storage.templates_path_prefix', 'templates'), '/');
     }
 
     public static function avatarsPath(int $userId): string

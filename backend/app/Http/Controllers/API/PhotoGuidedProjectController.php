@@ -17,6 +17,7 @@ use App\Services\Product\ProductPromptBuilder;
 use App\Services\Product\WishesPromptEnrichmentService;
 use App\Services\Project\PhotoGuidedProjectService;
 use App\Services\Vision\ProductImageCaptionService;
+use App\Services\Vision\ProductCardPhotoAnalysisService;
 use App\Services\Vision\ProductPhotoAnalysisService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -27,6 +28,7 @@ class PhotoGuidedProjectController extends Controller
     public function __construct(
         private readonly PhotoGuidedProjectService $photoGuidedProjectService,
         private readonly ProductImageCaptionService $captionService,
+        private readonly ProductCardPhotoAnalysisService $cardPhotoAnalysis,
         private readonly ProductPhotoAnalysisService $productPhotoAnalysisService,
         private readonly ProductPromptBuilder $promptBuilder,
         private readonly WishesPromptEnrichmentService $wishesEnrichment,
@@ -68,7 +70,7 @@ class PhotoGuidedProjectController extends Controller
     }
 
     /**
-     * Vision analysis of the first uploaded product photo — name, category, qualities.
+     * Vision analysis of uploaded product reference images (up to five) — name, category, qualities.
      */
     public function analyzeProduct(Request $request, Project $project): JsonResponse
     {
@@ -123,7 +125,7 @@ class PhotoGuidedProjectController extends Controller
         if (($validated['content_type'] ?? '') === 'video') {
             $code = $this->subscriptionEntitlements->photoGuidedVideoRestrictionCode($request->user());
             if ($code !== null) {
-                $min = (int) config('reelforge.credits.photo_guided_video.min_balance', 10);
+                $min = (int) config('platform.credits.photo_guided_video.min_balance', 10);
                 $message = match ($code) {
                     'low_credits' => __('messages.photo_guided.video_blocked_low_credits', ['min' => $min]),
                     'no_subscription' => __('messages.photo_guided.video_blocked_no_subscription'),
@@ -152,7 +154,7 @@ class PhotoGuidedProjectController extends Controller
             ($validated['content_type'] ?? '') === 'photo' ? ($validated['scene_style'] ?? 'from_wishes') : null
         );
         $cost = $unitCost * $quantity;
-        if (config('reelforge.credits.require_for_generation', true)) {
+        if (config('platform.credits.require_for_generation', true)) {
             if ($cost < 1) {
                 return response()->json([
                     'success' => false,
@@ -175,12 +177,26 @@ class PhotoGuidedProjectController extends Controller
         $firstImage = $project->images()->orderBy('order')->first();
         $caption     = $this->captionService->describe($firstImage);
         $rawWishes   = $validated['user_wishes'] ?? '';
+
+        $cardAnalysisJson   = null;
+        $cardTextsJson      = null;
+        $cardVisualForStore = null;
+        if (($validated['content_type'] ?? '') === 'card') {
+            $cardVisualForStore = $this->cardPhotoAnalysis->analyze($project);
+            if (is_array($cardVisualForStore) && $cardVisualForStore !== []) {
+                $cardAnalysisJson = json_encode($cardVisualForStore, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            }
+            $cardTextsJson = $this->cardTextsAsJson($rawWishes);
+        }
+
         $enriched    = $this->wishesEnrichment->enrich(
             $project->title,
             $validated['product_category'] ?? 'other',
             $validated['content_type'],
             $validated['scene_style'],
             $rawWishes,
+            $cardAnalysisJson,
+            $cardTextsJson,
         );
         $prompt = $this->promptBuilder->build(
             $validated['content_type'],
@@ -202,8 +218,19 @@ class PhotoGuidedProjectController extends Controller
         }
 
         try {
-            $job = DB::transaction(function () use ($request, $project, $validated, $caption, $prompt, $cost) {
-                $project->forceFill(['final_prompt' => $prompt])->save();
+            $cardVisual = $cardVisualForStore;
+            $job = DB::transaction(function () use ($request, $project, $validated, $caption, $prompt, $cost, $cardVisual) {
+                $fill = ['final_prompt' => $prompt];
+                if (is_array($cardVisual) && $cardVisual !== []) {
+                    $meta = $project->product_meta_json;
+                    if (! is_array($meta)) {
+                        $meta = [];
+                    }
+                    $meta['card_photo_analysis']    = $cardVisual;
+                    $meta['card_photo_analysis_at'] = now()->toIso8601String();
+                    $fill['product_meta_json'] = $meta;
+                }
+                $project->forceFill($fill)->save();
 
                 $job = GenerationJob::query()->create([
                     'user_id'       => $request->user()->id,
@@ -216,7 +243,7 @@ class PhotoGuidedProjectController extends Controller
                     'provider'      => 'stub',
                 ]);
 
-                if (config('reelforge.credits.require_for_generation', true) && $cost > 0) {
+                if (config('platform.credits.require_for_generation', true) && $cost > 0) {
                     $tx = $this->creditService->spendForPhotoGuidedGeneration($request->user(), $job, $cost);
                     $job->forceFill([
                         'credits_cost'             => $cost,
@@ -256,6 +283,26 @@ class PhotoGuidedProjectController extends Controller
      *
      * @param  array<string, mixed>  $validated
      */
+    /**
+     * One label per non-empty line; if a single line, one-element JSON array. For user_card_kontext {card_texts_json}.
+     */
+    private function cardTextsAsJson(string $raw): string
+    {
+        $lines = preg_split('/\r\n|\r|\n/', $raw) ?: [];
+        $out   = [];
+        foreach ($lines as $line) {
+            $t = trim($line);
+            if ($t !== '') {
+                $out[] = $t;
+            }
+        }
+        if ($out === [] && trim($raw) !== '') {
+            $out[] = trim($raw);
+        }
+
+        return json_encode(array_values($out), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    }
+
     private function mergeProductOverridesFromRequest(Project $project, array $validated): void
     {
         $name = isset($validated['product_name']) ? trim((string) $validated['product_name']) : '';

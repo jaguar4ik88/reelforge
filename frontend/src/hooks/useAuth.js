@@ -5,7 +5,7 @@ import { authApi } from '../services/api'
 function syncLocale(user) {
   if (user?.locale && user.locale !== i18n.language) {
     i18n.changeLanguage(user.locale)
-    localStorage.setItem('reelforge_locale', user.locale)
+    localStorage.setItem('app_locale', user.locale)
   }
 }
 

@@ -106,7 +106,7 @@ class SubscriptionEntitlementService
      */
     public function photoGuidedVideoRestrictionCode(User $user): ?string
     {
-        $min = (int) config('reelforge.credits.photo_guided_video.min_balance', 10);
+        $min = (int) config('platform.credits.photo_guided_video.min_balance', 10);
         $balance = app(CreditService::class)->balance($user);
         if ($balance < $min) {
             return 'low_credits';
@@ -117,7 +117,7 @@ class SubscriptionEntitlementService
             return 'no_subscription';
         }
 
-        $blocked = config('reelforge.credits.photo_guided_video.blocked_plan_slugs', ['starter-monthly']);
+        $blocked = config('platform.credits.photo_guided_video.blocked_plan_slugs', ['starter-monthly']);
         if (in_array($plan->slug, $blocked, true)) {
             return 'starter_plan';
         }

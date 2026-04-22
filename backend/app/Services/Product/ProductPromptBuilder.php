@@ -16,6 +16,10 @@ class ProductPromptBuilder
         string $imageCaption = '',
         ?int $videoDurationSeconds = null,
     ): string {
+        if ($contentType === 'card') {
+            return $this->buildCardPrompt($enrichedWishes, $rawWishes, $imageCaption);
+        }
+
         $parts = [
             'Task: generate marketing visuals based on the uploaded product reference image.',
         ];
@@ -42,12 +46,7 @@ class ProductPromptBuilder
         $raw = trim($rawWishes);
         $enriched = trim($enrichedWishes);
 
-        if ($contentType === 'card') {
-            if ($enriched !== '') {
-                $parts[] = 'Design direction (English): '.$enriched;
-            }
-            $parts[] = str_replace('{card_text}', $rawWishes, (string) config('prompts.content_types.card'));
-        } elseif ($contentType === 'video') {
+        if ($contentType === 'video') {
             if ($enriched !== '') {
                 $parts[] = 'Video direction (English): '.$enriched;
             } elseif ($raw !== '') {
@@ -76,5 +75,28 @@ class ProductPromptBuilder
         $parts[] = (string) config('prompts.suffix', '8k resolution, photorealistic');
 
         return implode("\n\n", array_values(array_filter($parts, fn ($p) => trim((string) $p) !== '')));
+    }
+
+    /**
+     * Card mode: English enrichment + product-card content template + card suffix (kontext-friendly).
+     */
+    private function buildCardPrompt(string $enrichedWishes, string $rawWishes, string $imageCaption = ''): string
+    {
+        $enriched        = trim($enrichedWishes);
+        $raw             = trim($rawWishes);
+        $contentTypeLine = str_replace('{card_text}', $rawWishes, (string) config('prompts.content_types.card'));
+        $suffixCard      = trim((string) config('prompts.suffix_card', ''));
+        $caption         = trim($imageCaption);
+
+        // Order matches kontext spec: enriched (includes photo analysis when present) → content template → suffix_card
+        $step1 = $enriched !== '' ? $enriched : ($caption !== '' ? 'Reference image description (from vision): '.$caption : '');
+
+        $segments = array_filter([
+            $step1,
+            trim($contentTypeLine),
+            $suffixCard,
+        ], fn ($s) => is_string($s) && $s !== '');
+
+        return implode('. ', $segments);
     }
 }

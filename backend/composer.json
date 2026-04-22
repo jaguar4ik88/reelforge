@@ -1,5 +1,5 @@
 {
-    "name": "reelforge/api",
+    "name": "laravel/api",
     "type": "project",
     "description": "ReelForge API – video generation from photos",
     "keywords": ["laravel", "framework"],

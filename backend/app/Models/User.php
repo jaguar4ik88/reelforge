@@ -74,8 +74,8 @@ class User extends Authenticatable
     public function videoLimit(): int
     {
         return match ($this->plan) {
-            'pro' => (int) config('reelforge.pro_plan_videos_per_month', 100),
-            default => (int) config('reelforge.free_plan_videos_per_month', 10),
+            'pro' => (int) config('platform.pro_plan_videos_per_month', 100),
+            default => (int) config('platform.free_plan_videos_per_month', 10),
         };
     }
 
@@ -105,7 +105,7 @@ class User extends Authenticatable
         $creditService = app(CreditService::class);
         $cost = $creditService->getOperationCost('video_generation');
 
-        if (config('reelforge.credits.require_for_generation', true)) {
+        if (config('platform.credits.require_for_generation', true)) {
             if (! $creditService->canSpend($this, $cost)) {
                 return false;
             }
@@ -115,7 +115,7 @@ class User extends Authenticatable
             }
         }
 
-        if (config('reelforge.credits.enforce_monthly_cap', false)) {
+        if (config('platform.credits.enforce_monthly_cap', false)) {
             return $this->videosThisMonth() < $this->videoLimit();
         }
 

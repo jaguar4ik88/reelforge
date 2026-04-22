@@ -11,6 +11,17 @@
 
 return [
 
+    'photo_analysis_system' => <<<'PROMPT'
+You are a product photography analyst. Analyze the provided product image and return ONLY a JSON object with these keys:
+- dominant_colors: array of 2-3 hex colors most prominent on the product
+- background_type: "white" | "gradient" | "lifestyle" | "studio" | "transparent"
+- product_angle: "front" | "side" | "three_quarter" | "top_down"
+- material_cues: string (e.g. "glossy leather, rubber sole, mesh panels")
+- mood: string (e.g. "sporty urban", "luxury minimal", "bold streetwear")
+- composition_notes: string (1 sentence about framing)
+No markdown, no explanation, only valid JSON.
+PROMPT,
+
     /*
      | ── Wishes preprocessor (Anthropic / OpenAI) ─────────────────
      */
@@ -59,6 +70,25 @@ Category: {category}
 User's video direction (camera, mood, effects): {wishes}
 
 Output ONLY an English prompt describing key visual frames, motion, and atmosphere for a short vertical product video concept.
+PROMPT,
+
+        'user_card_kontext' => <<<'PROMPT'
+Product: {product_name}
+Category: {category}
+Photo analysis: {photo_analysis}
+
+The following Cyrillic text labels MUST appear verbatim on the card image (do not translate them):
+{card_texts_json}
+
+Describe ONLY:
+- The layout (where each label is positioned: top-left, bottom-right, etc.)
+- Typography style (bold black sans-serif, uppercase)
+- Diagonal graphic elements or geometric accents color and style
+- Background treatment
+- How the product is placed
+
+Do NOT translate the Cyrillic text. Refer to each label as its exact string in quotes.
+Output one English prompt for FLUX, max 120 words.
 PROMPT,
     ],
 
@@ -152,10 +182,20 @@ PROMPT,
         '4K resolution',
         'photorealistic',
         'professional color grading',
-        'no text unless specified for card',
         'no watermarks',
         'no logos',
         'single product hero',
+    ]),
+
+    /** product marketing card (kontext): typography rules — do not reuse generic suffix (it contradicted on-card text). */
+    'suffix_card' => implode(', ', [
+        'sharp product photography',
+        'bold Cyrillic typography rendered in Cyrillic script exactly as provided',
+        'clean geometric graphic design layout',
+        'high contrast legible text on light background',
+        'diagonal accent lines where appropriate in red and black',
+        'professional retail card composition',
+        '4K resolution, no watermarks or logos on image',
     ]),
 
     /*
@@ -178,11 +218,13 @@ PROMPT,
      */
     'models' => [
         'kontext' => [
-            'id'                  => 'black-forest-labs/flux-kontext-pro',
-            'aspect_ratio'        => '1:1',
-            'output_format'       => 'jpg',
-            'safety_tolerance'    => 2,
-            'prompt_upsampling'   => true,
+            'id'               => 'black-forest-labs/flux-kontext-pro',
+            'aspect_ratio'     => '3:4',   // вертикальный формат для карточки маркетплейса
+            'output_format'    => 'jpg',
+            'output_quality'   => 95,
+            'safety_tolerance' => 2,
+            'prompt_upsampling'=> true,
+            // input_image передаётся отдельно через Replicate API как base64 или URL
         ],
 
         'default' => [

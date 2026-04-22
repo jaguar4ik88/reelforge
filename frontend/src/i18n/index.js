@@ -4,6 +4,14 @@ import LanguageDetector from 'i18next-browser-languagedetector'
 import uk from './uk'
 import en from './en'
 
+const LOCALE_KEY = 'app_locale'
+if (typeof localStorage !== 'undefined') {
+  const legacy = localStorage.getItem('reelforge_locale')
+  if (legacy && !localStorage.getItem(LOCALE_KEY)) {
+    localStorage.setItem(LOCALE_KEY, legacy)
+  }
+}
+
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
@@ -16,7 +24,7 @@ i18n
     detection: {
       order:  ['localStorage', 'navigator'],
       caches: ['localStorage'],
-      lookupLocalStorage: 'reelforge_locale',
+      lookupLocalStorage: LOCALE_KEY,
     },
   })
 

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use RuntimeException;
 
 /**
- * Analyzes the first product reference image and returns structured metadata (name, category, qualities).
+ * Analyzes up to five product reference images in one OpenAI vision call and returns structured metadata (name, category, qualities).
  * Uses OpenAI Vision when OPENAI_API_KEY is set; otherwise returns a safe stub.
  */
 class ProductPhotoAnalysisService
@@ -24,31 +24,61 @@ class ProductPhotoAnalysisService
      */
     public function analyze(Project $project): array
     {
-        $first = $project->images()->orderBy('order')->first();
-        if ($first === null) {
+        $rows = $project->images()->orderBy('order')->get();
+        if ($rows->isEmpty()) {
             throw new RuntimeException('No product images to analyze.');
         }
 
-        $disk = ReelForgeStorage::contentDisk();
-        if (! Storage::disk($disk)->exists($first->path)) {
-            throw new RuntimeException('Image file not found.');
-        }
-
-        $bytes    = Storage::disk($disk)->get($first->path);
-        $mime     = $this->guessMime($first->path);
-        $dataUri  = 'data:'.$mime.';base64,'.base64_encode($bytes);
-        $apiKey   = config('services.openai.api_key');
+        $disk   = ReelForgeStorage::contentDisk();
+        $apiKey = config('services.openai.api_key');
 
         if (empty($apiKey)) {
             return $this->stubResult($project);
         }
 
+        $imageParts = [];
+        foreach ($rows->take(5) as $img) {
+            if (! Storage::disk($disk)->exists($img->path)) {
+                continue;
+            }
+            $bytes   = Storage::disk($disk)->get($img->path);
+            $mime    = $this->guessMime($img->path);
+            $dataUri = 'data:'.$mime.';base64,'.base64_encode($bytes);
+            $imageParts[] = [
+                'type'      => 'image_url',
+                'image_url' => ['url' => $dataUri],
+            ];
+        }
+        if ($imageParts === []) {
+            return $this->stubResult($project);
+        }
+
+        $count = count($imageParts);
         $model = config('services.openai.vision_model', 'gpt-4o-mini');
         $cats  = implode(', ', self::ALLOWED_CATEGORIES);
+        $multi = $count > 1
+            ? " You are given {$count} photos of the same product (different angles). Combine what you see into one coherent listing."
+            : ' Look at the product photo.';
 
         try {
+            $textPrompt = <<<PROMPT
+You are an e-commerce catalog assistant.{$multi}
+Return ONLY valid JSON with this shape (no markdown):
+{
+  "name": "short product title in the same language as visible text on packaging or English if none",
+  "category": "one of: {$cats}",
+  "qualities": ["2-4 short selling points in Russian or Ukrainian"]
+}
+"name" must describe the actual product. "qualities" are marketing-style bullets (style, materials, comfort, etc.).
+PROMPT;
+
+            $content = array_merge(
+                [['type' => 'text', 'text' => $textPrompt]],
+                $imageParts
+            );
+
             $response = Http::withToken($apiKey)
-                ->timeout(90)
+                ->timeout(120)
                 ->post('https://api.openai.com/v1/chat/completions', [
                     'model'             => $model,
                     'max_tokens'        => 500,
@@ -56,24 +86,7 @@ class ProductPhotoAnalysisService
                     'messages'          => [
                         [
                             'role'    => 'user',
-                            'content' => [
-                                [
-                                    'type' => 'text',
-                                    'text' => <<<PROMPT
-You are an e-commerce catalog assistant. Look at the product photo and return ONLY valid JSON with this shape (no markdown):
-{
-  "name": "short product title in the same language as visible text on packaging or English if none",
-  "category": "one of: {$cats}",
-  "qualities": ["2-4 short selling points in Russian or Ukrainian"]
-}
-"name" must describe the actual product in the image. "qualities" are marketing-style bullets (style, materials, comfort, etc.).
-PROMPT,
-                                ],
-                                [
-                                    'type'      => 'image_url',
-                                    'image_url' => ['url' => $dataUri],
-                                ],
-                            ],
+                            'content' => $content,
                         ],
                     ],
                 ]);

@@ -3,7 +3,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: reelforge_app
+    container_name: stack_app
     restart: unless-stopped
     working_dir: /var/www
     volumes:
@@ -15,11 +15,11 @@ services:
       - mysql
       - redis
     networks:
-      - reelforge
+      - stack
 
   nginx:
     image: nginx:alpine
-    container_name: reelforge_nginx
+    container_name: stack_nginx
     restart: unless-stopped
     ports:
       - "8000:80"
@@ -29,38 +29,38 @@ services:
     depends_on:
       - app
     networks:
-      - reelforge
+      - stack
 
   mysql:
     image: mysql:8.0
-    container_name: reelforge_mysql
+    container_name: stack_mysql
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: reelforge
+      MYSQL_DATABASE: laravel
       MYSQL_ROOT_PASSWORD: secret
       MYSQL_PASSWORD: secret
-      MYSQL_USER: reelforge
+      MYSQL_USER: laravel
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
-      - reelforge
+      - stack
 
   redis:
     image: redis:alpine
-    container_name: reelforge_redis
+    container_name: stack_redis
     restart: unless-stopped
     ports:
       - "6379:6379"
     networks:
-      - reelforge
+      - stack
 
   queue:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: reelforge_queue
+    container_name: stack_queue
     restart: unless-stopped
     working_dir: /var/www
     command: php artisan queue:work redis --sleep=3 --tries=3
@@ -70,13 +70,13 @@ services:
       - mysql
       - redis
     networks:
-      - reelforge
+      - stack
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: reelforge_frontend
+    container_name: stack_frontend
     restart: unless-stopped
     ports:
       - "5173:5173"
@@ -86,10 +86,10 @@ services:
     environment:
       - VITE_API_URL=http://localhost:8000
     networks:
-      - reelforge
+      - stack
 
 networks:
-  reelforge:
+  stack:
     driver: bridge
 
 volumes:

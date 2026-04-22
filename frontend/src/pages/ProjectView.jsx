@@ -260,11 +260,11 @@ export default function ProjectView() {
   const canDownload   = isDone && Boolean(downloadUrl)
   const downloadName = (() => {
     const u = downloadUrl || ''
-    if (/\.mp4(\?|$)/i.test(u)) return `reelforge-${project.id}.mp4`
-    if (/\.webm(\?|$)/i.test(u)) return `reelforge-${project.id}.webm`
-    if (/\.jpe?g(\?|$)/i.test(u)) return `reelforge-${project.id}.jpg`
-    if (/\.webp(\?|$)/i.test(u)) return `reelforge-${project.id}.webp`
-    return `reelforge-${project.id}.png`
+    if (/\.mp4(\?|$)/i.test(u)) return `product-${project.id}.mp4`
+    if (/\.webm(\?|$)/i.test(u)) return `product-${project.id}.webm`
+    if (/\.jpe?g(\?|$)/i.test(u)) return `product-${project.id}.jpg`
+    if (/\.webp(\?|$)/i.test(u)) return `product-${project.id}.webp`
+    return `product-${project.id}.png`
   })()
 
   const handleShare = async () => {
@@ -315,6 +315,16 @@ export default function ProjectView() {
                   ? `${t('project.photoFlowBadge')} · ${new Date(project.created_at).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}`
                   : new Date(project.created_at).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}
               </p>
+              {isPhotoGuided && project.product_meta?.card_photo_analysis && (
+                <div className="mt-3 p-3 rounded-lg bg-amber-950/30 border border-amber-500/25 text-left max-w-3xl">
+                  <p className="text-xs font-semibold text-amber-200/90 mb-2">
+                    {t('project.cardAnalysisTest')}
+                  </p>
+                  <pre className="text-[10px] leading-relaxed text-gray-300 overflow-x-auto max-h-56 overflow-y-auto font-mono whitespace-pre-wrap break-words">
+                    {JSON.stringify(project.product_meta.card_photo_analysis, null, 2)}
+                  </pre>
+                </div>
+              )}
             </div>
           </div>
           <div className="flex flex-wrap gap-2 shrink-0">

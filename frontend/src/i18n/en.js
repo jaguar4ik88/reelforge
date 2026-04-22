@@ -300,8 +300,14 @@ export default {
         processing: 'Processing',
       },
       empty:        'No items match the selected filters',
+      loadError:    'Could not load the gallery. Check the API URL and network, then try again.',
+      retry:        'Retry',
       thumbPlaceholder: 'No preview yet',
       thumbProcessing:  'Generating…',
+      prev:        'Previous',
+      next:        'Next',
+      page:        'Page {{current}} of {{total}}',
+      totalProjects: '{{count}} projects',
     },
 
     landing: {
@@ -545,6 +551,7 @@ export default {
       needImages:    'Need at least 3 photos to generate a video.',
       started:       'Video generation started!',
       photoFlowBadge:       'From product photo',
+      cardAnalysisTest:     'Card image analysis (test, JSON) — from last card generation',
       photoGuidedVideoBlock: 'Template video export is not available for photo-guided projects. Photo generation runs from the “From product photo” flow.',
       photoGuidedGenNote:   'When you ran “Generate” in the photo flow, your prompt was saved and the stub job completed. Connect a real image model to produce assets.',
       promptSent:    'Prompt sent to AI',
@@ -584,11 +591,26 @@ export default {
 
     photoFlow: {
       title:    'Generate from product photos',
-      subtitle: 'Photos and product info first, then settings. The project is created only when you tap Generate.',
+      subtitle:
+        'Upload product shots, run AI photo analysis, then set generation. A draft is created when you analyze or generate.',
       yourProduct: 'Your product',
       configureGeneration: 'Generation settings',
-      step2Locked: 'Upload photos and enter a product name to configure generation.',
-      step1ReadyHint: 'You can go to step 2.',
+      step2Locked:
+        'Run “Analyze photos (AI)” first. After the name and category are filled, you can configure generation in step 2.',
+      step1ReadyHint: 'Step 2 is available — you can set content type, scene, and generate.',
+      analyzeBlockTitle: '1. Analyze photos',
+      nameAfterAnalysisTitle: '2. Name and category',
+      nameAfterAnalysisSub: 'Filled by AI after analysis — you can edit before generating.',
+      runAnalyzeToContinue:
+        'Run photo analysis — the product name and category will appear here, then step 2 will unlock.',
+      analyzePhotos: 'Analyze photos (AI)',
+      temporaryNameForApi: 'Product',
+      analyzeHint:
+        'Needs at least one photo; the name can be empty — AI will suggest a title and category, then you can edit. Sends all selected photos in one pass.',
+      analyzingPhotos: 'Analyzing photos…',
+      analyzeSuccess: 'Product details updated from your photos.',
+      qualitiesFromAi: 'Suggested highlights',
+      photosChangedReanalyze: 'Photos changed — run analysis again for updated suggestions.',
       uploadMultiHint: 'Up to 4 product photos from different angles',
       creatingAndGenerating: 'Creating project and starting…',
       thisIs:          'This is',

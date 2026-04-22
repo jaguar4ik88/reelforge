@@ -1,6 +1,6 @@
 /**
  * Canonical marketing / app origin for SEO (Open Graph, JSON-LD, sitemap).
- * Set VITE_SITE_URL in production (e.g. https://reelforge.com) so meta tags
+ * Set VITE_SITE_URL in production (e.g. https://example.com) so meta tags
  * stay correct behind proxies and on staging.
  */
 export function getSiteUrl() {

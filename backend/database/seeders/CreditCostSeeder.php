@@ -11,12 +11,12 @@ class CreditCostSeeder extends Seeder
     {
         CreditCost::query()->updateOrCreate(
             ['operation_key' => 'video_generation'],
-            ['cost' => (int) config('reelforge.credits.default_video_cost', 10)]
+            ['cost' => (int) config('platform.credits.default_video_cost', 10)]
         );
 
         CreditCost::query()->updateOrCreate(
             ['operation_key' => 'photo_guided_generation'],
-            ['cost' => (int) config('reelforge.credits.default_photo_guided_cost', 5)]
+            ['cost' => (int) config('platform.credits.default_photo_guided_cost', 5)]
         );
     }
 }
