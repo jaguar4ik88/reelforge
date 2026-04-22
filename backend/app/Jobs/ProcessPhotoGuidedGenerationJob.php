@@ -128,16 +128,21 @@ class ProcessPhotoGuidedGenerationJob implements ShouldQueue
                 $aspectRatio = $settings['aspect_ratio'];
             }
 
+            $input = [
+                'prompt'            => $prompt,
+                'input_image'       => $imageBase64,
+                'aspect_ratio'      => $aspectRatio,
+                'output_format'     => $modelConfig['output_format'],
+                'safety_tolerance'  => $modelConfig['safety_tolerance'],
+                'prompt_upsampling' => $modelConfig['prompt_upsampling'],
+            ];
+            if (isset($modelConfig['output_quality'])) {
+                $input['output_quality'] = (int) $modelConfig['output_quality'];
+            }
+
             return [
                 $modelConfig['id'],
-                [
-                    'prompt'             => $prompt,
-                    'input_image'        => $imageBase64,
-                    'aspect_ratio'       => $aspectRatio,
-                    'output_format'      => $modelConfig['output_format'],
-                    'safety_tolerance'   => $modelConfig['safety_tolerance'],
-                    'prompt_upsampling'  => $modelConfig['prompt_upsampling'],
-                ],
+                $input,
             ];
         }
 
@@ -172,7 +177,7 @@ class ProcessPhotoGuidedGenerationJob implements ShouldQueue
             throw new RuntimeException('Video generation requires a reference product image.');
         }
 
-        $cfg = config('reelforge.photo_guided.video_i2v', []);
+        $cfg = config('platform.photo_guided.video_i2v', []);
         $modelId = trim((string) ($cfg['model_id'] ?? ''));
         if ($modelId === '') {
             $modelId = 'aicapcut/stable-video-diffusion-img2vid-xt-optimized:7b595c69ca428904c1907155b93a5580653d1e9dcd407612142595908650dd67';

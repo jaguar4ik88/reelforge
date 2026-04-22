@@ -27,7 +27,8 @@ const api = axios.create({
 
 api.interceptors.request.use((config) => {
   const token  = localStorage.getItem('token')
-  const locale = localStorage.getItem('reelforge_locale') || 'uk'
+  const locale =
+    localStorage.getItem('app_locale') || localStorage.getItem('reelforge_locale') || 'uk'
   if (token)  config.headers.Authorization = `Bearer ${token}`
   config.headers['X-Locale'] = locale
   return config
@@ -63,7 +64,19 @@ export const authApi = {
 
 // ── Projects ──────────────────────────────────────────────────────────────────
 export const projectsApi = {
-  list:   (page = 1) => api.get(`/projects?page=${page}`),
+  list: (page = 1, perPage = 12, projectId = null, filterKind = 'all') => {
+    const q = new URLSearchParams()
+    q.set('page', String(page))
+    q.set('per_page', String(perPage))
+    if (projectId != null && projectId !== '' && projectId !== 'all') {
+      q.set('project_id', String(projectId))
+    }
+    if (filterKind && filterKind !== 'all') {
+      q.set('filter_kind', String(filterKind))
+    }
+    return api.get(`/projects?${q.toString()}`)
+  },
+  listCompact: () => api.get('/projects/compact'),
   get:    (id)       => api.get(`/projects/${id}`),
   update: (id, body) => api.patch(`/projects/${id}`, body),
   delete: (id)       => api.delete(`/projects/${id}`),
@@ -93,7 +106,7 @@ export const photoFlowApi = {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
   },
-  /** Future: AI vision analysis (not used in MVP). */
+  /** AI vision: name, category, qualities from reference images. */
   analyzeProduct: (projectId) => api.post(`/projects/${projectId}/product-analysis`),
   startGeneration: (projectId, payload) =>
     api.post(`/projects/${projectId}/photo-generations`, payload),

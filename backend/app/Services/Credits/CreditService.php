@@ -44,8 +44,8 @@ class CreditService
             $this->costCache[$operationKey] = $fromDb !== null
                 ? (int) $fromDb
                 : (int) match ($operationKey) {
-                    'photo_guided_generation' => config('reelforge.credits.default_photo_guided_cost', 5),
-                    default => config('reelforge.credits.default_video_cost', 10),
+                    'photo_guided_generation' => config('platform.credits.default_photo_guided_cost', 5),
+                    default => config('platform.credits.default_video_cost', 10),
                 };
         }
 
@@ -59,10 +59,10 @@ class CreditService
      */
     public function getPhotoFlowPricing(): array
     {
-        $video = config('reelforge.credits.photo_flow.video_options', []);
+        $video = config('platform.credits.photo_flow.video_options', []);
 
-        $basePhoto = (int) config('reelforge.credits.photo_flow.photo_per_image', 2);
-        $sceneMap = config('reelforge.credits.photo_flow.photo_scene_credits', []);
+        $basePhoto = (int) config('platform.credits.photo_flow.photo_per_image', 2);
+        $sceneMap = config('platform.credits.photo_flow.photo_scene_credits', []);
         $sceneCredits = is_array($sceneMap)
             ? [
                 'from_wishes' => (int) ($sceneMap['from_wishes'] ?? $basePhoto),
@@ -76,10 +76,10 @@ class CreditService
             ];
 
         return [
-            'improvement' => (int) config('reelforge.credits.photo_flow.improvement', 1),
+            'improvement' => (int) config('platform.credits.photo_flow.improvement', 1),
             'photo_per_image' => $basePhoto,
             'photo_scene_credits' => $sceneCredits,
-            'card_per_image' => (int) config('reelforge.credits.photo_flow.card_per_image', 1),
+            'card_per_image' => (int) config('platform.credits.photo_flow.card_per_image', 1),
             'video' => array_values(array_map(
                 fn (array $o): array => [
                     'seconds' => (int) ($o['seconds'] ?? 0),

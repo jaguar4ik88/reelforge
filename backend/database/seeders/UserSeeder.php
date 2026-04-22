@@ -15,7 +15,7 @@ class UserSeeder extends Seeder
     {
         // Создаем тестового пользователя
         User::firstOrCreate(
-            ['email' => 'test@reelforge.com'],
+            ['email' => 'test@example.com'],
             [
                 'name' => 'Test User',
                 'password' => Hash::make('password'),
@@ -25,7 +25,7 @@ class UserSeeder extends Seeder
         );
 
         User::updateOrCreate(
-            ['email' => 'admin@reelforge.com'],
+            ['email' => 'admin@example.com'],
             [
                 'name' => 'Admin User',
                 'password' => Hash::make('admin123'),

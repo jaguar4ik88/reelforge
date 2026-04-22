@@ -7,7 +7,7 @@ import react from '@vitejs/plugin-react'
  */
 function spaHistoryFallback() {
   return {
-    name: 'reelforge-spa-history-fallback',
+    name: 'app-spa-history-fallback',
     configureServer(server) {
       return () => {
         const handle = (req, res, next) => {

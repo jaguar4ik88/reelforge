@@ -7,7 +7,7 @@ export function useLocale() {
 
   const changeLocale = useCallback(async (locale, isAuthenticated = false) => {
     await i18n.changeLanguage(locale)
-    localStorage.setItem('reelforge_locale', locale)
+    localStorage.setItem('app_locale', locale)
 
     if (isAuthenticated) {
       try {

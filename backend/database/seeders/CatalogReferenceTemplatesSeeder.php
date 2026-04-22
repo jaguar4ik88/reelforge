@@ -86,7 +86,7 @@ PROMPT,
             ],
         ];
 
-        $disk = config('reelforge.storage.templates_disk', config('filesystems.default', 'public'));
+        $disk = config('platform.storage.templates_disk', config('filesystems.default', 'public'));
 
         foreach ($items as $item) {
             if (! is_file($item['src'])) {

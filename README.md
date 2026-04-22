@@ -72,8 +72,8 @@ docker-compose ps
 | `/projects/new` | Создание проекта |
 
 ### Тестовые пользователи
-- **Тест**: `test@reelforge.com` / `password`
-- **Админ**: `admin@reelforge.com` / `admin123`
+- **Тест**: `test@example.com` / `password`
+- **Админ**: `admin@example.com` / `admin123`
 
 ## 📋 Функциональность MVP
 

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ProjectResource;
 use App\Models\Project;
 use App\Services\Project\ProjectService;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -15,16 +16,50 @@ class ProjectController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $projects = $request->user()
+        $perPage = (int) $request->query('per_page', 12);
+        $perPage = min(max($perPage, 1), 100);
+
+        $query = $request->user()
             ->projects()
             ->with(['template', 'images', 'latestGenerationJob'])
-            ->latest()
-            ->paginate(12);
+            ->latest();
+
+        if ($request->filled('project_id')) {
+            $query->where('id', (int) $request->query('project_id'));
+        }
+
+        $this->applyGalleryFilterKind($query, (string) $request->query('filter_kind', 'all'));
+
+        $projects = $query->paginate($perPage)->withQueryString();
+
+        $payload = ProjectResource::collection($projects)->response()->getData(true);
+        if (is_array($payload) && isset($payload['data']) && is_array($payload['data'])) {
+            $payload['items'] = $payload['data'];
+        }
 
         return response()->json([
             'success' => true,
             'message' => '',
-            'data'    => ProjectResource::collection($projects)->response()->getData(true),
+            'data'    => $payload,
+        ]);
+    }
+
+    /**
+     * Lightweight id+title list for gallery filters (not paginated; capped).
+     */
+    public function compactIndex(Request $request): JsonResponse
+    {
+        $rows = $request->user()
+            ->projects()
+            ->select(['id', 'title'])
+            ->orderByDesc('id')
+            ->limit(500)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => '',
+            'data'    => $rows,
         ]);
     }
 
@@ -66,6 +101,45 @@ class ProjectController extends Controller
             'message' => __('messages.project.deleted'),
             'data'    => [],
         ]);
+    }
+
+    private function applyGalleryFilterKind(Relation $query, string $filterKind): void
+    {
+        if (! in_array($filterKind, ['video', 'draft', 'processing'], true)) {
+            return;
+        }
+
+        if ($filterKind === 'draft') {
+            $query->where('status', 'draft');
+
+            return;
+        }
+
+        if ($filterKind === 'processing') {
+            $query->where('status', 'processing');
+
+            return;
+        }
+
+        // "video" — same idea as gallery UI: done + video output (template) or photo_guided I2V
+        $query->where('status', 'done')
+            ->where(function ($q) {
+                $q->where(function ($q2) {
+                    $q2->whereNotNull('video_path')
+                        ->where('video_path', '!=', '')
+                        ->where(function ($q3) {
+                            $q3->where('creation_flow', '!=', 'photo_guided')
+                                ->orWhereNull('creation_flow');
+                        });
+                })->orWhere(function ($q2) {
+                    $q2->where('creation_flow', 'photo_guided')
+                        ->whereHas('latestGenerationJob', function ($j) {
+                            $j->where('settings_json->content_type', 'video');
+                        })
+                        ->whereNotNull('video_path')
+                        ->where('video_path', '!=', '');
+                });
+            });
     }
 
     private function authorizeProject(Project $project, Request $request): void

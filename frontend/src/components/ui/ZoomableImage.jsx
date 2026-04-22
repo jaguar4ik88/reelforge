@@ -60,7 +60,7 @@ export default function ZoomableImage({
       {open &&
         createPortal(
           <div
-            className="fixed inset-0 z-[200] box-border flex cursor-zoom-out items-center justify-center overflow-y-auto bg-black/93 px-3 py-14 sm:px-6 sm:py-16"
+            className="fixed inset-0 z-[10000] box-border flex cursor-zoom-out items-center justify-center overflow-y-auto bg-zinc-950/95 px-3 py-14 backdrop-blur-sm sm:px-6 sm:py-16"
             role="dialog"
             aria-modal="true"
             aria-label={t('common.zoomImage')}
@@ -77,8 +77,9 @@ export default function ZoomableImage({
             >
               <X className="h-6 w-6" strokeWidth={1.75} />
             </button>
+            {/* w-fit: only the image row stops propagation — side margins close on backdrop click */}
             <div
-              className="relative z-[1] my-auto flex min-h-0 w-full max-w-[min(96vw,100%)] cursor-default items-center justify-center"
+              className="relative z-[1] my-auto w-fit max-w-[min(96vw,100%)] shrink-0 cursor-default"
               onClick={(e) => e.stopPropagation()}
             >
               <img

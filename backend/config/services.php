@@ -49,6 +49,8 @@ return [
         'api_key' => env('ANTHROPIC_API_KEY'),
         /** Claude model for wishes translation / enrichment. */
         'model' => env('ANTHROPIC_WISHES_MODEL', 'claude-sonnet-4-20250514'),
+        /** Vision model for product-card reference analysis (JSON). Must support images. */
+        'vision_model' => env('ANTHROPIC_VISION_MODEL', 'claude-3-5-sonnet-20241022'),
     ],
 
     'apple' => [

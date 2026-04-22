@@ -39,19 +39,19 @@ Route::get('/site', function () {
     return response()->json([
         'success' => true,
         'data' => [
-            'site_name' => config('reelforge.site_name'),
-            'seller' => config('reelforge.seller'),
+            'site_name' => config('platform.site_name'),
+            'seller' => config('platform.seller'),
             'payments' => [
-                'default_provider' => filter_var(config('reelforge.payments.wayforpay_billing_global', false), FILTER_VALIDATE_BOOLEAN) && $wfp->enabled()
+                'default_provider' => filter_var(config('platform.payments.wayforpay_billing_global', false), FILTER_VALIDATE_BOOLEAN) && $wfp->enabled()
                     ? 'wayforpay'
                     : 'fastspring',
-                'wayforpay_for_ukraine_enabled' => filter_var(config('reelforge.payments.wayforpay_for_ukraine_enabled', true), FILTER_VALIDATE_BOOLEAN),
-                'wayforpay_billing_global' => filter_var(config('reelforge.payments.wayforpay_billing_global', false), FILTER_VALIDATE_BOOLEAN),
+                'wayforpay_for_ukraine_enabled' => filter_var(config('platform.payments.wayforpay_for_ukraine_enabled', true), FILTER_VALIDATE_BOOLEAN),
+                'wayforpay_billing_global' => filter_var(config('platform.payments.wayforpay_billing_global', false), FILTER_VALIDATE_BOOLEAN),
                 'wayforpay_enabled' => $wfp->enabled(),
                 'fastspring_enabled' => $fs->enabled(),
                 'display_currency' => 'USD',
-                'usd_to_uah' => (float) config('reelforge.payments.wayforpay.usd_to_uah', 42),
-                'ua_discount_percent' => (float) config('reelforge.payments.wayforpay.ua_discount_percent', 0),
+                'usd_to_uah' => (float) config('platform.payments.wayforpay.usd_to_uah', 42),
+                'ua_discount_percent' => (float) config('platform.payments.wayforpay.ua_discount_percent', 0),
             ],
         ],
     ]);
@@ -70,6 +70,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('projects/from-photo', [PhotoGuidedProjectController::class, 'store']);
     Route::post('projects/{project}/product-analysis', [PhotoGuidedProjectController::class, 'analyzeProduct']);
     Route::post('projects/{project}/photo-generations', [PhotoGuidedProjectController::class, 'startGeneration']);
+    Route::get('projects/compact', [ProjectController::class, 'compactIndex']);
     Route::apiResource('projects', ProjectController::class)->only(['index', 'show', 'update', 'destroy']);
 
     Route::middleware(['admin'])->prefix('admin')->group(function () {

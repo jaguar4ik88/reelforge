@@ -46,9 +46,11 @@ if [[ -n "${COPY_FRONTEND_TO:-}" ]]; then
   rsync -a --delete "${ROOT}/frontend/dist/" "${COPY_FRONTEND_TO%/}/"
 fi
 
-log "Laravel: migrate and optimize"
+log "Laravel: migrate, storage link, optimize"
 cd "$ROOT/backend"
 php artisan migrate --force
+# Symlink public/storage → storage/app/public (not in git; recreate after each release)
+php artisan storage:link --force 2>/dev/null || php artisan storage:link
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache

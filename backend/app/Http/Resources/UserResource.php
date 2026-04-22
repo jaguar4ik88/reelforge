@@ -49,7 +49,7 @@ class UserResource extends JsonResource
             'has_active_subscription' => $subscriptionSummary !== null,
             'photo_guided_video' => [
                 'allowed'     => $photoGuidedVideoCode === null,
-                'min_balance' => (int) config('reelforge.credits.photo_guided_video.min_balance', 10),
+                'min_balance' => (int) config('platform.credits.photo_guided_video.min_balance', 10),
                 'code'        => $photoGuidedVideoCode,
             ],
             'created_at'        => $this->created_at->toISOString(),
