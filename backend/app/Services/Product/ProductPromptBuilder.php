@@ -4,7 +4,7 @@ namespace App\Services\Product;
 
 /**
  * Builds the final text prompt from structured settings + enriched wishes (English).
- * Scene/content/suffix strings live in config/prompts.php.
+ * Scene/content/suffix strings: config/prompts/photo.php, card.php, video.php, common.php.
  */
 class ProductPromptBuilder
 {

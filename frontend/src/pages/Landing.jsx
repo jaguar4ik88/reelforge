@@ -19,7 +19,7 @@ const howItWorksKeys = ['step1', 'step2', 'step3']
 
 export default function Landing() {
   const { t } = useTranslation()
-  const { siteName } = useSite()
+  const { siteName, registrationEnabled } = useSite()
   const jsonLd = buildLandingJsonLd(getSiteUrl(), siteName, t('seo.jsonLdDescription', { siteName }))
 
   return (
@@ -56,10 +56,15 @@ export default function Landing() {
         </p>
 
         <div className="flex items-center justify-center gap-4 flex-wrap">
-          <Link to="/register" className="btn-primary text-base px-8 py-3">
-            {t('landing.ctaFree')}
-          </Link>
-          <Link to="/login" className="btn-secondary text-base px-8 py-3">
+          {registrationEnabled && (
+            <Link to="/register" className="btn-primary text-base px-8 py-3">
+              {t('landing.ctaFree')}
+            </Link>
+          )}
+          <Link
+            to="/login"
+            className={registrationEnabled ? 'btn-secondary text-base px-8 py-3' : 'btn-primary text-base px-8 py-3'}
+          >
             {t('landing.ctaLogin')}
           </Link>
         </div>
@@ -160,8 +165,11 @@ export default function Landing() {
           <Film className="w-12 h-12 text-brand-400 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-white mb-3">{t('landing.ctaTitle')}</h2>
           <p className="text-gray-400 mb-6">{t('landing.ctaSub')}</p>
-          <Link to="/register" className="btn-primary inline-block px-8 py-3 text-base">
-            {t('landing.ctaBtn')}
+          <Link
+            to={registrationEnabled ? '/register' : '/login'}
+            className="btn-primary inline-block px-8 py-3 text-base"
+          >
+            {registrationEnabled ? t('landing.ctaBtn') : t('landing.ctaLogin')}
           </Link>
         </div>
       </section>

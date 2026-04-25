@@ -6,7 +6,7 @@ class PromptBuilderService
 {
     /**
      * Build the full prompt string from style + description + contentType.
-     * Reads from config/prompts.php — edit that file to change wording.
+     * Reads from config/prompts.php (merged from config/prompts/*.php).
      */
     public function build(string $style, string $description, string $contentType = 'photo'): string
     {

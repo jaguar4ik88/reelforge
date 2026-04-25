@@ -20,6 +20,9 @@ return [
         ? 'http://localhost:5173'
         : env('APP_URL', 'http://localhost'))), '/'),
 
+    /** Set to false to block new signups (email + OAuth) while existing users can sign in. */
+    'registration_enabled' => filter_var(env('APP_PLATFORM_REGISTRATION_ENABLED', true), FILTER_VALIDATE_BOOLEAN),
+
     'ffmpeg_binaries' => env('FFMPEG_BINARIES', '/usr/bin/ffmpeg'),
     'ffprobe_binaries' => env('FFPROBE_BINARIES', '/usr/bin/ffprobe'),
     'ffmpeg_font_path' => env('FFMPEG_FONT_PATH', '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'),

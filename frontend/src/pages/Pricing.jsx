@@ -5,10 +5,13 @@ import LandingNav from '../components/layout/LandingNav'
 import LandingFooter from '../components/layout/LandingFooter'
 import SeoHead from '../components/seo/SeoHead'
 import SubscriptionPlanCardsGrid from '../components/billing/SubscriptionPlanCardsGrid'
+import { useSite } from '../context/SiteContext'
 import api from '../services/api'
 
 export default function Pricing() {
   const { t, i18n } = useTranslation()
+  const { registrationEnabled } = useSite()
+  const startHref = registrationEnabled ? '/register' : '/login'
   const [subscriptionPlans, setSubscriptionPlans] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -53,7 +56,12 @@ export default function Pricing() {
         ) : subscriptionPlans.length === 0 ? (
           <p className="text-center text-gray-500 text-sm">{t('pricing.plansEmpty')}</p>
         ) : (
-          <SubscriptionPlanCardsGrid plans={subscriptionPlans} language={i18n.language} mode="marketing" />
+          <SubscriptionPlanCardsGrid
+            plans={subscriptionPlans}
+            language={i18n.language}
+            mode="marketing"
+            registerHref={startHref}
+          />
         )}
 
         <p className="text-center text-gray-500 text-sm mt-10">{t('pricing.note')}</p>
@@ -63,8 +71,8 @@ export default function Pricing() {
         <div className="bg-gradient-to-r from-brand-900/40 to-purple-900/40 border border-brand-500/20 rounded-3xl p-10">
           <h2 className="text-3xl font-bold mb-3">{t('pricing.cta.title')}</h2>
           <p className="text-gray-400 mb-6">{t('pricing.cta.subtitle')}</p>
-          <Link to="/register" className="btn-primary px-10 py-3 text-base inline-block">
-            {t('pricing.cta.btn')}
+          <Link to={startHref} className="btn-primary px-10 py-3 text-base inline-block">
+            {registrationEnabled ? t('pricing.cta.btn') : t('landing.ctaLogin')}
           </Link>
         </div>
       </div>

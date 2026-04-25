@@ -7,7 +7,7 @@ import { useSite } from '../../context/SiteContext'
 
 export default function LandingNav() {
   const { t } = useTranslation()
-  const { siteName } = useSite()
+  const { siteName, registrationEnabled } = useSite()
   const [mobileOpen, setMobileOpen] = useState(false)
 
   const navLinks = [
@@ -79,9 +79,11 @@ export default function LandingNav() {
             <Link to="/login"    className="btn-secondary text-sm text-center" onClick={() => setMobileOpen(false)}>
               {t('landing.ctaLogin')}
             </Link>
+            {registrationEnabled && (
             <Link to="/register" className="btn-primary  text-sm text-center" onClick={() => setMobileOpen(false)}>
               {t('landing.ctaFree')}
             </Link>
+            )}
           </div>
         </div>
       )}

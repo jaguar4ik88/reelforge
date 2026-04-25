@@ -40,6 +40,7 @@ Route::get('/site', function () {
         'success' => true,
         'data' => [
             'site_name' => config('platform.site_name'),
+            'registration_enabled' => filter_var(config('platform.registration_enabled', true), FILTER_VALIDATE_BOOLEAN),
             'seller' => config('platform.seller'),
             'payments' => [
                 'default_provider' => filter_var(config('platform.payments.wayforpay_billing_global', false), FILTER_VALIDATE_BOOLEAN) && $wfp->enabled()
