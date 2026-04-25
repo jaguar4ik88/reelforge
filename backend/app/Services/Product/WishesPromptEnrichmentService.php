@@ -122,8 +122,8 @@ class WishesPromptEnrichmentService
 
     private function fallbackCardKontext(string $rawWishes, string $photoAnalysisJson): string
     {
-        return 'E-commerce product card layout. Photo analysis: '.$photoAnalysisJson
-            .'. On-card text (do not translate, render verbatim): '.trim($rawWishes);
+        return 'Commercial product card: graphic background, solo product (no hands from reference). Analysis: '.$photoAnalysisJson
+            .'. On-card text verbatim: '.trim($rawWishes);
     }
 
     /**

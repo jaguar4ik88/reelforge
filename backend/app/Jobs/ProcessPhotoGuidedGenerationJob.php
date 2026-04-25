@@ -120,13 +120,16 @@ class ProcessPhotoGuidedGenerationJob implements ShouldQueue
         $imageBase64 = $this->loadReferenceImageBase64($job);
 
         if ($imageBase64 !== null) {
-            $modelConfig = config('prompts.models.kontext');
-            $settings    = $job->settings_json ?? [];
-            $allowed     = ['9:16', '3:4', '1:1', '4:3', '16:9'];
-            $aspectRatio = $modelConfig['aspect_ratio'];
+            $modelConfig   = config('prompts.models.kontext');
+            $settings      = $job->settings_json ?? [];
+            $contentTypeI2I = (string) ($settings['content_type'] ?? 'photo');
+            $allowed       = ['9:16', '3:4', '1:1', '4:3', '16:9'];
+            $aspectRatio   = $modelConfig['aspect_ratio'];
             if (isset($settings['aspect_ratio']) && in_array($settings['aspect_ratio'], $allowed, true)) {
                 $aspectRatio = $settings['aspect_ratio'];
             }
+            // Card: upsampling rewrites the prompt and often garbles on-image Cyrillic — keep the exact user prompt.
+            $upsampling = $contentTypeI2I === 'card' ? false : (bool) ($modelConfig['prompt_upsampling'] ?? true);
 
             $input = [
                 'prompt'            => $prompt,
@@ -134,7 +137,7 @@ class ProcessPhotoGuidedGenerationJob implements ShouldQueue
                 'aspect_ratio'      => $aspectRatio,
                 'output_format'     => $modelConfig['output_format'],
                 'safety_tolerance'  => $modelConfig['safety_tolerance'],
-                'prompt_upsampling' => $modelConfig['prompt_upsampling'],
+                'prompt_upsampling' => $upsampling,
             ];
             if (isset($modelConfig['output_quality'])) {
                 $input['output_quality'] = (int) $modelConfig['output_quality'];
