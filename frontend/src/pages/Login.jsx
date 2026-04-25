@@ -12,7 +12,7 @@ import { useSite } from '../context/SiteContext'
 
 export default function Login() {
   const { t } = useTranslation()
-  const { siteName } = useSite()
+  const { siteName, registrationEnabled } = useSite()
   const { login } = useAuthContext()
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -141,12 +141,14 @@ export default function Login() {
           <p className="mt-6 text-xs text-amber-500/90 text-center">{t('auth.oauthMissingApiUrl')}</p>
         )}
 
+        {registrationEnabled && (
         <p className="text-center text-sm text-gray-500 mt-6">
           {t('auth.noAccount')}{' '}
           <Link to="/register" className="text-brand-400 hover:text-brand-300 font-medium">
             {t('auth.createFree')}
           </Link>
         </p>
+        )}
       </div>
     </div>
   )

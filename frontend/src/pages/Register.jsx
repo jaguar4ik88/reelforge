@@ -8,9 +8,11 @@ import toast from 'react-hot-toast'
 import { getApiOrigin, getOAuthRedirectUrl, redirectToApp } from '../utils/apiBase'
 import { postLoginPath } from '../constants/routes'
 import SeoHead from '../components/seo/SeoHead'
+import { useSite } from '../context/SiteContext'
 
 export default function Register() {
   const { t } = useTranslation()
+  const { registrationEnabled } = useSite()
   const { register } = useAuthContext()
   const navigate     = useNavigate()
 
@@ -43,9 +45,21 @@ export default function Register() {
     <div className="w-full max-w-md">
       <SeoHead titleKey="seo.registerTitle" descriptionKey="seo.registerDescription" />
       <div className="card">
-        <h1 className="text-2xl font-bold text-white mb-1">{t('auth.registerTitle')}</h1>
-        <p className="text-gray-400 text-sm mb-8">{t('auth.registerSub')}</p>
+        <h1 className="text-2xl font-bold text-white mb-1">
+          {registrationEnabled ? t('auth.registerTitle') : t('auth.registrationClosedTitle')}
+        </h1>
+        <p className="text-gray-400 text-sm mb-8">
+          {registrationEnabled ? t('auth.registerSub') : t('auth.registrationClosedSub')}
+        </p>
 
+        {!registrationEnabled ? (
+          <p className="text-center text-sm text-gray-400">
+            <Link to="/login" className="text-brand-400 hover:text-brand-300 font-medium">
+              {t('auth.signIn')}
+            </Link>
+          </p>
+        ) : (
+          <>
         <form onSubmit={submit} className="space-y-5">
           <FormField label={t('auth.fullName')} error={errors.name?.[0]}>
             <input
@@ -139,6 +153,8 @@ export default function Register() {
             {t('auth.signIn')}
           </Link>
         </p>
+          </>
+        )}
       </div>
     </div>
   )

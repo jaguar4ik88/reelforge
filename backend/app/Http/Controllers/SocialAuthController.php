@@ -57,8 +57,8 @@ class SocialAuthController extends Controller
         }
 
         $email = $social->getEmail();
-        $name  = $social->getName() ?: ($social->getNickname() ?: Str::before($email ?? '', '@') ?: 'User');
-        $id    = $social->getId();
+        $name = $social->getName() ?: ($social->getNickname() ?: Str::before($email ?? '', '@') ?: 'User');
+        $id = $social->getId();
 
         if ($email === null || $email === '') {
             return redirect()->away($this->frontendUrl().'/login?oauth_error=no_email');
@@ -78,18 +78,22 @@ class SocialAuthController extends Controller
 
                 $user = $existing;
                 $user->update([
-                    'provider'    => $provider,
+                    'provider' => $provider,
                     'provider_id' => $id,
                 ]);
             } else {
+                if (! config('platform.registration_enabled', true)) {
+                    return redirect()->away($this->frontendUrl().'/login?oauth_error=registration_closed');
+                }
+
                 $user = User::create([
-                    'name'                => $name,
-                    'email'               => $email,
-                    'password'            => null,
-                    'provider'            => $provider,
-                    'provider_id'         => $id,
-                    'plan'                => 'free',
-                    'email_verified_at'   => now(),
+                    'name' => $name,
+                    'email' => $email,
+                    'password' => null,
+                    'provider' => $provider,
+                    'provider_id' => $id,
+                    'plan' => 'free',
+                    'email_verified_at' => now(),
                 ]);
 
                 Mail::to($user->email)->queue(new WelcomeMail($user));

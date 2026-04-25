@@ -21,6 +21,16 @@ class AuthController extends Controller
 {
     public function register(RegisterRequest $request): JsonResponse
     {
+        if (! config('platform.registration_enabled', true)) {
+            return response()->json([
+                'success' => false,
+                'message' => __('messages.auth.registration_disabled'),
+                'errors' => [
+                    'email' => [__('messages.auth.registration_disabled')],
+                ],
+            ], 403);
+        }
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
