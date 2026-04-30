@@ -19,9 +19,10 @@ import ForgotPassword  from './pages/ForgotPassword'
 import ResetPassword   from './pages/ResetPassword'
 import Dashboard     from './pages/Dashboard'
 import TemplatesPage from './pages/TemplatesPage'
-import CreateStudio  from './pages/CreateStudio'
 import Gallery       from './pages/Gallery'
 import CreateProductPhotoFlow from './pages/CreateProductPhotoFlow'
+import InfographicEditor from './pages/InfographicEditor'
+import ProductCardPage from './pages/ProductCardPage'
 import ProjectView   from './pages/ProjectView'
 import Profile       from './pages/Profile'
 import Credits       from './pages/Credits'
@@ -121,9 +122,18 @@ export default function App() {
           <Route path="dashboard"   element={<Dashboard />} />
           <Route path="products"    element={<Navigate to={`${APP_BASE}/gallery`} replace />} />
           <Route path="templates"   element={<TemplatesPage />} />
-          <Route path="create"      element={<CreateStudio />} />
+          <Route path="create" element={<Navigate to={`${APP_BASE}/dashboard`} replace />} />
           <Route path="gallery"     element={<Gallery />} />
-          <Route path="projects/new-photo" element={<CreateProductPhotoFlow />} />
+          <Route
+            path="projects/new-photo"
+            element={<CreateProductPhotoFlow key="flow-photo" flowVariant="photoOnly" />}
+          />
+          <Route
+            path="projects/new-video"
+            element={<CreateProductPhotoFlow key="flow-video" flowVariant="videoOnly" />}
+          />
+          <Route path="infographic" element={<InfographicEditor />} />
+          <Route path="product-card" element={<ProductCardPage />} />
           <Route path="projects/:id"     element={<ProjectView />} />
           <Route path="profile"     element={<Profile />} />
           <Route path="credits"     element={<Credits />} />
@@ -160,11 +170,14 @@ export default function App() {
         <Route path="/dashboard" element={<Navigate to={`${APP_BASE}/dashboard`} replace />} />
         <Route path="/products" element={<Navigate to={`${APP_BASE}/gallery`} replace />} />
         <Route path="/templates" element={<Navigate to={`${APP_BASE}/templates`} replace />} />
-        <Route path="/create" element={<Navigate to={`${APP_BASE}/create`} replace />} />
+        <Route path="/create" element={<Navigate to={`${APP_BASE}/dashboard`} replace />} />
         <Route path="/gallery" element={<Navigate to={`${APP_BASE}/gallery`} replace />} />
         <Route path="/profile" element={<Navigate to={`${APP_BASE}/profile`} replace />} />
         <Route path="/projects/new-photo" element={<Navigate to={`${APP_BASE}/projects/new-photo`} replace />} />
+        <Route path="/projects/new-video" element={<Navigate to={`${APP_BASE}/projects/new-video`} replace />} />
         <Route path="/projects/:id" element={<LegacyProjectRedirect />} />
+        <Route path="/product-card" element={<Navigate to={`${APP_BASE}/product-card`} replace />} />
+        <Route path="/infographic" element={<Navigate to={`${APP_BASE}/infographic`} replace />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

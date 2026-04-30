@@ -10,6 +10,7 @@ use App\Http\Controllers\API\FastSpringController;
 use App\Http\Controllers\API\GenerationController;
 use App\Http\Controllers\API\HomeController;
 use App\Http\Controllers\API\ImageController;
+use App\Http\Controllers\API\InfographicByExampleController;
 use App\Http\Controllers\API\PhotoGuidedProjectController;
 use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\ProjectController;
@@ -68,6 +69,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/home', HomeController::class);
 
     // Projects (photo-guided AI flow only)
+    Route::get('infographic/card-examples', [InfographicByExampleController::class, 'cardExamples']);
+    Route::post('infographic/generate-by-example', [InfographicByExampleController::class, 'store']);
+
     Route::post('projects/from-photo', [PhotoGuidedProjectController::class, 'store']);
     Route::post('projects/{project}/product-analysis', [PhotoGuidedProjectController::class, 'analyzeProduct']);
     Route::post('projects/{project}/photo-generations', [PhotoGuidedProjectController::class, 'startGeneration']);

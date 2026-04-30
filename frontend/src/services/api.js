@@ -112,6 +112,15 @@ export const photoFlowApi = {
     api.post(`/projects/${projectId}/photo-generations`, payload),
 }
 
+/** Infographic: card-by-example (vision ×2 + FLUX Kontext collage). */
+export const infographicApi = {
+  cardExamples: () => api.get('/infographic/card-examples'),
+  generateByExample: (formData) =>
+    api.post('/infographic/generate-by-example', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
+}
+
 // ── Templates ─────────────────────────────────────────────────────────────────
 export const templatesApi = {
   list: () => api.get('/templates'),

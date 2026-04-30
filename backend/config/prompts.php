@@ -2,7 +2,7 @@
 
 /**
  * ReelForge image/video prompt strings — loaded from `config/prompts/*.php` and merged here.
- * Edit per-domain files: analysis, photo, card, video, common.
+ * Edit per-domain files: analysis, photo, card, video, common, card/example.
  *
  * Merged config keys match `config('prompts.*')` used in ProductPromptBuilder, WishesPromptEnrichmentService, jobs, etc.
  */
@@ -31,6 +31,7 @@ foreach (
     [
         __DIR__.'/prompts/photo.php',
         __DIR__.'/prompts/card.php',
+        __DIR__.'/prompts/card/example.php',
         __DIR__.'/prompts/video.php',
         __DIR__.'/prompts/common.php',
     ] as $path

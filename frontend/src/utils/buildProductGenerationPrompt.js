@@ -12,8 +12,8 @@ const CONTENT_TYPE = {
 const SCENE_STYLE = {
   from_wishes:
     'Scene: follow the user wishes as the primary art direction — composition, lighting, setting, and mood come from their description.',
-  in_use:
-    'Scene: product in real use — hands or context showing application; authentic lifestyle feel.',
+  no_watermark:
+    'Scene: remove watermarks, shop URLs, and overlaid text from the reference; place the product on a clean neutral studio background, sharp and listing-ready.',
   environment:
     'Scene: product placed in a believable real-world environment; natural light, depth, context.',
   studio:
@@ -23,7 +23,7 @@ const SCENE_STYLE = {
 /**
  * @param {object} opts
  * @param {'photo'|'card'|'video'} opts.contentType
- * @param {'in_use'|'environment'|'studio'} opts.sceneStyle
+ * @param {'no_watermark'|'environment'|'studio'} opts.sceneStyle
  * @param {string} [opts.userWishes]
  * @param {string} [opts.imageCaption] — from vision / captioning API (server-side)
  */
