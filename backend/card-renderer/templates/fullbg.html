@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700;900&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: {{CANVAS_WIDTH}}px;
+      height: {{CANVAS_HEIGHT}}px;
+      overflow: hidden;
+      font-family: 'Roboto Condensed', sans-serif;
+      --accent: {{ACCENT}};
+    }
+    .card {
+      width: {{CANVAS_WIDTH}}px;
+      height: {{CANVAS_HEIGHT}}px;
+      position: relative;
+      overflow: hidden;
+      background: #111;
+    }
+    .card .product-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .grad-top {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 38%;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.72) 0%, transparent 100%);
+      pointer-events: none;
+    }
+    .grad-bot {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 52%;
+      background: linear-gradient(to top, rgba(0,0,0,0.82) 0%, transparent 100%);
+      pointer-events: none;
+    }
+    .price-block {
+      position: absolute;
+      top: 3.5%;
+      right: 4%;
+      text-align: right;
+      z-index: 2;
+    }
+    .price-main {
+      font-family: 'Oswald', sans-serif;
+      font-weight: 900;
+      font-size: calc({{CANVAS_WIDTH}}px * 0.065);
+      color: #fff;
+      line-height: 1;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+    }
+    .price-old {
+      font-size: calc({{CANVAS_WIDTH}}px * 0.032);
+      color: rgba(255,255,255,0.75);
+      text-decoration: line-through;
+      margin-top: 0.25rem;
+    }
+    .badge-row-mid {
+      position: absolute;
+      top: 36%;
+      left: 4%;
+      right: 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 3%;
+      z-index: 2;
+    }
+    .badge-col { display: flex; flex-direction: column; gap: 0.55rem; max-width: 42%; }
+    .badge-col.right { align-items: flex-end; text-align: right; }
+    .pill {
+      display: inline-block;
+      padding: 0.35rem 0.75rem;
+      background: rgba(0,0,0,0.55);
+      color: #fff;
+      font-size: calc({{CANVAS_WIDTH}}px * 0.028);
+      font-weight: 700;
+      border-radius: 6px;
+      border-left: 4px solid var(--accent);
+      backdrop-filter: blur(8px);
+      max-width: 100%;
+      word-wrap: break-word;
+    }
+    .badge-col.right .pill {
+      border-left: none;
+      border-right: 4px solid var(--accent);
+    }
+    .bottom-copy {
+      position: absolute;
+      left: 4%;
+      right: 4%;
+      bottom: 4%;
+      z-index: 2;
+    }
+    .title {
+      font-family: 'Oswald', sans-serif;
+      font-weight: 900;
+      font-size: calc({{CANVAS_WIDTH}}px * 0.062);
+      color: #fff;
+      line-height: 1.05;
+      text-transform: uppercase;
+      text-shadow: 0 2px 16px rgba(0,0,0,0.6);
+      max-width: 92%;
+      word-wrap: break-word;
+    }
+    .desc {
+      margin-top: 0.45rem;
+      font-size: calc({{CANVAS_WIDTH}}px * 0.026);
+      color: rgba(255,255,255,0.88);
+      line-height: 1.35;
+      max-width: 95%;
+      word-wrap: break-word;
+    }
+    .cta {
+      display: inline-block;
+      margin-top: 0.65rem;
+      padding: 0.45rem 1.1rem;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'Oswald', sans-serif;
+      font-weight: 700;
+      font-size: calc({{CANVAS_WIDTH}}px * 0.028);
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    {{PRODUCT_IMAGE}}
+    <div class="grad-top"></div>
+    <div class="grad-bot"></div>
+    <div class="price-block">
+      <div class="price-main">{{PRICE}}</div>
+      <div class="price-old">{{PRICE_OLD}}</div>
+    </div>
+    <div class="badge-row-mid">
+      <div class="badge-col left">
+        <span class="pill">{{BADGE_1}}</span>
+        <span class="pill">{{BADGE_2}}</span>
+      </div>
+      <div class="badge-col right">
+        <span class="pill">{{BADGE_3}}</span>
+        <span class="pill">{{BADGE_4}}</span>
+      </div>
+    </div>
+    <div class="bottom-copy">
+      <div class="title">{{TITLE}}</div>
+      <div class="desc">{{DESC}}</div>
+      <span class="cta">Купить</span>
+    </div>
+  </div>
+</body>
+</html>

@@ -52,6 +52,12 @@ return [
         'stub_quality_1' => 'Product is visible in the frame',
         'stub_quality_2' => 'Add an image-analysis API key for automatic descriptions',
     ],
+    'infographic_by_example' => [
+        'need_example' => 'Upload an example card image or pick one from the gallery.',
+        'example_one_source' => 'Use either an uploaded example or a gallery file — not both.',
+        'invalid_example_file' => 'Example image is missing or invalid.',
+        'started' => 'Infographic generation queued.',
+    ],
     'credits' => [
         'stub_purchase' => 'Credits added (stub purchase; enable only in debug).',
     ],

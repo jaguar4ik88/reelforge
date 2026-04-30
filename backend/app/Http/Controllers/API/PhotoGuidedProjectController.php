@@ -12,12 +12,12 @@ use App\Jobs\ProcessPhotoGuidedGenerationJob;
 use App\Models\GenerationJob;
 use App\Models\Project;
 use App\Services\Credits\CreditService;
-use App\Services\Subscriptions\SubscriptionEntitlementService;
 use App\Services\Product\ProductPromptBuilder;
 use App\Services\Product\WishesPromptEnrichmentService;
 use App\Services\Project\PhotoGuidedProjectService;
-use App\Services\Vision\ProductImageCaptionService;
+use App\Services\Subscriptions\SubscriptionEntitlementService;
 use App\Services\Vision\ProductCardPhotoAnalysisService;
+use App\Services\Vision\ProductImageCaptionService;
 use App\Services\Vision\ProductPhotoAnalysisService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -43,14 +43,14 @@ class PhotoGuidedProjectController extends Controller
             : [$request->file('image')];
 
         $productName = $request->validated('product_name');
-        $category    = $request->validated('category');
-        $templateId  = $request->validated('template_id');
+        $category = $request->validated('category');
+        $templateId = $request->validated('template_id');
 
         if ($templateId !== null && $this->subscriptionEntitlements->activeSubscriptionPlan($request->user()) === null) {
             return response()->json([
                 'success' => false,
                 'message' => __('messages.photo_guided.template_requires_subscription'),
-                'errors'  => [],
+                'errors' => [],
             ], 422);
         }
 
@@ -65,7 +65,7 @@ class PhotoGuidedProjectController extends Controller
         return response()->json([
             'success' => true,
             'message' => __('messages.photo_guided.project_created'),
-            'data'    => new ProjectResource($project->load(['template', 'images'])),
+            'data' => new ProjectResource($project->load(['template', 'images'])),
         ], 201);
     }
 
@@ -82,14 +82,14 @@ class PhotoGuidedProjectController extends Controller
         $meta = $this->productPhotoAnalysisService->analyze($project->load('images'));
 
         $project->update([
-            'title'             => $meta['name'],
+            'title' => $meta['name'],
             'product_meta_json' => $meta,
         ]);
 
         return response()->json([
             'success' => true,
             'message' => '',
-            'data'    => [
+            'data' => [
                 'product' => $meta,
                 'project' => new ProjectResource($project->fresh()->load(['template', 'images'])),
             ],
@@ -108,7 +108,7 @@ class PhotoGuidedProjectController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => __('messages.photo_guided.template_requires_subscription'),
-                'errors'  => [],
+                'errors' => [],
             ], 422);
         }
 
@@ -116,7 +116,7 @@ class PhotoGuidedProjectController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => __('messages.photo_guided.already_running'),
-                'errors'  => [],
+                'errors' => [],
             ], 422);
         }
 
@@ -136,7 +136,7 @@ class PhotoGuidedProjectController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => $message,
-                    'errors'  => ['content_type' => [$message]],
+                    'errors' => ['content_type' => [$message]],
                 ], 422);
             }
         }
@@ -159,14 +159,14 @@ class PhotoGuidedProjectController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => __('messages.photo_guided.generation_requires_credits'),
-                    'errors'  => [],
+                    'errors' => [],
                 ], 422);
             }
             if (! $this->creditService->canSpend($request->user(), $cost)) {
                 return response()->json([
                     'success' => false,
                     'message' => __('messages.photo_guided.insufficient_credits'),
-                    'errors'  => [],
+                    'errors' => [],
                 ], 422);
             }
         }
@@ -175,11 +175,11 @@ class PhotoGuidedProjectController extends Controller
         $project->refresh();
 
         $firstImage = $project->images()->orderBy('order')->first();
-        $caption     = $this->captionService->describe($firstImage);
-        $rawWishes   = $validated['user_wishes'] ?? '';
+        $caption = $this->captionService->describe($firstImage);
+        $rawWishes = $validated['user_wishes'] ?? '';
 
-        $cardAnalysisJson   = null;
-        $cardTextsJson      = null;
+        $cardAnalysisJson = null;
+        $cardTextsJson = null;
         $cardVisualForStore = null;
         if (($validated['content_type'] ?? '') === 'card') {
             $cardVisualForStore = $this->cardPhotoAnalysis->analyze($project);
@@ -189,7 +189,7 @@ class PhotoGuidedProjectController extends Controller
             $cardTextsJson = $this->cardTextsAsJson($rawWishes);
         }
 
-        $enriched    = $this->wishesEnrichment->enrich(
+        $enriched = $this->wishesEnrichment->enrich(
             $project->title,
             $validated['product_category'] ?? 'other',
             $validated['content_type'],
@@ -219,35 +219,39 @@ class PhotoGuidedProjectController extends Controller
 
         try {
             $cardVisual = $cardVisualForStore;
-            $job = DB::transaction(function () use ($request, $project, $validated, $caption, $prompt, $cost, $cardVisual) {
+            $job = DB::transaction(function () use ($request, $project, $validated, $caption, $prompt, $cost, $cardVisual, $enriched) {
                 $fill = ['final_prompt' => $prompt];
                 if (is_array($cardVisual) && $cardVisual !== []) {
                     $meta = $project->product_meta_json;
                     if (! is_array($meta)) {
                         $meta = [];
                     }
-                    $meta['card_photo_analysis']    = $cardVisual;
+                    $meta['card_photo_analysis'] = $cardVisual;
                     $meta['card_photo_analysis_at'] = now()->toIso8601String();
                     $fill['product_meta_json'] = $meta;
                 }
                 $project->forceFill($fill)->save();
 
+                $settingsForJob = array_merge($validated, [
+                    '_enriched_wishes' => (string) $enriched,
+                ]);
+
                 $job = GenerationJob::query()->create([
-                    'user_id'       => $request->user()->id,
-                    'project_id'    => $project->id,
-                    'kind'          => 'photo_guided',
-                    'status'        => 'pending',
-                    'settings_json' => $validated,
+                    'user_id' => $request->user()->id,
+                    'project_id' => $project->id,
+                    'kind' => 'photo_guided',
+                    'status' => 'pending',
+                    'settings_json' => $settingsForJob,
                     'image_caption' => $caption !== '' ? $caption : null,
-                    'final_prompt'  => $prompt,
-                    'provider'      => 'stub',
+                    'final_prompt' => $prompt,
+                    'provider' => 'stub',
                 ]);
 
                 if (config('platform.credits.require_for_generation', true) && $cost > 0) {
                     $tx = $this->creditService->spendForPhotoGuidedGeneration($request->user(), $job, $cost);
                     $job->forceFill([
-                        'credits_cost'             => $cost,
-                        'credits_transaction_id'   => $tx->id,
+                        'credits_cost' => $cost,
+                        'credits_transaction_id' => $tx->id,
                     ])->save();
                 }
 
@@ -257,7 +261,7 @@ class PhotoGuidedProjectController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => __('messages.photo_guided.insufficient_credits'),
-                'errors'  => [],
+                'errors' => [],
             ], 422);
         }
 
@@ -266,9 +270,9 @@ class PhotoGuidedProjectController extends Controller
         return response()->json([
             'success' => true,
             'message' => __('messages.photo_guided.started'),
-            'data'    => [
-                'project'         => new ProjectResource($project->fresh()->load(['template', 'images'])),
-                'generation_job'  => new GenerationJobResource($job),
+            'data' => [
+                'project' => new ProjectResource($project->fresh()->load(['template', 'images'])),
+                'generation_job' => new GenerationJobResource($job),
             ],
         ], 201);
     }
@@ -289,7 +293,7 @@ class PhotoGuidedProjectController extends Controller
     private function cardTextsAsJson(string $raw): string
     {
         $lines = preg_split('/\r\n|\r|\n/', $raw) ?: [];
-        $out   = [];
+        $out = [];
         foreach ($lines as $line) {
             $t = trim($line);
             if ($t !== '') {
@@ -306,7 +310,7 @@ class PhotoGuidedProjectController extends Controller
     private function mergeProductOverridesFromRequest(Project $project, array $validated): void
     {
         $name = isset($validated['product_name']) ? trim((string) $validated['product_name']) : '';
-        $cat  = isset($validated['product_category']) ? trim((string) $validated['product_category']) : '';
+        $cat = isset($validated['product_category']) ? trim((string) $validated['product_category']) : '';
         $qual = $validated['product_qualities'] ?? null;
 
         if ($name === '' && $cat === '' && ! is_array($qual)) {
@@ -329,7 +333,7 @@ class PhotoGuidedProjectController extends Controller
         }
 
         $project->update([
-            'title'             => $meta['name'] ?? $project->title,
+            'title' => $meta['name'] ?? $project->title,
             'product_meta_json' => $meta,
         ]);
     }

@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Storage;
 class ProductCardPhotoAnalysisService
 {
     /**
-     * @return array<string, mixed>|null  Decoded JSON or null if unavailable
+     * @return array<string, mixed>|null Decoded JSON or null if unavailable
      */
     public function analyze(Project $project): ?array
     {
@@ -29,14 +29,31 @@ class ProductCardPhotoAnalysisService
             return null;
         }
 
-        $system = trim((string) config('prompts.photo_analysis_system', ''));
+        $bytes = Storage::disk($disk)->get($first->path);
+        $ext = pathinfo($first->path, PATHINFO_EXTENSION);
+
+        return $this->analyzeRawBytes($bytes, is_string($ext) ? $ext : 'jpg', 'photo_analysis_system');
+    }
+
+    /**
+     * Vision JSON for arbitrary image bytes (e.g. Replicate output before text overlay).
+     *
+     * @param  string  $promptConfigKey  Key on merged prompts config (e.g. card_overlay_analysis_system).
+     * @return array<string, mixed>|null
+     */
+    public function analyzeRawBytes(string $bytes, string $fileExtension = 'jpg', string $promptConfigKey = 'card_overlay_analysis_system'): ?array
+    {
+        if ($bytes === '') {
+            return null;
+        }
+
+        $system = trim((string) config('prompts.'.$promptConfigKey, ''));
         if ($system === '') {
             return null;
         }
 
-        $bytes = Storage::disk($disk)->get($first->path);
-        $mime  = $this->guessMime($first->path);
-        $b64   = base64_encode($bytes);
+        $mime = $this->guessMime('x.'.$fileExtension);
+        $b64 = base64_encode($bytes);
 
         if (! empty(config('services.anthropic.api_key'))) {
             $out = $this->analyzeWithAnthropic($b64, $mime, $system);
@@ -59,29 +76,29 @@ class ProductCardPhotoAnalysisService
     private function analyzeWithAnthropic(string $base64, string $mediaType, string $system): ?array
     {
         $model = (string) config('services.anthropic.vision_model', 'claude-3-5-sonnet-20241022');
-        $key   = (string) config('services.anthropic.api_key');
+        $key = (string) config('services.anthropic.api_key');
 
         try {
             $response = Http::timeout(120)
                 ->withHeaders([
-                    'x-api-key'         => $key,
+                    'x-api-key' => $key,
                     'anthropic-version' => '2023-06-01',
-                    'content-type'      => 'application/json',
+                    'content-type' => 'application/json',
                 ])
                 ->post('https://api.anthropic.com/v1/messages', [
-                    'model'      => $model,
+                    'model' => $model,
                     'max_tokens' => 1024,
-                    'system'     => $system,
-                    'messages'   => [
+                    'system' => $system,
+                    'messages' => [
                         [
-                            'role'    => 'user',
+                            'role' => 'user',
                             'content' => [
                                 [
-                                    'type'   => 'image',
+                                    'type' => 'image',
                                     'source' => [
-                                        'type'       => 'base64',
+                                        'type' => 'base64',
                                         'media_type' => $mediaType,
-                                        'data'       => $base64,
+                                        'data' => $base64,
                                     ],
                                 ],
                                 [
@@ -96,7 +113,7 @@ class ProductCardPhotoAnalysisService
             if ($response->failed()) {
                 Log::warning('ProductCardPhotoAnalysisService: Anthropic error', [
                     'status' => $response->status(),
-                    'body'   => $response->body(),
+                    'body' => $response->body(),
                 ]);
 
                 return null;
@@ -117,31 +134,31 @@ class ProductCardPhotoAnalysisService
      */
     private function analyzeWithOpenAI(string $base64, string $mediaType, string $system): ?array
     {
-        $key   = (string) config('services.openai.api_key');
+        $key = (string) config('services.openai.api_key');
         $model = (string) config('services.openai.vision_model', 'gpt-4o-mini');
-        $uri   = 'data:'.$mediaType.';base64,'.$base64;
+        $uri = 'data:'.$mediaType.';base64,'.$base64;
 
         try {
             $response = Http::withToken($key)
                 ->timeout(90)
                 ->post('https://api.openai.com/v1/chat/completions', [
-                    'model'             => $model,
-                    'max_tokens'        => 800,
-                    'response_format'   => ['type' => 'json_object'],
-                    'messages'          => [
+                    'model' => $model,
+                    'max_tokens' => 800,
+                    'response_format' => ['type' => 'json_object'],
+                    'messages' => [
                         [
-                            'role'    => 'system',
+                            'role' => 'system',
                             'content' => $system,
                         ],
                         [
-                            'role'    => 'user',
+                            'role' => 'user',
                             'content' => [
                                 [
                                     'type' => 'text',
                                     'text' => 'Analyze this product image and return only the JSON object described in the system message.',
                                 ],
                                 [
-                                    'type'      => 'image_url',
+                                    'type' => 'image_url',
                                     'image_url' => ['url' => $uri],
                                 ],
                             ],
@@ -152,7 +169,7 @@ class ProductCardPhotoAnalysisService
             if ($response->failed()) {
                 Log::warning('ProductCardPhotoAnalysisService: OpenAI error', [
                     'status' => $response->status(),
-                    'body'   => $response->body(),
+                    'body' => $response->body(),
                 ]);
 
                 return null;
@@ -189,9 +206,9 @@ class ProductCardPhotoAnalysisService
 
         return match ($ext) {
             'jpg', 'jpeg' => 'image/jpeg',
-            'png'         => 'image/png',
-            'webp'        => 'image/webp',
-            default       => 'image/jpeg',
+            'png' => 'image/png',
+            'webp' => 'image/webp',
+            default => 'image/jpeg',
         };
     }
 }

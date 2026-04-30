@@ -12,6 +12,14 @@ use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 Route::get('/robots.txt', RobotsController::class);
 Route::get('/sitemap.xml', SitemapController::class);
 
+if (app()->environment('local') || (bool) config('app.debug', false)) {
+    /** Temporary: verify GD / Imagick for product-card PHP composition (see CardComposerService). */
+    Route::get('/check', static fn () => response()->json([
+        'imagick' => extension_loaded('imagick'),
+        'gd' => extension_loaded('gd'),
+    ]));
+}
+
 Route::get('/auth/{provider}/redirect', [SocialAuthController::class, 'redirect'])
     ->whereIn('provider', ['google', 'apple']);
 

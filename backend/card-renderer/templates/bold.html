@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: {{CANVAS_WIDTH}}px;
+      height: {{CANVAS_HEIGHT}}px;
+      overflow: hidden;
+      --accent: {{ACCENT}};
+    }
+    .card {
+      width: {{CANVAS_WIDTH}}px;
+      height: {{CANVAS_HEIGHT}}px;
+      position: relative;
+      overflow: hidden;
+      background: #e8e8e8;
+    }
+    .card .product-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      z-index: 0;
+    }
+    .diagonal {
+      position: absolute;
+      inset: 0;
+      opacity: 0.35;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .diagonal line { stroke: var(--accent); stroke-width: 3; }
+    .corner-tri {
+      position: absolute;
+      top: 0; right: 0;
+      width: 0; height: 0;
+      border-style: solid;
+      border-width: 0 calc({{CANVAS_WIDTH}}px * 0.22) calc({{CANVAS_HEIGHT}}px * 0.18) 0;
+      border-color: transparent var(--accent) transparent transparent;
+      opacity: 0.4;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .bracket {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 72%;
+      height: 72%;
+      border: calc({{CANVAS_WIDTH}}px * 0.01) solid var(--accent);
+      border-radius: 2px;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .bracket::before, .bracket::after {
+      content: '';
+      position: absolute;
+      border: calc({{CANVAS_WIDTH}}px * 0.012) solid var(--accent);
+      width: 12%;
+      height: 12%;
+    }
+    .bracket::before { top: -4%; left: -4%; border-right: none; border-bottom: none; }
+    .bracket::after { bottom: -4%; right: -4%; border-left: none; border-top: none; }
+    .badge-row-mid {
+      position: absolute;
+      top: 36%;
+      left: 4%;
+      right: 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 3%;
+      z-index: 5;
+    }
+    .badge-col { display: flex; flex-direction: column; gap: 0.55rem; max-width: 42%; }
+    .badge-col.right { align-items: flex-end; text-align: right; }
+    .pill {
+      display: inline-block;
+      padding: 0.35rem 0.75rem;
+      background: rgba(0,0,0,0.55);
+      color: #fff;
+      font-family: 'Oswald', sans-serif;
+      font-size: calc({{CANVAS_WIDTH}}px * 0.028);
+      font-weight: 700;
+      border-radius: 6px;
+      border-left: 4px solid var(--accent);
+      backdrop-filter: blur(8px);
+      max-width: 100%;
+      word-wrap: break-word;
+    }
+    .badge-col.right .pill {
+      border-left: none;
+      border-right: 4px solid var(--accent);
+    }
+    .grad-bot {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 38%;
+      background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%);
+      pointer-events: none;
+      z-index: 3;
+    }
+    .footer {
+      position: absolute;
+      left: 0; right: 0;
+      bottom: 0;
+      padding: 3% 4% 4%;
+      z-index: 4;
+    }
+    .title {
+      font-family: 'Oswald', sans-serif;
+      font-weight: 900;
+      font-size: calc({{CANVAS_WIDTH}}px * 0.042);
+      color: #fff;
+      text-transform: uppercase;
+      max-width: 85%;
+      word-wrap: break-word;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+    }
+    .price-row {
+      margin-top: 0.35rem;
+      font-family: 'Oswald', sans-serif;
+      font-size: calc({{CANVAS_WIDTH}}px * 0.04);
+      color: #fff;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.45);
+    }
+    .price-old { color: rgba(255,255,255,0.78); text-decoration: line-through; margin-left: 0.5rem; font-size: 0.78em; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    {{PRODUCT_IMAGE}}
+    <svg class="diagonal" viewBox="0 0 100 100" preserveAspectRatio="none">
+      <line x1="0" y1="38" x2="38" y2="0" />
+      <line x1="0" y1="48" x2="48" y2="0" />
+      <line x1="58" y1="100" x2="100" y2="58" />
+      <line x1="68" y1="100" x2="100" y2="68" />
+    </svg>
+    <div class="corner-tri"></div>
+    <div class="bracket"></div>
+    <div class="badge-row-mid">
+      <div class="badge-col left">
+        <span class="pill">{{BADGE_1}}</span>
+        <span class="pill">{{BADGE_2}}</span>
+      </div>
+      <div class="badge-col right">
+        <span class="pill">{{BADGE_3}}</span>
+        <span class="pill">{{BADGE_4}}</span>
+      </div>
+    </div>
+    <div class="grad-bot"></div>
+    <div class="footer">
+      <div class="title">{{TITLE}}</div>
+      <div class="price-row">{{PRICE}}<span class="price-old">{{PRICE_OLD}}</span></div>
+    </div>
+  </div>
+</body>
+</html>

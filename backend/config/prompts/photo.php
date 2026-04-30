@@ -44,14 +44,13 @@ PROMPT,
 
         'from_wishes' => '',
 
-        'in_use' => implode(', ', [
-            'product lifestyle photography',
-            'product naturally held or used in context',
-            'authentic real-world setting',
-            'soft natural window light',
-            'shallow depth of field',
-            'warm editorial atmosphere',
-            'story-driven composition',
+        'no_watermark' => implode(', ', [
+            'e-commerce product cleanup and relight',
+            'remove all watermarks, shop URLs, stock marks, and overlaid text from the source reference',
+            'reproduce the product on a clean neutral light-grey to off-white seamless studio background',
+            'soft even three-point professional lighting, tack-sharp product detail',
+            'no people, no hands, no busy environment',
+            'generous copy-safe negative space, marketplace listing hero',
         ]),
 
         'studio' => implode(', ', [

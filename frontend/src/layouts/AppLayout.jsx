@@ -1,5 +1,5 @@
 import { Outlet, NavLink, Link, useNavigate, useLocation } from 'react-router-dom'
-import { Film, LayoutDashboard, Layers, MessageSquare, Images, LogOut, User, Coins, ImagePlus } from 'lucide-react'
+import { Film, LayoutDashboard, Layers, Images, LogOut, User, Coins, ImagePlus, Clapperboard, CreditCard } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useAuthContext } from '../context/AuthContext'
 import { useSite } from '../context/SiteContext'
@@ -16,8 +16,9 @@ export default function AppLayout() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const fullBleed =
-    [`${APP_BASE}/templates`, `${APP_BASE}/gallery`, `${APP_BASE}/create`].includes(pathname) ||
-    pathname.startsWith(`${APP_BASE}/projects/new-photo`)
+    [`${APP_BASE}/templates`, `${APP_BASE}/gallery`, `${APP_BASE}/infographic`, `${APP_BASE}/product-card`].includes(pathname) ||
+    pathname.startsWith(`${APP_BASE}/projects/new-photo`) ||
+    pathname.startsWith(`${APP_BASE}/projects/new-video`)
 
   const handleLogout = async () => {
     await logout()
@@ -92,7 +93,7 @@ export default function AppLayout() {
           </NavLink>
 
           <NavLink
-            to={`${APP_BASE}/create`}
+            to={`${APP_BASE}/projects/new-video`}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                 isActive
@@ -101,8 +102,22 @@ export default function AppLayout() {
               }`
             }
           >
-            <MessageSquare className="w-4 h-4" />
-            {t('nav.create')}
+            <Clapperboard className="w-4 h-4" />
+            {t('nav.videoGeneration')}
+          </NavLink>
+
+          <NavLink
+            to={`${APP_BASE}/product-card`}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                isActive
+                  ? 'bg-brand-600/20 text-brand-300 border border-brand-500/30'
+                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+              }`
+            }
+          >
+            <CreditCard className="w-4 h-4" />
+            {t('nav.productCard')}
           </NavLink>
 
           <NavLink

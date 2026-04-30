@@ -52,6 +52,53 @@ return [
         ],
     ],
 
+    /**
+     * Product card (new architecture): Kontext scene regen → vision typography → PHP text overlay.
+     * Only env toggle: APP_PLATFORM_CARD_PHP_COMPOSITE. All other behaviour is defined here (no card-specific .env keys).
+     */
+    'card' => [
+        'php_composite' => [
+            'enabled' => filter_var(env('APP_PLATFORM_CARD_PHP_COMPOSITE', false), FILTER_VALIDATE_BOOLEAN),
+            'width' => 1080,
+            'height' => 1080,
+            /** Legacy T2I backdrop: prompts.models key (flux-schnell / flux-dev). */
+            'replicate_model_key' => 'preview',
+            /** Longer side (px) for 16:9 / 9:16 etc. when using aspect_ratio from the UI. */
+            'long_edge' => 1080,
+            'default_accent' => '#d4af37',
+            'auto_text_contrast' => true,
+            'local_text_contrast' => true,
+            'infographic_callouts' => false,
+            /**
+             * true: FLUX Kontext full scene → vision → PHP text. false: empty T2I backdrop + optional product paste.
+             */
+            'regen_scene_before_text' => true,
+            'scene_regen_model_key' => 'kontext',
+            'vision_typography_from_scene' => true,
+            'vision_overlay_analysis' => true,
+            'text_halo_on_light_patch' => true,
+            'diagonal_accents' => false,
+            /** Legacy path only: overlay reference as product layer. */
+            'composite_product_layer' => true,
+            'font_bold' => 'Montserrat-Bold.ttf',
+            'font_regular' => 'Montserrat-Regular.ttf',
+        ],
+
+        /**
+         * HTML + Puppeteer screenshot for on-card typography (replaces Imagick/GD text overlay when enabled).
+         */
+        'puppeteer' => [
+            'enabled' => filter_var(env('APP_PLATFORM_CARD_PUPPETEER', false), FILTER_VALIDATE_BOOLEAN),
+            'node_binary' => env('APP_PLATFORM_NODE_BINARY', 'node'),
+            /** Absolute path to cli.mjs; empty = base_path('card-renderer/cli.mjs'). */
+            'cli_path' => env('APP_PLATFORM_CARD_PUPPETEER_CLI', ''),
+            /** Optional: system Chrome for puppeteer-core style setups. */
+            'executable_path' => env('PUPPETEER_EXECUTABLE_PATH', ''),
+            'device_scale_factor' => (int) env('APP_PLATFORM_CARD_PUPPETEER_DPR', 2),
+            'jpeg_quality' => (int) env('APP_PLATFORM_CARD_PUPPETEER_JPEG_QUALITY', 92),
+        ],
+    ],
+
     'credits' => [
         'welcome_bonus' => (int) env('APP_PLATFORM_WELCOME_CREDITS', env('REELFORGE_WELCOME_CREDITS', 10)),
         'default_video_cost' => (int) env('APP_PLATFORM_DEFAULT_VIDEO_CREDIT_COST', env('REELFORGE_DEFAULT_VIDEO_CREDIT_COST', 10)),
@@ -63,10 +110,22 @@ return [
             'photo_per_image' => (int) env('APP_PLATFORM_PHOTO_CONTENT_CREDIT_PER_IMAGE', env('REELFORGE_PHOTO_CONTENT_CREDIT_PER_IMAGE', 2)),
             'photo_scene_credits' => [
                 'from_wishes' => (int) env('APP_PLATFORM_PHOTO_SCENE_FROM_WISHES_CREDITS', env('REELFORGE_PHOTO_SCENE_FROM_WISHES_CREDITS', 2)),
-                'in_use' => (int) env('APP_PLATFORM_PHOTO_SCENE_IN_USE_CREDITS', env('REELFORGE_PHOTO_SCENE_IN_USE_CREDITS', 2)),
+                'no_watermark' => (int) env(
+                    'APP_PLATFORM_PHOTO_SCENE_NO_WATERMARK',
+                    env('APP_PLATFORM_PHOTO_SCENE_IN_USE_CREDITS', env('REELFORGE_PHOTO_SCENE_IN_USE_CREDITS', 2))
+                ),
                 'studio' => (int) env('APP_PLATFORM_PHOTO_SCENE_STUDIO_CREDITS', env('REELFORGE_PHOTO_SCENE_STUDIO_CREDITS', 2)),
             ],
-            'card_per_image' => (int) env('APP_PLATFORM_CARD_CONTENT_CREDIT_PER_IMAGE', env('REELFORGE_CARD_CONTENT_CREDIT_PER_IMAGE', 1)),
+            /** GPT Image card from product + reference (Product card: «Приклад», «Шаблон»). */
+            'card_by_example' => (int) env('APP_PLATFORM_CARD_BY_EXAMPLE_CREDITS', env('REELFORGE_CARD_BY_EXAMPLE_CREDITS', 2)),
+            /** Prompt / photo-guided product card (вкладка «Промпт», generation з content_type card). */
+            'card_by_prompt' => (int) env(
+                'APP_PLATFORM_CARD_BY_PROMPT_CREDITS',
+                env(
+                    'REELFORGE_CARD_BY_PROMPT_CREDITS',
+                    env('APP_PLATFORM_CARD_CONTENT_CREDIT_PER_IMAGE', env('REELFORGE_CARD_CONTENT_CREDIT_PER_IMAGE', 1))
+                )
+            ),
             'video_options' => [
                 ['seconds' => 5, 'credits' => (int) env('APP_PLATFORM_VIDEO_5S_CREDIT_COST', env('REELFORGE_VIDEO_5S_CREDIT_COST', 10))],
                 ['seconds' => 20, 'credits' => (int) env('APP_PLATFORM_VIDEO_20S_CREDIT_COST', env('REELFORGE_VIDEO_20S_CREDIT_COST', 20))],

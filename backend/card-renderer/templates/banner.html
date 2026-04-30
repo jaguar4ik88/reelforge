@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: {{CANVAS_WIDTH}}px;
+      height: {{CANVAS_HEIGHT}}px;
+      overflow: hidden;
+      --accent: {{ACCENT}};
+    }
+    .card {
+      width: {{CANVAS_WIDTH}}px;
+      height: {{CANVAS_HEIGHT}}px;
+      position: relative;
+      overflow: hidden;
+      background: #eaeaea;
+    }
+    .photo-zone {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      height: 65%;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 2px solid rgba(255,255,255,0.25);
+    }
+    .photo-zone .product-img {
+      max-width: 92%;
+      max-height: 92%;
+      object-fit: contain;
+    }
+    .photo-zone .badge-row-mid {
+      position: absolute;
+      top: 28%;
+      left: 4%;
+      right: 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 3%;
+      z-index: 5;
+    }
+    .badge-col { display: flex; flex-direction: column; gap: 0.55rem; max-width: 42%; }
+    .badge-col.right { align-items: flex-end; text-align: right; }
+    .pill {
+      display: inline-block;
+      padding: 0.35rem 0.75rem;
+      background: rgba(0,0,0,0.55);
+      color: #fff;
+      font-family: 'Roboto', sans-serif;
+      font-size: calc({{CANVAS_WIDTH}}px * 0.026);
+      font-weight: 700;
+      border-radius: 6px;
+      border-left: 4px solid var(--accent);
+      backdrop-filter: blur(8px);
+      max-width: 100%;
+      word-wrap: break-word;
+    }
+    .badge-col.right .pill {
+      border-left: none;
+      border-right: 4px solid var(--accent);
+    }
+    .strip {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 35%;
+      background: var(--accent);
+      padding: 3.5% 4%;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      gap: 3%;
+      z-index: 2;
+    }
+    .strip-left {
+      flex: 1;
+      min-width: 0;
+    }
+    .strip-title {
+      font-family: 'Oswald', sans-serif;
+      font-weight: 700;
+      font-size: calc({{CANVAS_WIDTH}}px * 0.048);
+      color: #fff;
+      line-height: 1.05;
+      word-wrap: break-word;
+    }
+    .strip-right {
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .price {
+      font-family: 'Oswald', sans-serif;
+      font-weight: 700;
+      font-size: calc({{CANVAS_WIDTH}}px * 0.055);
+      color: #fff;
+    }
+    .price-old {
+      font-family: 'Roboto', sans-serif;
+      font-size: calc({{CANVAS_WIDTH}}px * 0.03);
+      color: rgba(255,255,255,0.75);
+      text-decoration: line-through;
+    }
+    .cta {
+      display: inline-block;
+      margin-top: 0.4rem;
+      padding: 0.35rem 0.9rem;
+      background: #fff;
+      color: var(--accent);
+      font-family: 'Roboto', sans-serif;
+      font-weight: 700;
+      font-size: calc({{CANVAS_WIDTH}}px * 0.024);
+      border-radius: 4px;
+    }
+    .desc {
+      margin-top: 0.35rem;
+      font-family: 'Roboto', sans-serif;
+      font-size: calc({{CANVAS_WIDTH}}px * 0.02);
+      color: rgba(255,255,255,0.9);
+      max-width: 100%;
+      word-wrap: break-word;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="photo-zone">
+      {{PRODUCT_IMAGE}}
+      <div class="badge-row-mid">
+        <div class="badge-col left">
+          <span class="pill">{{BADGE_1}}</span>
+          <span class="pill">{{BADGE_2}}</span>
+        </div>
+        <div class="badge-col right">
+          <span class="pill">{{BADGE_3}}</span>
+          <span class="pill">{{BADGE_4}}</span>
+        </div>
+      </div>
+    </div>
+    <div class="strip">
+      <div class="strip-left">
+        <div class="strip-title">{{TITLE}}</div>
+        <div class="desc">{{DESC}}</div>
+      </div>
+      <div class="strip-right">
+        <div class="price">{{PRICE}}</div>
+        <div class="price-old">{{PRICE_OLD}}</div>
+        <div class="cta">Купить</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

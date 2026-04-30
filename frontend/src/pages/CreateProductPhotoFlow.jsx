@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useEffect } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Camera, Clapperboard, FileImage, ChevronDown, Sparkles } from 'lucide-react'
+import { Camera, Clapperboard, ChevronDown, Sparkles } from 'lucide-react'
 import toast from 'react-hot-toast'
 import ImageUploader from '../components/ImageUploader'
 import Spinner from '../components/ui/Spinner'
@@ -11,7 +11,7 @@ import { APP_BASE } from '../constants/routes'
 import { useAuthContext } from '../context/AuthContext'
 import AspectRatioSelector from '../components/photo/AspectRatioSelector'
 
-const CONTENT_ICONS = { photo: Camera, card: FileImage, video: Clapperboard }
+const CONTENT_ICONS = { photo: Camera, video: Clapperboard }
 
 const CATEGORY_IDS = ['apparel', 'electronics', 'home', 'beauty', 'food', 'sports', 'other']
 
@@ -20,17 +20,19 @@ const DEFAULT_PHOTO_FLOW = {
   photo_per_image: 2,
   photo_scene_credits: {
     from_wishes: 2,
-    in_use: 2,
+    no_watermark: 2,
     studio: 2,
   },
   card_per_image: 1,
+  card_by_example: 2,
+  card_by_prompt: 1,
   video: [
     { seconds: 5, credits: 10 },
     { seconds: 20, credits: 20 },
   ],
 }
 
-export default function CreateProductPhotoFlow() {
+export default function CreateProductPhotoFlow({ flowVariant = 'photoOnly' }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
@@ -63,10 +65,9 @@ export default function CreateProductPhotoFlow() {
     }
   }, [templateState?.productCategory])
 
-  const [contentType, setContentType] = useState('photo')
+  const [contentType, setContentType] = useState(() => (flowVariant === 'videoOnly' ? 'video' : 'photo'))
   const [sceneStyle, setSceneStyle] = useState('from_wishes')
   const [photoPrompt, setPhotoPrompt] = useState('')
-  const [cardCopy, setCardCopy] = useState('')
   const [videoDescription, setVideoDescription] = useState('')
   const [videoDuration, setVideoDuration] = useState(5)
   const [batchCount, setBatchCount] = useState(1)
@@ -76,12 +77,12 @@ export default function CreateProductPhotoFlow() {
   }, [maxBatchQuantity])
 
   useEffect(() => {
-    if (contentType === 'video' && !videoTabAllowed) {
+    if (flowVariant === 'photoOnly' && contentType === 'video') {
       setContentType('photo')
     }
-  }, [contentType, videoTabAllowed])
+  }, [flowVariant, contentType])
   const [advancedOpen, setAdvancedOpen] = useState(false)
-  /** FLUX Kontext output aspect ratio (photo & product card). */
+  /** FLUX Kontext output aspect ratio (photo). */
   const [outputAspectRatio, setOutputAspectRatio] = useState('3:4')
 
   const filesSignature = useMemo(
@@ -89,12 +90,12 @@ export default function CreateProductPhotoFlow() {
     [files]
   )
 
-  /** After successful photo analysis: name filled, draft project matches current file set. */
-  const step1Ready =
-    files.length >= 1 &&
-    productName.trim() !== '' &&
-    analysisProjectId != null &&
-    analyzedFileSignature === filesSignature
+  /** Draft project from last successful analysis, matching current files (optional; generate can create a new project). */
+  const analysisSynced =
+    analysisProjectId != null && analyzedFileSignature === filesSignature && files.length >= 1
+
+  /** Generate requires photos and a product name; analysis is optional. */
+  const canStartGeneration = files.length >= 1 && productName.trim() !== ''
 
   /** AI analysis can run on photos only; API still needs a string title — we send a placeholder if empty. */
   const analyzeReady = files.length >= 1
@@ -112,15 +113,17 @@ export default function CreateProductPhotoFlow() {
 
   const photoSceneOptions = [
     { id: 'from_wishes', titleKey: 'photoFlow.scene.fromWishes.title', subKey: 'photoFlow.scene.fromWishes.sub' },
-    { id: 'in_use', titleKey: 'photoFlow.scene.inUse.title', subKey: 'photoFlow.scene.inUse.sub' },
+    { id: 'no_watermark', titleKey: 'photoFlow.scene.noWatermark.title', subKey: 'photoFlow.scene.noWatermark.sub' },
     { id: 'studio', titleKey: 'photoFlow.scene.studio.title', subKey: 'photoFlow.scene.studio.sub' },
   ]
 
-  const contentTypes = [
-    { id: 'photo', labelKey: 'photoFlow.content.photo' },
-    { id: 'card', labelKey: 'photoFlow.content.card' },
-    { id: 'video', labelKey: 'photoFlow.content.video' },
-  ]
+  const contentTypes = useMemo(() => {
+    if (flowVariant === 'videoOnly') {
+      return [{ id: 'video', labelKey: 'photoFlow.content.video' }]
+    }
+    return [{ id: 'photo', labelKey: 'photoFlow.content.photo' }]
+  }, [flowVariant])
+  const showContentTypeSwitcher = contentTypes.length > 1
 
   const photoSceneCost = useMemo(() => {
     const m = pricing.photo_scene_credits ?? DEFAULT_PHOTO_FLOW.photo_scene_credits
@@ -129,7 +132,6 @@ export default function CreateProductPhotoFlow() {
 
   const tabCredits = useMemo(() => ({
     photo: photoSceneCost,
-    card: pricing.card_per_image,
     video: (pricing.video ?? DEFAULT_PHOTO_FLOW.video).find((v) => v.seconds === videoDuration)?.credits ?? 10,
   }), [pricing, videoDuration, photoSceneCost])
 
@@ -141,11 +143,10 @@ export default function CreateProductPhotoFlow() {
     setProductName('')
     setCategory('other')
     setPhotoPrompt('')
-    setCardCopy('')
     setVideoDescription('')
     setSceneStyle('from_wishes')
     setVideoDuration(5)
-    setContentType('photo')
+    setContentType(flowVariant === 'videoOnly' ? 'video' : 'photo')
     setBatchCount(1)
     setAdvancedOpen(false)
     setOutputAspectRatio('3:4')
@@ -153,13 +154,12 @@ export default function CreateProductPhotoFlow() {
     setAnalyzedFileSignature('')
     setAnalysisQualities([])
     setFileChangeInvalidated(false)
-  }, [])
+  }, [flowVariant])
 
   const userWishesForApi = useMemo(() => {
     if (contentType === 'photo') return photoPrompt.trim()
-    if (contentType === 'card') return cardCopy.trim()
     return videoDescription.trim()
-  }, [contentType, photoPrompt, cardCopy, videoDescription])
+  }, [contentType, photoPrompt, videoDescription])
 
   const templateSceneCost = useMemo(() => {
     const m = pricing.photo_scene_credits ?? DEFAULT_PHOTO_FLOW.photo_scene_credits
@@ -214,7 +214,8 @@ export default function CreateProductPhotoFlow() {
         if (typeof p.category === 'string' && CATEGORY_IDS.includes(p.category)) {
           setCategory(p.category)
         }
-        setAnalysisQualities(Array.isArray(p.qualities) ? p.qualities : [])
+        const qs = Array.isArray(p.qualities) ? p.qualities : []
+        setAnalysisQualities(qs)
       }
       setAnalysisProjectId(projectId)
       setAnalyzedFileSignature(filesSignature)
@@ -331,7 +332,7 @@ export default function CreateProductPhotoFlow() {
         product_category: category,
         quantity: batchCount,
         ...(contentType === 'video' ? { video_duration_seconds: videoDuration } : {}),
-        ...(contentType === 'photo' || contentType === 'card' ? { aspect_ratio: outputAspectRatio } : {}),
+        ...(contentType === 'photo' ? { aspect_ratio: outputAspectRatio } : {}),
       }
 
       const { data: genRes } = await photoFlowApi.startGeneration(projectId, payload)
@@ -483,12 +484,17 @@ export default function CreateProductPhotoFlow() {
   }
 
   return (
-    <div className="max-w-xl mx-auto space-y-8 pb-12">
+    <div className="max-w-6xl mx-auto space-y-8 pb-12 px-1 sm:px-0">
       <div>
-        <h1 className="text-3xl font-bold text-white mb-1">{t('photoFlow.title')}</h1>
-        <p className="text-gray-400">{t('photoFlow.subtitle')}</p>
+        <h1 className="text-3xl font-bold text-white mb-1">
+          {flowVariant === 'videoOnly' ? t('photoFlow.pageTitleVideo') : t('photoFlow.title')}
+        </h1>
+        <p className="text-gray-400">
+          {flowVariant === 'videoOnly' ? t('photoFlow.pageSubtitleVideo') : t('photoFlow.subtitle')}
+        </p>
       </div>
 
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
       <section className="card relative border border-white/10 rounded-3xl bg-gray-900/40">
         <div className="flex items-start justify-between gap-4 mb-5">
           <h2 className="text-lg font-semibold text-white">{t('photoFlow.yourProduct')}</h2>
@@ -542,7 +548,7 @@ export default function CreateProductPhotoFlow() {
           </div>
         )}
 
-        {analysisProjectId && analyzedFileSignature === filesSignature && (
+        {analyzeReady && (
           <div className="mt-6 space-y-4">
             <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{t('photoFlow.nameAfterAnalysisTitle')}</p>
             <p className="text-xs text-gray-500 -mt-1">{t('photoFlow.nameAfterAnalysisSub')}</p>
@@ -570,16 +576,18 @@ export default function CreateProductPhotoFlow() {
           </div>
         )}
 
-        {analyzeReady && !step1Ready && !fileChangeInvalidated && !analyzing && (
-          <p className="text-xs text-gray-500 mt-4 leading-relaxed">{t('photoFlow.runAnalyzeToContinue')}</p>
+        {analyzeReady && !analysisSynced && !fileChangeInvalidated && !analyzing && (
+          <p className="text-xs text-gray-500 mt-4 leading-relaxed">{t('photoFlow.runAnalyzeOptional')}</p>
         )}
 
-        {step1Ready && (
-          <p className="text-xs text-brand-400/90 mt-4">{t('photoFlow.step1ReadyHint')}</p>
+        {analysisSynced && (
+          <p className="text-xs text-brand-400/90 mt-4">
+            {flowVariant === 'videoOnly' ? t('photoFlow.step1ReadyHintVideo') : t('photoFlow.step1ReadyHint')}
+          </p>
         )}
       </section>
 
-      <section className={`card relative border border-white/10 rounded-3xl bg-gray-900/40 ${!step1Ready ? 'opacity-55' : ''}`}>
+      <section className="card relative border border-white/10 rounded-3xl bg-gray-900/40 lg:sticky lg:top-24">
         <div className="flex items-start justify-between gap-4 mb-5">
           <h2 className="text-lg font-semibold text-white">{t('photoFlow.configureGeneration')}</h2>
           <span className="text-2xl font-black italic text-gray-500 tabular-nums" aria-hidden>
@@ -587,47 +595,42 @@ export default function CreateProductPhotoFlow() {
           </span>
         </div>
 
-        {!step1Ready && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center rounded-3xl bg-gray-950/75 backdrop-blur-[2px] px-6">
-            <p className="text-sm text-center text-gray-300 max-w-xs">{t('photoFlow.step2Locked')}</p>
-          </div>
-        )}
-
-        <div className={!step1Ready ? 'pointer-events-none select-none' : ''}>
-          <section className="mb-6">
-            <h3 className="text-sm font-semibold text-white mb-3">{t('photoFlow.contentType')}</h3>
-            <div className="flex rounded-xl bg-gray-900/80 p-1 border border-white/10 gap-1">
-              {contentTypes.map(({ id, labelKey }) => {
-                const Icon = CONTENT_ICONS[id]
-                const active = contentType === id
-                const disabled = id === 'video' && !videoTabAllowed
-                return (
-                  <button
-                    key={id}
-                    type="button"
-                    disabled={disabled}
-                    title={disabled ? t('photoFlow.videoTabDisabledTitle') : undefined}
-                    onClick={() => !disabled && setContentType(id)}
-                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-1 rounded-lg text-sm font-medium transition-all min-w-0
-                      ${disabled ? 'opacity-45 cursor-not-allowed text-gray-500' : ''}
-                      ${active && !disabled ? 'bg-white text-gray-950 shadow' : !disabled ? 'text-gray-400 hover:text-white' : ''}`}
-                  >
-                    <Icon className="w-4 h-4 shrink-0" />
-                    <span className="truncate">{t(labelKey)}</span>
-                  </button>
-                )
-              })}
-            </div>
-            {step1Ready && videoBlockBannerLine && (
-              <p className="mt-3 text-xs text-amber-100/90 rounded-xl border border-amber-500/25 bg-amber-950/25 px-3 py-2 leading-relaxed">
-                {videoBlockBannerLine}{' '}
-                <Link to={`${APP_BASE}/credits`} className="text-brand-400 hover:text-brand-300 underline underline-offset-2 font-medium">
-                  {t('photoFlow.topUpCreditsLink')}
-                </Link>
-              </p>
-            )}
-          </section>
-
+        <div>
+          {showContentTypeSwitcher && (
+            <section className="mb-6">
+              <h3 className="text-sm font-semibold text-white mb-3">{t('photoFlow.contentType')}</h3>
+              <div className="flex rounded-xl bg-gray-900/80 p-1 border border-white/10 gap-1">
+                {contentTypes.map(({ id, labelKey }) => {
+                  const Icon = CONTENT_ICONS[id]
+                  const active = contentType === id
+                  const disabled = id === 'video' && !videoTabAllowed
+                  return (
+                    <button
+                      key={id}
+                      type="button"
+                      disabled={disabled}
+                      title={disabled ? t('photoFlow.videoTabDisabledTitle') : undefined}
+                      onClick={() => !disabled && setContentType(id)}
+                      className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-1 rounded-lg text-sm font-medium transition-all min-w-0
+                        ${disabled ? 'opacity-45 cursor-not-allowed text-gray-500' : ''}
+                        ${active && !disabled ? 'bg-white text-gray-950 shadow' : !disabled ? 'text-gray-400 hover:text-white' : ''}`}
+                    >
+                      <Icon className="w-4 h-4 shrink-0" />
+                      <span className="truncate">{t(labelKey)}</span>
+                    </button>
+                  )
+                })}
+              </div>
+            </section>
+          )}
+          {flowVariant === 'videoOnly' && videoBlockBannerLine && (
+            <p className="mb-6 text-xs text-amber-100/90 rounded-xl border border-amber-500/25 bg-amber-950/25 px-3 py-2 leading-relaxed">
+              {videoBlockBannerLine}{' '}
+              <Link to={`${APP_BASE}/credits`} className="text-brand-400 hover:text-brand-300 underline underline-offset-2 font-medium">
+                {t('photoFlow.topUpCreditsLink')}
+              </Link>
+            </p>
+          )}
           {contentType === 'photo' && (
             <section className="space-y-6 mb-6">
               <div>
@@ -645,7 +648,6 @@ export default function CreateProductPhotoFlow() {
                             ? 'border-brand-500 bg-brand-600/10 ring-1 ring-brand-500/40'
                             : 'border-white/10 bg-gray-900/40 hover:border-white/20'}`}
                       >
-                        <div className="aspect-[4/3] rounded-xl bg-gradient-to-br from-gray-700 to-gray-900 mb-2 border border-white/5 shrink-0" />
                         <p className="font-semibold text-white text-sm leading-tight">{t(titleKey)}</p>
                         <p className="text-xs text-gray-500 mt-1 flex-1">{t(subKey)}</p>
                       </button>
@@ -668,24 +670,6 @@ export default function CreateProductPhotoFlow() {
                 />
                 <p className="text-xs text-gray-600 text-right mt-1">{photoPrompt.length}/2000</p>
               </div>
-            </section>
-          )}
-
-          {contentType === 'card' && (
-            <section className="mb-6">
-              <h3 className="text-sm font-semibold text-white mb-1">{t('photoFlow.card.copyTitle')}</h3>
-              <p className="text-xs text-emerald-400/90 mb-2 leading-relaxed border border-emerald-500/25 rounded-lg px-2.5 py-1.5 bg-emerald-500/5">
-                {t('photoFlow.card.onImageCopyNote')}
-              </p>
-              <p className="text-sm text-gray-500 mb-3">{t('photoFlow.card.copyHint')}</p>
-              <textarea
-                className="input-field min-h-[120px] resize-y"
-                placeholder={t('photoFlow.card.copyPlaceholder')}
-                value={cardCopy}
-                onChange={(e) => setCardCopy(e.target.value.slice(0, 2000))}
-                maxLength={2000}
-              />
-              <p className="text-xs text-gray-600 text-right mt-1">{cardCopy.length}/2000</p>
             </section>
           )}
 
@@ -730,7 +714,7 @@ export default function CreateProductPhotoFlow() {
             </section>
           )}
 
-          {(contentType === 'photo' || contentType === 'card') && (
+          {contentType === 'photo' && (
             <div className="mb-6 rounded-2xl border border-white/10 bg-gray-900/30 overflow-hidden">
               <button
                 type="button"
@@ -760,7 +744,7 @@ export default function CreateProductPhotoFlow() {
             </div>
           )}
 
-          {step1Ready && generationCost >= 1 && creditBalance < generationCost && (
+          {canStartGeneration && generationCost >= 1 && creditBalance < generationCost && (
             <p className="text-sm text-amber-200/90 mb-3 rounded-xl border border-amber-500/20 bg-amber-950/20 px-3 py-2">
               {t('photoFlow.generateBlockedNoCreditsBanner', { count: generationCost })}{' '}
               <Link to={`${APP_BASE}/credits`} className="text-brand-400 hover:text-brand-300 underline underline-offset-2 font-medium">
@@ -773,7 +757,7 @@ export default function CreateProductPhotoFlow() {
             <button
               type="button"
               onClick={handleGenerate}
-              disabled={loading || analyzing || !step1Ready || !standardGenerateAllowed}
+              disabled={loading || analyzing || !canStartGeneration || !standardGenerateAllowed}
               className="btn-primary flex-1 flex items-center justify-center gap-2 py-3 min-w-0 disabled:opacity-45 disabled:cursor-not-allowed"
             >
               {loading && <Spinner size="sm" />}
@@ -787,7 +771,7 @@ export default function CreateProductPhotoFlow() {
                 id="photo-flow-quantity"
                 value={batchCount}
                 onChange={(e) => setBatchCount(Number(e.target.value))}
-                disabled={loading || analyzing || !step1Ready}
+                disabled={loading || analyzing}
                 className="input-field w-full py-3 min-h-[48px] text-center"
               >
                 {Array.from({ length: maxBatchQuantity }, (_, i) => i + 1).map((n) => (
@@ -800,6 +784,7 @@ export default function CreateProductPhotoFlow() {
           </div>
         </div>
       </section>
+      </div>
     </div>
   )
 }

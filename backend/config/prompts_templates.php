@@ -15,10 +15,15 @@
  * Типы съёмки:
  *   studio     — студийное фото товара
  *   background — товар на фоне / в окружении
- *   in_use     — товар в использовании (на человеке / в руках)
+ *   no_watermark — убрать водяные знаки, нейтральный студийный фон
  *   card       — карточка товара (чистая композиция, текст добавляется программно)
  * ─────────────────────────────────────────────────────────────
  */
+
+$noWatermarkTemplate = [
+    'scene_prompt' => 'The product as the sole hero on a smooth neutral light-grey to off-white seamless studio background. No people, no hands, no busy environment. Professional three-point soft lighting, tack-sharp product detail, very soft shadow. The image must contain no watermarks, no shop URLs, no stock site text, or source branding — only the product on a clean commercial backdrop with generous negative space.',
+    'kontext_instruction' => 'Recreate the product from the reference. Do not copy any watermarks, URLs, shop names, stock marks, or overlaid text from the source image. Place the product on a clean neutral seamless background with professional studio lighting. Preserve accurate color, materials, proportions, and design. No new logos or ad copy.',
+];
 
 return [
 
@@ -39,10 +44,7 @@ return [
             'kontext_instruction' => 'Replace the shoes in the scene with the product from the reference image. Keep the wooden surface, brick wall background, golden hour lighting, shadow direction, and overall composition exactly as they are. Only the shoes should change.',
         ],
 
-        'in_use' => [
-            'scene_prompt' => 'A person walking on a clean urban sidewalk, shot from the knees down. The person is wearing casual slim-fit jeans. Shoes are clearly visible and in motion — one foot slightly raised mid-step. Natural daylight, slightly overcast, soft shadows. Street style photography, 50mm lens, realistic and authentic feel.',
-            'kontext_instruction' => 'Replace only the footwear on the person\'s feet with the product from the reference image. Keep the legs, jeans, walking pose, sidewalk surface, lighting, and all surroundings exactly the same. The new shoes must look naturally worn on the feet.',
-        ],
+        'no_watermark' => $noWatermarkTemplate,
 
         'card' => [
             'scene_prompt' => 'A single pair of shoes centered on a very light grey gradient background, positioned at a clean 3/4 angle. Soft diffused overhead light, subtle drop shadow underneath the shoes. Generous empty space on the left side and top for text overlay. Minimal, premium e-commerce product card composition.',
@@ -67,10 +69,7 @@ return [
             'kontext_instruction' => 'Replace the main clothing item on the rack with the product from the reference image. Keep the metal rack, plaster wall background, natural window lighting, blurred background garments, and overall composition unchanged. Only the featured product changes.',
         ],
 
-        'in_use' => [
-            'scene_prompt' => 'A person standing in a bright modern interior space, facing slightly away from camera at a 3/4 angle. The clothing is the clear focus of the shot. The person has a relaxed confident posture, arms slightly away from body to show garment shape. Soft natural light. Fashion editorial style, full body shot.',
-            'kontext_instruction' => 'Replace only the clothing worn by the person with the product from the reference image. Keep the person\'s pose, body position, facial expression, background interior, lighting, and camera angle exactly the same. The garment must look naturally worn.',
-        ],
+        'no_watermark' => $noWatermarkTemplate,
 
         'card' => [
             'scene_prompt' => 'A clothing item neatly folded and placed on a smooth light cream surface, shot from directly above (flat lay). Soft even diffused lighting, no harsh shadows. Clean empty cream background visible around the garment. Generous space at the top and right side for text overlay. Minimal and elegant.',
@@ -95,10 +94,7 @@ return [
             'kontext_instruction' => 'Replace the handbag on the cafe table with the product from the reference image. Keep the wooden table, window, blurred street background, coffee glass prop, warm natural lighting, and composition exactly the same. Only the bag changes.',
         ],
 
-        'in_use' => [
-            'scene_prompt' => 'A woman carrying a handbag over her shoulder, walking on a city street. Shot from the side at waist level. The bag is clearly visible, hanging naturally at hip height. The person is wearing a neutral-toned outfit. Natural daylight, city background blurred. Authentic street style editorial photography.',
-            'kontext_instruction' => 'Replace only the handbag being carried with the product from the reference image. Keep the person\'s arm, shoulder, outfit, walking pose, city street background, lighting, and camera angle exactly the same. The bag must appear to hang naturally from the shoulder.',
-        ],
+        'no_watermark' => $noWatermarkTemplate,
 
         'card' => [
             'scene_prompt' => 'A handbag centered on a soft white marble surface, shot at a clean 3/4 front angle. Gentle diffused studio light from above, soft shadow underneath. The bag handles are neatly arranged. Plenty of empty space on the right side and above for text overlay. Premium e-commerce card composition.',
@@ -123,10 +119,7 @@ return [
             'kontext_instruction' => 'Replace the gadget on the desk with the product from the reference image. Keep the wooden desk surface, notebook and mug props, window light direction, warm atmosphere, depth of field, and composition exactly the same. Only the featured product changes.',
         ],
 
-        'in_use' => [
-            'scene_prompt' => 'A person\'s hands holding a smartphone or small device at a comfortable reading angle. Shot from slightly above, showing hands and device clearly. Person is seated at a light-colored desk, casual setting. Clean natural light. Hands are relaxed and natural. Authentic everyday usage feel.',
-            'kontext_instruction' => 'Replace only the device being held in the hands with the product from the reference image. Keep the hands, holding position, finger placement, desk surface, lighting, camera angle, and all surroundings exactly the same. The product must appear naturally held.',
-        ],
+        'no_watermark' => $noWatermarkTemplate,
 
         'card' => [
             'scene_prompt' => 'A tech device centered on a pure white background, shot perfectly straight-on. Clean symmetrical composition. Soft even studio lighting, no reflections on screen if present. Generous empty space above and to the right for text overlay. Precise, clinical, modern e-commerce presentation.',
@@ -151,10 +144,7 @@ return [
             'kontext_instruction' => 'Replace the beauty product with the product from the reference image. Keep the flowers, green leaves, water droplets, pink surface, soft natural lighting, depth of field, and overall floral composition exactly the same. Only the product changes.',
         ],
 
-        'in_use' => [
-            'scene_prompt' => 'A close-up shot of a woman\'s hand applying a cream or serum to the back of her other hand. Both hands are visible and well-groomed. Clean neutral background, soft studio lighting. The product container is visible and open next to the hands. Beauty tutorial photography style, authentic and clean.',
-            'kontext_instruction' => 'Replace only the cosmetic product container visible in the scene with the product from the reference image. Keep the hands, application gesture, skin, neutral background, lighting, and composition exactly the same. The product must appear naturally placed in the scene.',
-        ],
+        'no_watermark' => $noWatermarkTemplate,
 
         'card' => [
             'scene_prompt' => 'A cosmetic product centered on a soft pink pastel background. Shot slightly from above at a clean angle. Minimal composition with one or two small pearl beads as decorative props. Gentle even studio lighting. Space on the left side and top for text overlay. Feminine, premium beauty brand presentation.',
@@ -179,10 +169,7 @@ return [
             'kontext_instruction' => 'Replace the food or beverage product with the product from the reference image. Keep the wooden table, outdoor background, daylight, fruit props, warm color palette, depth of field, and composition exactly the same. Only the product changes.',
         ],
 
-        'in_use' => [
-            'scene_prompt' => 'A person\'s hand holding a beverage bottle or food package at a natural comfortable angle. Shot from the side slightly above. Casual outdoor setting, blurred greenery in background. Natural sunlight. The product label is clearly visible facing camera. Authentic lifestyle moment.',
-            'kontext_instruction' => 'Replace only the product being held in the hand with the product from the reference image. Keep the hand, grip position, finger placement, outdoor background, lighting, label visibility angle, and composition exactly the same. The product must appear naturally held.',
-        ],
+        'no_watermark' => $noWatermarkTemplate,
 
         'card' => [
             'scene_prompt' => 'A food or beverage product centered on a clean white background. Shot straight-on so the label faces camera completely. Even bright studio lighting, no shadows. Generous empty space on the right half of the frame for text overlay. Simple, clear, supermarket-ready product card composition.',
@@ -207,10 +194,7 @@ return [
             'kontext_instruction' => 'Replace the jewelry piece with the product from the reference image. Keep the rose petals, marble surface, blurred foreground petals, soft natural lighting, shallow depth of field, and romantic composition exactly the same. Only the jewelry changes.',
         ],
 
-        'in_use' => [
-            'scene_prompt' => 'A close-up of a woman\'s hand and wrist wearing a bracelet or ring. Elegant well-groomed hand with neutral nail polish. Shot from slightly above at a 3/4 angle. Soft studio light, neutral light grey background. The jewelry is the clear focus, sharp and detailed. Luxury accessories photography.',
-            'kontext_instruction' => 'Replace only the jewelry worn on the hand or wrist with the product from the reference image. Keep the hand, skin tone, nail polish, pose, grey background, lighting, and camera angle exactly the same. The jewelry must appear naturally worn.',
-        ],
+        'no_watermark' => $noWatermarkTemplate,
 
         'card' => [
             'scene_prompt' => 'A jewelry piece centered on a pure white background, shot directly from above (overhead flat lay). Even bright diffused studio lighting, no harsh reflections. The piece is arranged to show its full shape. Plenty of empty space on all sides, especially the right half, for text overlay. Clean luxury presentation.',
@@ -235,10 +219,7 @@ return [
             'kontext_instruction' => 'Replace the home product with the product from the reference image. Keep the Scandinavian interior setting, white walls, wooden floor, background decor props, natural window light, and warm inviting atmosphere exactly the same. Only the featured product changes.',
         ],
 
-        'in_use' => [
-            'scene_prompt' => 'A person\'s hands using or holding a home product in a natural kitchen or living room context. The hands are interacting with the product in its intended way. Warm natural interior light. The background shows a blurred but recognizable home environment. Authentic lifestyle usage photography.',
-            'kontext_instruction' => 'Replace only the home product being used or held with the product from the reference image. Keep the hands, usage gesture, home interior background, lighting, and composition exactly the same. The product must appear naturally integrated into the usage scenario.',
-        ],
+        'no_watermark' => $noWatermarkTemplate,
 
         'card' => [
             'scene_prompt' => 'A home product centered on a clean white background. Shot at a clear 3/4 front angle showing the product\'s best side. Soft even studio lighting with a subtle shadow base. Empty space on the right side and top third of the frame for text overlay. Modern e-commerce product card layout.',
@@ -263,10 +244,7 @@ return [
             'kontext_instruction' => 'Replace the sports product with the product from the reference image. Keep the asphalt surface, painted court lines, bright midday lighting, strong shadows, low camera angle, and energetic outdoor atmosphere exactly the same. Only the product changes.',
         ],
 
-        'in_use' => [
-            'scene_prompt' => 'An athlete in motion using a sports product in an outdoor sports environment. The person is mid-action — running, jumping, or exercising. Shot with a fast shutter speed freezing the motion. Natural bright outdoor light. The sports product is clearly visible and central to the action. Dynamic sports photography.',
-            'kontext_instruction' => 'Replace only the sports product being used by the athlete with the product from the reference image. Keep the athlete\'s body, motion, athletic outfit, outdoor sports environment, lighting, and dynamic composition exactly the same. The product must appear naturally integrated into the action.',
-        ],
+        'no_watermark' => $noWatermarkTemplate,
 
         'card' => [
             'scene_prompt' => 'A sports product on a pure white background, positioned at a dynamic diagonal angle suggesting movement and energy. Strong even studio lighting, crisp sharp shadows. The product angle shows its best design features. Space in the upper left corner and right side for text overlay. Energetic yet clean product card.',
@@ -291,10 +269,7 @@ return [
             'kontext_instruction' => 'Replace the product with the product from the reference image. Keep the wooden surface, blurred neutral background, natural side lighting, minimal props, warm atmosphere, and depth of field exactly the same. Only the product changes.',
         ],
 
-        'in_use' => [
-            'scene_prompt' => 'A person\'s hands holding or interacting with a product in a natural everyday context. The hands and product are the clear focus of the shot. Clean neutral background, soft natural light. The interaction looks authentic and relaxed. Shot from slightly above at a comfortable viewing angle.',
-            'kontext_instruction' => 'Replace only the product being held or used with the product from the reference image. Keep the hands, interaction gesture, neutral background, lighting, camera angle, and composition exactly the same. The product must appear naturally held and integrated.',
-        ],
+        'no_watermark' => $noWatermarkTemplate,
 
         'card' => [
             'scene_prompt' => 'A product centered on a pure white background. Shot straight-on or at a slight 3/4 angle showing the product clearly. Clean even studio lighting with a very soft shadow base. Generous empty space on the right half of the frame and at the top for text overlay. Simple, clear, universal e-commerce card composition.',

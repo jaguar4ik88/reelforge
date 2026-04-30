@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: {{CANVAS_WIDTH}}px;
+      height: {{CANVAS_HEIGHT}}px;
+      overflow: hidden;
+      --accent: {{ACCENT}};
+      background: #FAFAFA;
+    }
+    .card {
+      width: {{CANVAS_WIDTH}}px;
+      height: {{CANVAS_HEIGHT}}px;
+      position: relative;
+      overflow: hidden;
+      background: #FAFAFA;
+    }
+    .product-wrap {
+      position: absolute;
+      left: 50%;
+      top: 48%;
+      transform: translate(-50%, -50%);
+      width: 72%;
+      height: 58%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+    }
+    .product-img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 12px 28px rgba(0,0,0,0.12));
+    }
+    .badge-row-mid {
+      position: absolute;
+      top: 36%;
+      left: 4%;
+      right: 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 3%;
+      z-index: 5;
+    }
+    .badge-col { display: flex; flex-direction: column; gap: 0.55rem; max-width: 42%; }
+    .badge-col.right { align-items: flex-end; text-align: right; }
+    .pill {
+      display: inline-block;
+      padding: 0.35rem 0.75rem;
+      background: rgba(0,0,0,0.55);
+      color: #fff;
+      font-family: 'Roboto', sans-serif;
+      font-size: calc({{CANVAS_WIDTH}}px * 0.024);
+      font-weight: 700;
+      border-radius: 6px;
+      border-left: 4px solid var(--accent);
+      backdrop-filter: blur(8px);
+      max-width: 100%;
+      word-wrap: break-word;
+    }
+    .badge-col.right .pill {
+      border-left: none;
+      border-right: 4px solid var(--accent);
+    }
+    .rule {
+      position: absolute;
+      left: 7%;
+      right: 7%;
+      bottom: 18%;
+      height: 1px;
+      background: rgba(0,0,0,0.12);
+      z-index: 2;
+    }
+    .bottom {
+      position: absolute;
+      left: 7%;
+      right: 7%;
+      bottom: 6%;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 4%;
+      z-index: 3;
+    }
+    .title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 600;
+      font-size: calc({{CANVAS_WIDTH}}px * 0.038);
+      color: #222;
+      line-height: 1.15;
+      max-width: 62%;
+      word-wrap: break-word;
+    }
+    .price-block { text-align: right; flex-shrink: 0; }
+    .price {
+      font-family: 'Roboto', sans-serif;
+      font-weight: 300;
+      font-size: calc({{CANVAS_WIDTH}}px * 0.048);
+      color: #111;
+    }
+    .price-old {
+      font-size: calc({{CANVAS_WIDTH}}px * 0.026);
+      color: #999;
+      text-decoration: line-through;
+    }
+    .desc {
+      position: absolute;
+      left: 7%;
+      right: 7%;
+      bottom: 20.5%;
+      font-family: 'Roboto', sans-serif;
+      font-weight: 300;
+      font-size: calc({{CANVAS_WIDTH}}px * 0.02);
+      color: #666;
+      word-wrap: break-word;
+      z-index: 3;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="product-wrap">
+      {{PRODUCT_IMAGE}}
+    </div>
+    <div class="badge-row-mid">
+      <div class="badge-col left">
+        <span class="pill">{{BADGE_1}}</span>
+        <span class="pill">{{BADGE_2}}</span>
+      </div>
+      <div class="badge-col right">
+        <span class="pill">{{BADGE_3}}</span>
+        <span class="pill">{{BADGE_4}}</span>
+      </div>
+    </div>
+    <div class="desc">{{DESC}}</div>
+    <div class="rule"></div>
+    <div class="bottom">
+      <div class="title">{{TITLE}}</div>
+      <div class="price-block">
+        <div class="price">{{PRICE}}</div>
+        <div class="price-old">{{PRICE_OLD}}</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -55,7 +55,7 @@ class CreditService
     /**
      * Pricing shown on the photo-guided project page (improvements + batch generate).
      *
-     * @return array{improvement: int, photo_per_image: int, photo_scene_credits: array<string, int>, card_per_image: int, video: array<int, array{seconds: int, credits: int}>}
+     * @return array{improvement: int, photo_per_image: int, photo_scene_credits: array<string, int>, card_per_image: int, card_by_example: int, card_by_prompt: int, video: array<int, array{seconds: int, credits: int}>}
      */
     public function getPhotoFlowPricing(): array
     {
@@ -66,20 +66,25 @@ class CreditService
         $sceneCredits = is_array($sceneMap)
             ? [
                 'from_wishes' => (int) ($sceneMap['from_wishes'] ?? $basePhoto),
-                'in_use' => (int) ($sceneMap['in_use'] ?? $basePhoto),
+                'no_watermark' => (int) ($sceneMap['no_watermark'] ?? $sceneMap['in_use'] ?? $basePhoto),
                 'studio' => (int) ($sceneMap['studio'] ?? $basePhoto),
             ]
             : [
                 'from_wishes' => $basePhoto,
-                'in_use' => $basePhoto,
+                'no_watermark' => $basePhoto,
                 'studio' => $basePhoto,
             ];
+
+        $cardByExample = (int) config('platform.credits.photo_flow.card_by_example', 2);
+        $cardByPrompt = (int) config('platform.credits.photo_flow.card_by_prompt', 1);
 
         return [
             'improvement' => (int) config('platform.credits.photo_flow.improvement', 1),
             'photo_per_image' => $basePhoto,
             'photo_scene_credits' => $sceneCredits,
-            'card_per_image' => (int) config('platform.credits.photo_flow.card_per_image', 1),
+            'card_per_image' => $cardByPrompt,
+            'card_by_example' => $cardByExample,
+            'card_by_prompt' => $cardByPrompt,
             'video' => array_values(array_map(
                 fn (array $o): array => [
                     'seconds' => (int) ($o['seconds'] ?? 0),
@@ -99,10 +104,18 @@ class CreditService
 
         return match ($contentType) {
             'photo' => $this->resolvePhotoSceneCredits($p, $photoSceneStyle ?? 'from_wishes'),
-            'card' => $p['card_per_image'],
+            'card' => $p['card_by_prompt'],
             'video' => $this->resolveVideoTierCredits($p['video'], $videoSeconds ?? 5),
             default => $p['photo_per_image'],
         };
+    }
+
+    /**
+     * Credits for infographic / GPT Image «card by example» (reference image + product photo).
+     */
+    public function getInfographicCardByExampleCost(): int
+    {
+        return (int) $this->getPhotoFlowPricing()['card_by_example'];
     }
 
     /**
@@ -110,6 +123,9 @@ class CreditService
      */
     private function resolvePhotoSceneCredits(array $p, string $sceneStyle): int
     {
+        if ($sceneStyle === 'in_use') {
+            $sceneStyle = 'no_watermark';
+        }
         $map = $p['photo_scene_credits'] ?? [];
 
         return (int) ($map[$sceneStyle] ?? $p['photo_per_image']);
