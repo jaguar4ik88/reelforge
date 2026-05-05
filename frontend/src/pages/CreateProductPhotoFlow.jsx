@@ -1,11 +1,10 @@
 import { useState, useCallback, useMemo, useEffect } from 'react'
-import { useNavigate, useLocation, Link } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Camera, Clapperboard, ChevronDown, Sparkles } from 'lucide-react'
 import toast from 'react-hot-toast'
 import ImageUploader from '../components/ImageUploader'
 import Spinner from '../components/ui/Spinner'
-import ZoomableImage from '../components/ui/ZoomableImage'
 import { photoFlowApi } from '../services/api'
 import { APP_BASE } from '../constants/routes'
 import { useAuthContext } from '../context/AuthContext'
@@ -35,17 +34,12 @@ const DEFAULT_PHOTO_FLOW = {
 export default function CreateProductPhotoFlow({ flowVariant = 'photoOnly' }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const location = useLocation()
   const { user } = useAuthContext()
   const pricing = user?.credits?.photo_flow ?? DEFAULT_PHOTO_FLOW
   const maxBatchQuantity = Math.max(1, user?.generation_limits?.max_batch_quantity ?? 1)
   const creditBalance = user?.credits?.balance ?? 0
-  const hasActiveSubscription = user?.has_active_subscription === true
   const photoGuidedVideoGate = user?.photo_guided_video
   const videoTabAllowed = photoGuidedVideoGate?.allowed !== false
-
-  const templateState = location.state
-  const templateId = templateState?.templateId
 
   const [files, setFiles] = useState([])
   const [loading, setLoading] = useState(false)
@@ -57,14 +51,7 @@ export default function CreateProductPhotoFlow({ flowVariant = 'photoOnly' }) {
   const [fileChangeInvalidated, setFileChangeInvalidated] = useState(false)
 
   const [productName, setProductName] = useState('')
-  const [category, setCategory] = useState(() => templateState?.productCategory || 'other')
-
-  useEffect(() => {
-    if (templateState?.productCategory) {
-      setCategory(templateState.productCategory)
-    }
-  }, [templateState?.productCategory])
-
+  const [category, setCategory] = useState('other')
   const [contentType, setContentType] = useState(() => (flowVariant === 'videoOnly' ? 'video' : 'photo'))
   const [sceneStyle, setSceneStyle] = useState('from_wishes')
   const [photoPrompt, setPhotoPrompt] = useState('')
@@ -161,11 +148,6 @@ export default function CreateProductPhotoFlow({ flowVariant = 'photoOnly' }) {
     return videoDescription.trim()
   }, [contentType, photoPrompt, videoDescription])
 
-  const templateSceneCost = useMemo(() => {
-    const m = pricing.photo_scene_credits ?? DEFAULT_PHOTO_FLOW.photo_scene_credits
-    return m?.studio ?? pricing.photo_per_image
-  }, [pricing])
-
   const videoBlockBannerLine = useMemo(() => {
     if (videoTabAllowed || !photoGuidedVideoGate?.code) return null
     const min = photoGuidedVideoGate.min_balance ?? 10
@@ -181,8 +163,6 @@ export default function CreateProductPhotoFlow({ flowVariant = 'photoOnly' }) {
     }
   }, [videoTabAllowed, photoGuidedVideoGate, t])
 
-  const templateGenerateAllowed =
-    hasActiveSubscription && templateSceneCost >= 1 && creditBalance >= templateSceneCost
   const standardGenerateAllowed =
     generationCost >= 1 &&
     creditBalance >= generationCost &&
@@ -226,57 +206,6 @@ export default function CreateProductPhotoFlow({ flowVariant = 'photoOnly' }) {
       toast.error(msg)
     } finally {
       setAnalyzing(false)
-    }
-  }
-
-  const handleTemplateGenerate = async () => {
-    if (files.length < 1) {
-      toast.error(t('photoFlow.validation.photoRequired'))
-      return
-    }
-    const name = productName.trim()
-    if (!name) {
-      toast.error(t('photoFlow.validation.nameRequired'))
-      return
-    }
-    if (!templateId) return
-    if (!hasActiveSubscription) {
-      toast.error(t('photoFlow.templateMode.subscribersOnlyToast'))
-      return
-    }
-    if (creditBalance < templateSceneCost) {
-      toast.error(t('photoFlow.generateBlockedNoCreditsToast', { count: templateSceneCost }))
-      return
-    }
-
-    setLoading(true)
-    try {
-      const { data: createRes } = await photoFlowApi.createFromPhoto(files, {
-        productName: name,
-        category,
-        templateId,
-      })
-      const projectId = createRes.data.id
-
-      const payload = {
-        content_type: 'photo',
-        scene_style: 'studio',
-        user_wishes: undefined,
-        product_name: name,
-        product_category: category,
-        quantity: 1,
-        aspect_ratio: outputAspectRatio,
-      }
-
-      const { data: genRes } = await photoFlowApi.startGeneration(projectId, payload)
-
-      toast.success(genRes.message || t('photoFlow.generateQueued'))
-      navigate(`${APP_BASE}/projects/${projectId}`)
-    } catch (err) {
-      const msg = err.response?.data?.message ?? t('common.error')
-      toast.error(msg)
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -345,142 +274,6 @@ export default function CreateProductPhotoFlow({ flowVariant = 'photoOnly' }) {
     } finally {
       setLoading(false)
     }
-  }
-
-  if (templateId) {
-    const previewUrl = templateState?.previewUrl
-    const templateName = templateState?.templateName || t('photoFlow.templateMode.fallbackTitle')
-    const templateReady = files.length >= 1 && productName.trim() !== ''
-
-    return (
-      <div className="max-w-5xl mx-auto space-y-6 lg:space-y-8 pb-12 px-1 sm:px-0">
-        <div className="flex flex-col gap-2">
-          <Link
-            to={`${APP_BASE}/templates`}
-            className="text-sm text-brand-400 hover:text-brand-300 w-fit"
-          >
-            ← {t('photoFlow.templateMode.backToTemplates')}
-          </Link>
-          <h1 className="text-3xl font-bold text-white mb-1">{t('photoFlow.templateMode.title')}</h1>
-          <p className="text-gray-400">{t('photoFlow.templateMode.subtitle')}</p>
-        </div>
-
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 lg:items-start">
-          {/* Reference — left on desktop, top on mobile */}
-          <section className="card border border-white/10 rounded-3xl bg-gray-900/40 overflow-hidden w-full lg:w-[min(100%,22rem)] lg:flex-shrink-0 lg:sticky lg:top-24">
-            <div className="px-4 sm:px-5 pt-4 sm:pt-5 pb-2">
-              <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wide">{t('photoFlow.templateMode.referenceLabel')}</h2>
-              <p className="text-base sm:text-lg font-semibold text-white mt-1 leading-snug">{templateName}</p>
-            </div>
-            <div className="relative mx-4 mb-4 aspect-[3/4] max-h-[min(70vh,32rem)] min-h-[12rem] overflow-hidden rounded-2xl border border-white/10 bg-gray-800 sm:mx-5 sm:mb-5">
-              {previewUrl ? (
-                <ZoomableImage
-                  src={previewUrl}
-                  alt=""
-                  className="absolute inset-0 h-full w-full rounded-2xl"
-                  imageClassName="h-full w-full object-cover"
-                />
-              ) : (
-                <div className="flex h-full min-h-[12rem] items-center justify-center px-4 text-center text-sm text-gray-500">
-                  {templateName}
-                </div>
-              )}
-            </div>
-          </section>
-
-          {/* Product + generate — right */}
-          <section className="card relative border border-white/10 rounded-3xl bg-gray-900/40 flex-1 min-w-0 p-5 sm:p-6">
-            <div className="mb-5">
-              <h2 className="text-lg font-semibold text-white">{t('photoFlow.yourProduct')}</h2>
-            </div>
-
-            <ImageUploader files={files} onChange={setFiles} maxFiles={4} minRequiredForHint={1} />
-
-            <p className="text-sm text-gray-500 mt-4">{t('photoFlow.uploadMultiHint')}</p>
-
-            <div className="mt-6 space-y-4">
-              <input
-                type="text"
-                className="input-field w-full"
-                value={productName}
-                onChange={(e) => setProductName(e.target.value.slice(0, 200))}
-                placeholder={t('photoFlow.productName')}
-              />
-              <div>
-                <label className="text-xs text-gray-500 block mb-1.5">{t('photoFlow.category')}</label>
-                <select
-                  className="input-field w-full"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                >
-                  {CATEGORY_IDS.map((id) => (
-                    <option key={id} value={id}>
-                      {t(`photoFlow.categories.${id}`)}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <p className="text-xs text-gray-500 mt-4 leading-relaxed">{t('photoFlow.templateMode.hint')}</p>
-
-            <div className="mt-6 rounded-2xl border border-white/10 bg-gray-900/30 overflow-hidden">
-              <button
-                type="button"
-                onClick={() => setAdvancedOpen((o) => !o)}
-                aria-expanded={advancedOpen}
-                className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left text-sm font-semibold text-white hover:bg-white/5 transition-colors"
-              >
-                <span>{t('photoFlow.advanced.title')}</span>
-                <ChevronDown
-                  className={`w-5 h-5 shrink-0 text-gray-400 transition-transform duration-200 ${advancedOpen ? 'rotate-180' : ''}`}
-                  aria-hidden
-                />
-              </button>
-              {advancedOpen && (
-                <div className="border-t border-white/10 px-4 pb-4 pt-1">
-                  <p id="photo-flow-template-format-label" className="text-sm font-semibold text-white mb-3">
-                    {t('photoFlow.advanced.formatLabel')}
-                  </p>
-                  <p className="text-xs text-gray-500 mb-3">{t('photoFlow.advanced.formatHint')}</p>
-                  <AspectRatioSelector
-                    labelId="photo-flow-template-format-label"
-                    value={outputAspectRatio}
-                    onChange={setOutputAspectRatio}
-                  />
-                </div>
-              )}
-            </div>
-
-            {!hasActiveSubscription && (
-              <div className="mt-6 rounded-2xl border border-amber-500/30 bg-amber-950/25 px-4 py-3 text-sm text-amber-100/95">
-                {t('photoFlow.templateMode.subscribersOnly')}
-              </div>
-            )}
-            {hasActiveSubscription && templateReady && creditBalance < templateSceneCost && (
-              <div className="mt-6 rounded-2xl border border-red-500/25 bg-red-950/20 px-4 py-3 text-sm text-red-100/90">
-                {t('photoFlow.generateBlockedNoCreditsBanner', { count: templateSceneCost })}{' '}
-                <Link to={`${APP_BASE}/credits`} className="text-brand-400 hover:text-brand-300 underline underline-offset-2 font-medium">
-                  {t('photoFlow.topUpCreditsLink')}
-                </Link>
-              </div>
-            )}
-
-            <button
-              type="button"
-              onClick={handleTemplateGenerate}
-              disabled={loading || !templateReady || !templateGenerateAllowed}
-              className="btn-primary w-full flex items-center justify-center gap-2 py-3.5 mt-6 disabled:opacity-45 disabled:cursor-not-allowed"
-            >
-              {loading && <Spinner size="sm" />}
-              {loading
-                ? t('photoFlow.creatingAndGenerating')
-                : t('photoFlow.templateMode.generateWithCredits', { count: templateSceneCost })}
-            </button>
-          </section>
-        </div>
-      </div>
-    )
   }
 
   return (

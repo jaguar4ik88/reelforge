@@ -1,0 +1,128 @@
+[{
+  "version": "1.0",
+  "image": {
+    "name": "/var/www/imageconvert_usr/data/www/imageconvert.org/image/public/uploadt/Кроссовки Nike — Фото 1.jpg",
+    "permissions": 644,
+    "format": "JSON",
+    "formatDescription": "The image format and characteristics",
+    "mimeType": "application/json",
+    "class": "DirectClass",
+    "geometry": {
+      "width": 1792,
+      "height": 2400,
+      "x": 0,
+      "y": 0
+    },
+    "units": "Undefined",
+    "type": "TrueColor",
+    "endianness": "Undefined",
+    "colorspace": "sRGB",
+    "depth": 8,
+    "baseDepth": 8,
+    "channelDepth": {
+      "red": 8,
+      "green": 8,
+      "blue": 8
+    },
+    "pixels": 4300800,
+    "imageStatistics": {
+      "all": {
+        "min": 0,
+        "max": 255,
+        "mean": 168.649,
+        "standardDeviation": 94.6185,
+        "kurtosis": -1.05567,
+        "skewness": -0.907268,
+        "entropy": 0.674144
+      }
+    },
+    "channelStatistics": {
+      "red": {
+        "min": 0,
+        "max": 255,
+        "mean": 174.349,
+        "standardDeviation": 91.0874,
+        "kurtosis": -0.704822,
+        "skewness": -1.05598,
+        "entropy": 0.675958
+      },
+      "green": {
+        "min": 0,
+        "max": 255,
+        "mean": 165.837,
+        "standardDeviation": 97.1021,
+        "kurtosis": -1.21047,
+        "skewness": -0.834785,
+        "entropy": 0.658068
+      },
+      "blue": {
+        "min": 0,
+        "max": 255,
+        "mean": 165.76,
+        "standardDeviation": 95.6661,
+        "kurtosis": -1.19253,
+        "skewness": -0.839791,
+        "entropy": 0.688406
+      }
+    },
+    "renderingIntent": "Perceptual",
+    "gamma": 0.454545,
+    "chromaticity": {
+      "redPrimary": {
+        "x": 0.64,
+        "y": 0.33
+      },
+      "greenPrimary": {
+        "x": 0.3,
+        "y": 0.6
+      },
+      "bluePrimary": {
+        "x": 0.15,
+        "y": 0.06
+      },
+      "whitePrimary": {
+        "x": 0.3127,
+        "y": 0.329
+      }
+    },
+    "backgroundColor": "#FFFFFF",
+    "borderColor": "#DFDFDF",
+    "matteColor": "#BDBDBD",
+    "transparentColor": "#000000",
+    "interlace": "None",
+    "intensity": "Undefined",
+    "compose": "Over",
+    "pageGeometry": {
+      "width": 1792,
+      "height": 2400,
+      "x": 0,
+      "y": 0
+    },
+    "dispose": "Undefined",
+    "iterations": 0,
+    "compression": "JPEG",
+    "quality": 100,
+    "orientation": "Undefined",
+    "properties": {
+      "date:create": "2026-04-30T18:55:50+00:00",
+      "date:modify": "2026-04-30T18:55:50+00:00",
+      "date:timestamp": "2026-04-30T18:55:54+00:00",
+      "jpeg:colorspace": "2",
+      "jpeg:sampling-factor": "2x2,1x1,1x1",
+      "signature": "fa13508c31c89d1cade9f12897b7c72a4e38f3ce24671c27ece2496fe0084551"
+    },
+    "profiles": {
+      "app11": {
+        "length": 6646
+      }
+    },
+    "tainted": false,
+    "filesize": "2.41198MB",
+    "numberPixels": "4.3008M",
+    "pixelsPerSecond": "68.3012MB",
+    "userTime": "0.060u",
+    "elapsedTime": "0:01.062",
+    "version": "ImageMagick 6.9.12-98 Q16 x86_64 18038 https://legacy.imagemagick.org"
+  }
+}
+]

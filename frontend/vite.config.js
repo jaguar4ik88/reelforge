@@ -52,6 +52,11 @@ export default defineConfig({
         target: process.env.VITE_API_URL || 'http://localhost:8000',
         changeOrigin: true,
       },
+      /** Same-origin in dev so Fabric can load /storage/* with crossOrigin (avoids CORS on :8000 vs :5173). */
+      '/storage': {
+        target: process.env.VITE_API_URL || 'http://localhost:8000',
+        changeOrigin: true,
+      },
     },
   },
 })

@@ -8,6 +8,54 @@ export function getApiOrigin() {
   return String(raw).replace(/\/$/, '')
 }
 
+function loopbackBucket(hostname) {
+  const h = String(hostname).toLowerCase()
+  if (h === 'localhost' || h === '127.0.0.1' || h === '[::1]') return '__loopback__'
+  return h
+}
+
+/**
+ * True when two URL origins refer to the same host (localhost vs 127.0.0.1 treated as same bucket).
+ */
+function sameBackendOrigin(assetUrl, apiOriginString) {
+  try {
+    const a = new URL(assetUrl)
+    const b = new URL(apiOriginString)
+    return a.protocol === b.protocol && a.port === b.port && loopbackBucket(a.hostname) === loopbackBucket(b.hostname)
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Laravel `URL::asset('storage/...')` points at the API origin (e.g. :8000). Vite dev runs on :5173;
+ * Fabric loads images with crossOrigin=anonymous, which triggers CORS and fails without headers on
+ * PHP's static file handler. Rewrite to the current page origin so `vite.config.js` `/storage` proxy
+ * serves bytes same-origin.
+ *
+ * In production, if the SPA and API share a host or you front storage via the app origin, this is a no-op
+ * when URLs already match `window.location.origin`.
+ */
+export function resolveBackendAssetUrlForCanvas(url) {
+  if (!url || typeof url !== 'string') return url
+  try {
+    const asset = new URL(url, window.location.href)
+    if (!asset.pathname.startsWith('/storage/')) return url
+    if (asset.origin === window.location.origin) return url
+
+    const apiOrigin = getApiOrigin()
+    if (apiOrigin && sameBackendOrigin(asset.href, apiOrigin)) {
+      return `${window.location.origin}${asset.pathname}${asset.search}`
+    }
+    if (import.meta.env.DEV && !apiOrigin) {
+      return `${window.location.origin}${asset.pathname}${asset.search}`
+    }
+  } catch {
+    /* ignore */
+  }
+  return url
+}
+
 export function getOAuthRedirectUrl(provider) {
   const origin = getApiOrigin()
   if (!origin) return '#'

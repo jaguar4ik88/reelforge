@@ -18,17 +18,15 @@ import OAuthCallback   from './pages/OAuthCallback'
 import ForgotPassword  from './pages/ForgotPassword'
 import ResetPassword   from './pages/ResetPassword'
 import Dashboard     from './pages/Dashboard'
-import TemplatesPage from './pages/TemplatesPage'
 import Gallery       from './pages/Gallery'
 import CreateProductPhotoFlow from './pages/CreateProductPhotoFlow'
-import InfographicEditor from './pages/InfographicEditor'
+// import InfographicEditor from './pages/InfographicEditor'
 import ProductCardPage from './pages/ProductCardPage'
 import ProjectView   from './pages/ProjectView'
 import Profile       from './pages/Profile'
 import Credits       from './pages/Credits'
 import AdminDashboard from './pages/admin/AdminDashboard'
-import AdminTemplates from './pages/admin/AdminTemplates'
-import AdminTemplateEdit from './pages/admin/AdminTemplateEdit'
+import AdminInfographicCanvasTemplates from './pages/admin/AdminInfographicCanvasTemplates'
 import AdminSubscriptionPlans from './pages/admin/AdminSubscriptionPlans'
 import AdminSubscriptionPlanEdit from './pages/admin/AdminSubscriptionPlanEdit'
 import AdminUsers from './pages/admin/AdminUsers'
@@ -121,7 +119,6 @@ export default function App() {
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard"   element={<Dashboard />} />
           <Route path="products"    element={<Navigate to={`${APP_BASE}/gallery`} replace />} />
-          <Route path="templates"   element={<TemplatesPage />} />
           <Route path="create" element={<Navigate to={`${APP_BASE}/dashboard`} replace />} />
           <Route path="gallery"     element={<Gallery />} />
           <Route
@@ -132,7 +129,8 @@ export default function App() {
             path="projects/new-video"
             element={<CreateProductPhotoFlow key="flow-video" flowVariant="videoOnly" />}
           />
-          <Route path="infographic" element={<InfographicEditor />} />
+          {/* Канвас інфографіка прихована від користувачів; прямий URL веде на дашборд */}
+          <Route path="infographic" element={<Navigate to={`${APP_BASE}/dashboard`} replace />} />
           <Route path="product-card" element={<ProductCardPage />} />
           <Route path="projects/:id"     element={<ProjectView />} />
           <Route path="profile"     element={<Profile />} />
@@ -158,9 +156,7 @@ export default function App() {
               </AdminOnlyRoute>
             }
           />
-          <Route path="templates" element={<AdminTemplates />} />
-          <Route path="templates/new" element={<AdminTemplateEdit />} />
-          <Route path="templates/:id/edit" element={<AdminTemplateEdit />} />
+          <Route path="infographic-templates" element={<AdminInfographicCanvasTemplates />} />
           <Route path="subscription-plans" element={<AdminSubscriptionPlans />} />
           <Route path="subscription-plans/new" element={<AdminSubscriptionPlanEdit />} />
           <Route path="subscription-plans/:id/edit" element={<AdminSubscriptionPlanEdit />} />
@@ -169,7 +165,7 @@ export default function App() {
         {/* Old URLs → /app/... */}
         <Route path="/dashboard" element={<Navigate to={`${APP_BASE}/dashboard`} replace />} />
         <Route path="/products" element={<Navigate to={`${APP_BASE}/gallery`} replace />} />
-        <Route path="/templates" element={<Navigate to={`${APP_BASE}/templates`} replace />} />
+        <Route path="/templates" element={<Navigate to={`${APP_BASE}/dashboard`} replace />} />
         <Route path="/create" element={<Navigate to={`${APP_BASE}/dashboard`} replace />} />
         <Route path="/gallery" element={<Navigate to={`${APP_BASE}/gallery`} replace />} />
         <Route path="/profile" element={<Navigate to={`${APP_BASE}/profile`} replace />} />
@@ -177,7 +173,7 @@ export default function App() {
         <Route path="/projects/new-video" element={<Navigate to={`${APP_BASE}/projects/new-video`} replace />} />
         <Route path="/projects/:id" element={<LegacyProjectRedirect />} />
         <Route path="/product-card" element={<Navigate to={`${APP_BASE}/product-card`} replace />} />
-        <Route path="/infographic" element={<Navigate to={`${APP_BASE}/infographic`} replace />} />
+        <Route path="/infographic" element={<Navigate to={`${APP_BASE}/dashboard`} replace />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

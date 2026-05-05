@@ -10,6 +10,7 @@ use App\Http\Resources\ProjectResource;
 use App\Jobs\ProcessInfographicByExampleJob;
 use App\Models\GenerationJob;
 use App\Services\Credits\CreditService;
+use App\Services\Infographic\InfographicCanvasTemplateService;
 use App\Services\Infographic\InfographicCardExampleService;
 use App\Services\Project\PhotoGuidedProjectService;
 use Illuminate\Http\JsonResponse;
@@ -21,6 +22,7 @@ class InfographicByExampleController extends Controller
 {
     public function __construct(
         private readonly InfographicCardExampleService $cardExamples,
+        private readonly InfographicCanvasTemplateService $canvasTemplates,
         private readonly PhotoGuidedProjectService $photoGuidedProjectService,
         private readonly CreditService $creditService,
     ) {}
@@ -28,6 +30,17 @@ class InfographicByExampleController extends Controller
     public function cardExamples(Request $request): JsonResponse
     {
         $items = $this->cardExamples->listForApi();
+
+        return response()->json([
+            'success' => true,
+            'message' => '',
+            'data' => ['items' => $items],
+        ]);
+    }
+
+    public function canvasTemplates(Request $request): JsonResponse
+    {
+        $items = $this->canvasTemplates->listForApi();
 
         return response()->json([
             'success' => true,

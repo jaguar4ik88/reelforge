@@ -22,7 +22,8 @@ export default {
 
     productCard: {
       title: 'Картка товару',
-      subtitle: 'Згенеруйте AI-картку маркетплейсу з фото товару та прикладу стилю — промптову генерацію додамо пізніше.',
+      subtitle:
+        'Пріоритет AI: серверні агенти генерують картку маркетплейсу з фото товару та стилевих референсів (приклади чи промпти). Окремо від ручного полотна «Інфографіка».',
       sidebarTitle: 'Картка товару',
       photosStepTitle: 'Фото та стильовий приклад',
       formStepTitle: 'Текст картки та результат',
@@ -35,11 +36,32 @@ export default {
     infographic: {
       title: 'Інфографіка',
       subtitle:
-        'Збирайте картки у стилі маркетплейсів на полотні: текст, фігури та зображення (JPG, PNG, WebP), потім експорт PNG 1080×1440. Подвійний клік по тексту — редагувати.',
+        'Ручне полотно: шар шаблону, вирізаний товар, текст і зображення — повний контроль позицій і розмірів. Експорт PNG локально; це не сценарій AI «Картка товару».',
       canvasPageSubtitle:
-        'Лише локальне полотно: розміщуйте та накладіть зображення й експортуйте PNG (1080×1440). Макет на сервер не відправляється.',
+        'Оберіть шаблон, додайте фото товару (за бажанням з вирізанням фону в браузері), редагуйте всі елементи й завантажте результат. Макет не надсилається на сервер.',
       canvasPageAside:
-        'Завантажуйте зображення кнопкою «Додати зображення». Порядок шарів — у панелі зверху, потім завантаження. Для AI-картки за референсом використайте «Картка товару» в меню.',
+        'Шаблон і фото товару редагуються на полотні. Подвійний клік по тексту — введення. Для повністю автоматичних AI-карток використайте «Картка товару».',
+      canvasEditorCallout:
+        '«Картка товару» — це AI. Тут лише ручна збірка: шаблон, вирізаний товар, типографіка й додаткові зображення.',
+      canvasEditorAiCta: 'Картка товару (AI)',
+      canvasEditorReferenceGridTitle: 'Шаблони',
+      canvasEditorReferenceGridHint:
+        'Шар — зображення тла. Файл templates-layout.json додає окремі текстові об’єкти (не зашиті в пікселі).',
+      templateManifestHint:
+        'Редаговані підписи: скопіюйте storage/app/public/infographic/templates-layout.example.json у templates-layout.json (там само); ключі = імена зображень.',
+      templateHasTextLayers: 'Є текстові шари',
+      canvasEditorPlainBackground: 'Порожнє полотно',
+      canvasEditorZoom: 'Масштаб',
+      productPhotoSection: 'Фото товару',
+      addProductPhoto: 'Завантажити товар',
+      cutOutLabel: 'Вирізати товар (прибрати фон)',
+      cutOutHint: 'Обробка в браузері. Перший запуск може завантажити модель (десятки МБ).',
+      cutOutProcessing: 'Прибираємо фон…',
+      cutOutFailed: 'Не вдалося прибрати фон; використовуємо оригінал.',
+      addDecorativeImage: 'Додати зображення',
+      addHeadingTool: 'Заголовок',
+      addTextTool: 'Текст',
+      flipHorizontal: 'Відзеркалити',
       addImage: 'Додати зображення',
       addHeading: 'Заголовок',
       addText: 'Текст',
@@ -112,7 +134,9 @@ export default {
       cardGalleryButton: 'Приклади',
       cardGalleryTitle: 'Оберіть приклад картки',
       cardGalleryLoading: 'Завантаження галереї…',
-      cardGalleryEmpty: 'Немає прикладів. Додайте JPG/PNG у public/storage/cards/exemple на сервері.',
+      cardGalleryEmpty: 'Немає прикладів. Додайте JPG, PNG або WebP у public/storage/cards/exemple на сервері.',
+      canvasTemplatesEmpty:
+        'Немає шаблонів канвасу. Покладіть JPG/PNG/WebP у backend/storage/app/public/infographic і виконайте php artisan storage:link.',
       cardGalleryLoadError: 'Не вдалося завантажити галерею прикладів.',
       productNameRequired: 'Назва товару',
       templateCharacteristicsEachLine: 'Характеристики (кожен рядок = пункт)',
@@ -173,7 +197,7 @@ export default {
         brandTitle: '{{siteName}} — Адмін',
         dashboard: 'Адмін',
         users: 'Користувачі',
-        templates: 'Шаблони',
+        infographicTemplates: 'Шаблони інфографіки',
         subscriptionPlans: 'Підписки (тарифи)',
       },
       dashboard: {
@@ -191,6 +215,25 @@ export default {
         paymentOrdersCompleted: 'Завершених платежів',
         usersByRole: 'Користувачі за роллю',
         loadError: 'Не вдалося завантажити статистику.',
+      },
+      infographicCanvas: {
+        title: 'Шаблони для інфографіки',
+        subtitle:
+          'Фони з’являються в клієнтському редакторі інфографіки. Файли зберігаються в storage/app/public/infographic (публічно — /storage/infographic/).',
+        addPhoto: 'Завантажити зображення',
+        uploading: 'Завантаження…',
+        empty: 'Ще немає зображень у корені infographic.',
+        delete: 'Видалити',
+        deleted: 'Файл видалено.',
+        uploaded: 'Файл завантажено.',
+        confirmDelete: 'Видалити файл «{{name}}»? Запис у templates-layout.json (якщо був) також буде прибрано.',
+        hasEditorLayers: 'Є шари тексту в templates-layout.json',
+        hint: 'Формати: JPEG, PNG, WebP. Редаговані підписи додаються вручну в templates-layout.json на сервері (ключ = ім’я файлу). Або натисніть «Згенерувати шари» — потрібен OPENAI_API_KEY.',
+        generateLayers: 'Згенерувати шари (AI)',
+        generatingLayers: 'Аналіз зображення… (~1 хв)',
+        layersGenerated: 'Шари збережено. Текстових блоків: {{count}}.',
+        confirmRegenerateLayers:
+          'Для цього файлу вже є запис у templates-layout.json. Перегенерувати через OpenAI Vision?',
       },
       users: {
         title: 'Користувачі',
@@ -281,6 +324,8 @@ export default {
         colFeatured: 'Акцент',
         colSort: 'Порядок',
         colActions: 'Дії',
+        statusActive: 'Активний',
+        statusInactive: 'Прихований',
         edit: 'Змінити',
         formTitle: 'Новий тарифний план',
         editTitle: 'Редагування тарифу',
@@ -331,7 +376,7 @@ export default {
       },
       desc: {
         credits:   'Підписки та пакети кредитів',
-        templates: 'Приклади фото та відео для натхнення',
+        infographic: 'Редактор інфографіки на полотні',
         products:  'Ваші товари та відео-проєкти',
         create:    'Чат і промпти для генерації контенту',
         gallery:   'Усе створене в одному місці',

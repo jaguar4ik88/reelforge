@@ -1,5 +1,5 @@
 import { Outlet, NavLink, Link, useNavigate } from 'react-router-dom'
-import { Film, LayoutDashboard, LayoutTemplate, LogOut, Repeat, Users } from 'lucide-react'
+import { Film, LayoutDashboard, BarChart3, LogOut, Repeat, Users } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useAuthContext } from '../context/AuthContext'
 import { useSite } from '../context/SiteContext'
@@ -64,7 +64,7 @@ export default function AdminLayout() {
             </NavLink>
           )}
           <NavLink
-            to={`${ADMIN_BASE}/templates`}
+            to={`${ADMIN_BASE}/infographic-templates`}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                 isActive
@@ -73,8 +73,8 @@ export default function AdminLayout() {
               }`
             }
           >
-            <LayoutTemplate className="w-4 h-4" />
-            {t('admin.nav.templates')}
+            <BarChart3 className="w-4 h-4" />
+            {t('admin.nav.infographicTemplates')}
           </NavLink>
           <NavLink
             to={`${ADMIN_BASE}/subscription-plans`}
