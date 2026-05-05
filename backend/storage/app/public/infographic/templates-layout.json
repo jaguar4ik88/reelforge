@@ -1,0 +1,87 @@
+{
+    "1111.webp": {
+        "texts": [
+            {
+                "content": "30",
+                "leftRatio": 0.1,
+                "topRatio": 0,
+                "fontSize": 13,
+                "fontWeight": "400",
+                "fill": "#000000",
+                "shadow": true,
+                "kind": "textbox",
+                "widthRatio": 0.8
+            },
+            {
+                "content": "30",
+                "leftRatio": 0.1,
+                "topRatio": 0,
+                "fontSize": 13,
+                "fontWeight": "400",
+                "fill": "#000000",
+                "shadow": true,
+                "kind": "textbox",
+                "widthRatio": 0.8
+            },
+            {
+                "content": "30",
+                "leftRatio": 0.1,
+                "topRatio": 0,
+                "fontSize": 13,
+                "fontWeight": "400",
+                "fill": "#000000",
+                "shadow": true,
+                "kind": "textbox",
+                "widthRatio": 0.8
+            }
+        ]
+    },
+    "shoes-1.jpg": {
+        "texts": [
+            {
+                "content": "Title text",
+                "leftRatio": 0.1,
+                "topRatio": 0,
+                "fontSize": 25.9,
+                "fontWeight": "700",
+                "fill": "#ffffff",
+                "shadow": true,
+                "kind": "textbox",
+                "widthRatio": 0.7
+            },
+            {
+                "content": "Feature text 1",
+                "leftRatio": 0.1,
+                "topRatio": 0,
+                "fontSize": 19.4,
+                "fontWeight": "400",
+                "fill": "#000000",
+                "shadow": true,
+                "kind": "textbox",
+                "widthRatio": 0.7
+            },
+            {
+                "content": "Feature text 2",
+                "leftRatio": 0.1,
+                "topRatio": 0,
+                "fontSize": 19.4,
+                "fontWeight": "400",
+                "fill": "#000000",
+                "shadow": true,
+                "kind": "textbox",
+                "widthRatio": 0.7
+            },
+            {
+                "content": "Feature text 3",
+                "leftRatio": 0.1,
+                "topRatio": 0,
+                "fontSize": 19.4,
+                "fontWeight": "400",
+                "fill": "#000000",
+                "shadow": true,
+                "kind": "textbox",
+                "widthRatio": 0.7
+            }
+        ]
+    }
+}

@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\URL;
 
 /**
- * Static gallery files under public/storage/cards/exemple (or public path).
+ * Reference card images for Product card (AI by example) — public/storage/cards/exemple.
  */
 class InfographicCardExampleService
 {
@@ -29,8 +29,10 @@ class InfographicCardExampleService
             File::glob($dir.'/*.jpg') ?: [],
             File::glob($dir.'/*.jpeg') ?: [],
             File::glob($dir.'/*.png') ?: [],
+            File::glob($dir.'/*.webp') ?: [],
             File::glob($dir.'/*.JPG') ?: [],
             File::glob($dir.'/*.PNG') ?: [],
+            File::glob($dir.'/*.WEBP') ?: [],
         )));
         sort($files);
         $out = [];
@@ -51,9 +53,6 @@ class InfographicCardExampleService
         return $out;
     }
 
-    /**
-     * Absolute filesystem path if the file exists and name is safe.
-     */
     public function resolvePublicExamplePath(string $filename): ?string
     {
         $name = basename($filename);
@@ -70,6 +69,6 @@ class InfographicCardExampleService
 
     public function isAllowedBasename(string $name): bool
     {
-        return (bool) preg_match('/^[a-zA-Z0-9._-]+\.(jpe?g|png)$/i', $name);
+        return (bool) preg_match('/^[a-zA-Z0-9._-]+\.(jpe?g|png|webp)$/i', $name);
     }
 }

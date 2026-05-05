@@ -84,7 +84,7 @@ export default function AdminSubscriptionPlans() {
                   <td className="px-4 py-3 tabular-nums">${Number(row.price_usd).toFixed(2)}</td>
                   <td className="px-4 py-3">{row.is_featured ? '✓' : '—'}</td>
                   <td className="px-4 py-3">
-                    {row.is_active ? t('admin.templates.statusActive') : t('admin.templates.statusInactive')}
+                    {row.is_active ? t('admin.subscriptionPlans.statusActive') : t('admin.subscriptionPlans.statusInactive')}
                   </td>
                   <td className="px-4 py-3 tabular-nums">{row.sort_order}</td>
                   <td className="px-4 py-3">

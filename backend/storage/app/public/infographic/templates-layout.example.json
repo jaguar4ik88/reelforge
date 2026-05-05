@@ -1,0 +1,26 @@
+{
+  "YOUR_TEMPLATE_BASENAME.jpg": {
+    "texts": [
+      {
+        "content": "Заголовок товару",
+        "leftRatio": 0.06,
+        "topRatio": 0.04,
+        "fontSize": 26,
+        "fontWeight": "700",
+        "fill": "#ffffff",
+        "shadow": true
+      },
+      {
+        "content": "✓ Перевага 1\n✓ Перевага 2",
+        "kind": "textbox",
+        "leftRatio": 0.48,
+        "topRatio": 0.62,
+        "widthRatio": 0.44,
+        "fontSize": 13,
+        "fontWeight": "400",
+        "fill": "#f8fafc",
+        "shadow": true
+      }
+    ]
+  }
+}

@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\API\Admin\AdminStatsController;
 use App\Http\Controllers\API\Admin\AdminSubscriptionPlanController;
-use App\Http\Controllers\API\Admin\AdminTemplateController;
+use App\Http\Controllers\API\Admin\AdminInfographicCanvasTemplateController;
 use App\Http\Controllers\API\Admin\AdminUserController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CreditsController;
@@ -14,7 +14,6 @@ use App\Http\Controllers\API\InfographicByExampleController;
 use App\Http\Controllers\API\PhotoGuidedProjectController;
 use App\Http\Controllers\API\ProfileController;
 use App\Http\Controllers\API\ProjectController;
-use App\Http\Controllers\API\TemplateController;
 use App\Http\Controllers\API\WayForPayController;
 use App\Services\Payments\FastSpringService;
 use App\Services\Payments\WayForPayService;
@@ -70,6 +69,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Projects (photo-guided AI flow only)
     Route::get('infographic/card-examples', [InfographicByExampleController::class, 'cardExamples']);
+    Route::get('infographic/canvas-templates', [InfographicByExampleController::class, 'canvasTemplates']);
     Route::post('infographic/generate-by-example', [InfographicByExampleController::class, 'store']);
 
     Route::post('projects/from-photo', [PhotoGuidedProjectController::class, 'store']);
@@ -88,12 +88,12 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::middleware('staff')->prefix('admin')->group(function () {
-        Route::get('templates', [AdminTemplateController::class, 'index']);
-        Route::post('templates', [AdminTemplateController::class, 'store']);
-        Route::get('templates/{template}', [AdminTemplateController::class, 'show']);
-        // POST (not PUT) so multipart preview uploads work reliably on all PHP stacks.
-        Route::post('templates/{template}', [AdminTemplateController::class, 'update']);
-        Route::delete('templates/{template}', [AdminTemplateController::class, 'destroy']);
+        Route::get('infographic-canvas-templates', [AdminInfographicCanvasTemplateController::class, 'index']);
+        Route::post('infographic-canvas-templates', [AdminInfographicCanvasTemplateController::class, 'store']);
+        Route::post('infographic-canvas-templates/{filename}/generate-layout', [AdminInfographicCanvasTemplateController::class, 'generateLayout'])
+            ->where('filename', '[a-zA-Z0-9._-]+');
+        Route::delete('infographic-canvas-templates/{filename}', [AdminInfographicCanvasTemplateController::class, 'destroy'])
+            ->where('filename', '[a-zA-Z0-9._-]+');
 
         Route::get('subscription-plans', [AdminSubscriptionPlanController::class, 'index']);
         Route::post('subscription-plans', [AdminSubscriptionPlanController::class, 'store']);
@@ -104,10 +104,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Images
     Route::delete('/projects/{project}/images/{image}', [ImageController::class, 'destroy']);
-
-    // Templates (read-only for users)
-    Route::get('/templates', [TemplateController::class, 'index']);
-    Route::get('/templates/{template}', [TemplateController::class, 'show']);
 
     Route::get('/credits/balance', [CreditsController::class, 'balance']);
     Route::get('/credits/transactions', [CreditsController::class, 'transactions']);

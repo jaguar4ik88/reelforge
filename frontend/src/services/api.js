@@ -93,15 +93,12 @@ export const photoFlowApi = {
    * @param {File|File[]} files
    * @param {{ productName: string, category: string }} meta — required by API (MVP: manual name + category)
    */
-  createFromPhoto: (files, { productName, category, templateId }) => {
+  createFromPhoto: (files, { productName, category }) => {
     const form = new FormData()
     const list = Array.isArray(files) ? files : [files]
     list.forEach((f) => form.append('images[]', f))
     form.append('product_name', productName)
     form.append('category', category)
-    if (templateId != null && templateId !== '') {
-      form.append('template_id', String(templateId))
-    }
     return api.post('/projects/from-photo', form, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
@@ -115,30 +112,30 @@ export const photoFlowApi = {
 /** Infographic: card-by-example (vision ×2 + FLUX Kontext collage). */
 export const infographicApi = {
   cardExamples: () => api.get('/infographic/card-examples'),
+  /** Canvas editor templates: storage/app/public/infographic */
+  canvasTemplates: () => api.get('/infographic/canvas-templates'),
   generateByExample: (formData) =>
     api.post('/infographic/generate-by-example', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     }),
 }
 
-// ── Templates ─────────────────────────────────────────────────────────────────
-export const templatesApi = {
-  list: () => api.get('/templates'),
-  get:  (id) => api.get(`/templates/${id}`),
-}
-
-export const adminTemplatesApi = {
-  list: (page = 1) => api.get(`/admin/templates?page=${page}`),
-  get: (id) => api.get(`/admin/templates/${id}`),
-  create: (formData) =>
-    api.post('/admin/templates', formData, {
+export const adminInfographicCanvasTemplatesApi = {
+  list: () => api.get('/admin/infographic-canvas-templates'),
+  upload: (file) => {
+    const fd = new FormData()
+    fd.append('file', file)
+    return api.post('/admin/infographic-canvas-templates', fd, {
       headers: { 'Content-Type': 'multipart/form-data' },
+    })
+  },
+  /** OpenAI Vision → merge templates-layout.json (can take 1–2 min). */
+  generateLayout: (filename, body = {}) =>
+    api.post(`/admin/infographic-canvas-templates/${encodeURIComponent(filename)}/generate-layout`, body, {
+      timeout: 180000,
     }),
-  update: (id, formData) =>
-    api.post(`/admin/templates/${id}`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    }),
-  remove: (id) => api.delete(`/admin/templates/${id}`),
+  remove: (filename) =>
+    api.delete(`/admin/infographic-canvas-templates/${encodeURIComponent(filename)}`),
 }
 
 export const adminSubscriptionPlansApi = {

@@ -21,7 +21,8 @@ export default {
 
     productCard: {
       title: 'Product card',
-      subtitle: 'Generate an AI marketplace card from your photo and a style example — or try prompt-based generation when it ships.',
+      subtitle:
+        'AI-first workflow: server-side agents generate marketplace cards from your product photo and style references (examples or prompts). Separate from the manual Infographic canvas.',
       sidebarTitle: 'Product card',
       photosStepTitle: 'Photos & style reference',
       formStepTitle: 'Card copy & output',
@@ -34,11 +35,32 @@ export default {
     infographic: {
       title: 'Infographic',
       subtitle:
-        'Compose marketplace-style cards on a canvas: add text, shapes, and images (JPG, PNG, WebP), then export a 1080×1440 PNG. Double-click text to edit.',
+        'Manual canvas: template base layer, cut-out product, free-form text and images—full control of position and size. Export PNG locally; this is not the AI Product card flow.',
       canvasPageSubtitle:
-        'Local canvas only: place and layer images, then export PNG (1080×1440). This page does not send your layout to the server.',
+        'Pick a layout template, place your product (optional background removal in the browser), edit every element, then download. Layout stays on your device.',
       canvasPageAside:
-        'Upload images with «Add image». Reorder layers with the toolbar, then download. For AI cards from a reference example, use «Product card» in the sidebar.',
+        'Templates and the product photo are edited on the canvas. Double-click text to type. For automated AI cards, use «Product card» in the sidebar.',
+      canvasEditorCallout:
+        '«Product card» is the AI route. This page is only for hands-on composition—template, product cut-out, typography, and extra images.',
+      canvasEditorAiCta: 'Product card (AI)',
+      canvasEditorReferenceGridTitle: 'Templates',
+      canvasEditorReferenceGridHint:
+        'Background image layer. Optional templates-layout.json adds editable text objects (not baked into pixels).',
+      templateManifestHint:
+        'Editable captions: copy storage/app/public/infographic/templates-layout.example.json → templates-layout.json (same folder); keys = image filenames.',
+      templateHasTextLayers: 'Includes editable text slots',
+      canvasEditorPlainBackground: 'Blank canvas',
+      canvasEditorZoom: 'Zoom',
+      productPhotoSection: 'Product photo',
+      addProductPhoto: 'Upload product',
+      cutOutLabel: 'Cut out product (remove background)',
+      cutOutHint: 'Processed in your browser. The first run may download a model file (tens of MB).',
+      cutOutProcessing: 'Removing background…',
+      cutOutFailed: 'Could not remove background; using the original photo.',
+      addDecorativeImage: 'Add image',
+      addHeadingTool: 'Heading',
+      addTextTool: 'Text',
+      flipHorizontal: 'Flip',
       addImage: 'Add image',
       addHeading: 'Heading',
       addText: 'Text',
@@ -108,7 +130,9 @@ export default {
       cardGalleryButton: 'Examples',
       cardGalleryTitle: 'Choose a card example',
       cardGalleryLoading: 'Loading gallery…',
-      cardGalleryEmpty: 'No example images found. Add JPG/PNG files to public/storage/cards/exemple on the server.',
+      cardGalleryEmpty: 'No example images found. Add JPG, PNG, or WebP files to public/storage/cards/exemple on the server.',
+      canvasTemplatesEmpty:
+        'No canvas templates. Put JPG/PNG/WebP in backend/storage/app/public/infographic and run php artisan storage:link.',
       cardGalleryLoadError: 'Could not load the example gallery.',
       productNameRequired: 'Product name',
       templateCharacteristicsEachLine: 'Specifications (one line = one bullet)',
@@ -169,7 +193,7 @@ export default {
         brandTitle: '{{siteName}} Admin',
         dashboard: 'Admin',
         users: 'Users',
-        templates: 'Templates',
+        infographicTemplates: 'Infographic templates',
         subscriptionPlans: 'Subscription plans',
       },
       dashboard: {
@@ -187,6 +211,25 @@ export default {
         paymentOrdersCompleted: 'Completed payment orders',
         usersByRole: 'Users by role',
         loadError: 'Could not load statistics.',
+      },
+      infographicCanvas: {
+        title: 'Infographic templates',
+        subtitle:
+          'Backgrounds appear in the client infographic editor. Files are stored in storage/app/public/infographic (public URL /storage/infographic/).',
+        addPhoto: 'Upload image',
+        uploading: 'Uploading…',
+        empty: 'No images in the infographic folder root yet.',
+        delete: 'Delete',
+        deleted: 'File removed.',
+        uploaded: 'File uploaded.',
+        confirmDelete: 'Delete "{{name}}"? Matching entry in templates-layout.json will be removed if present.',
+        hasEditorLayers: 'Has text layers in templates-layout.json',
+        hint: 'Formats: JPEG, PNG, WebP. Editable captions can be set manually in templates-layout.json (key = filename). Or use “Generate layers (AI)” — requires OPENAI_API_KEY.',
+        generateLayers: 'Generate layers (AI)',
+        generatingLayers: 'Analysing image… (~1 min)',
+        layersGenerated: 'Layers saved. Text blocks: {{count}}.',
+        confirmRegenerateLayers:
+          'This file already has a templates-layout.json entry. Regenerate with OpenAI Vision?',
       },
       users: {
         title: 'Users',
@@ -275,6 +318,8 @@ export default {
         colFeatured: 'Featured',
         colSort: 'Sort',
         colActions: 'Actions',
+        statusActive: 'Active',
+        statusInactive: 'Hidden',
         edit: 'Edit',
         formTitle: 'New subscription plan',
         editTitle: 'Edit subscription plan',
@@ -325,7 +370,7 @@ export default {
       },
       desc: {
         credits:   'Subscriptions and credit packs',
-        templates: 'Photo & video inspiration',
+        infographic: 'Canvas infographic editor',
         products:  'Your products and video projects',
         create:    'Chat and prompts for content generation',
         gallery:   'Everything you created in one place',
