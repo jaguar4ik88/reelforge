@@ -27,14 +27,14 @@ function ProcessingAnimation({ label, sub, variant = 'film' }) {
   const Icon = variant === 'photo' ? Image : Film
   return (
     <div className="w-full max-w-xl mx-auto">
-      <div className="aspect-[4/5] max-h-[min(70vh,640px)] rounded-2xl bg-gray-900 border border-white/10 flex flex-col items-center justify-center gap-4 shadow-2xl">
+      <div className="aspect-[4/5] max-h-[min(70vh,640px)] rounded-2xl bg-rf-well border border-rf-border flex flex-col items-center justify-center gap-4 shadow-2xl">
         <div className="relative">
           <div className="w-16 h-16 rounded-full border-4 border-brand-500/20 border-t-brand-500 animate-spin" />
           <Icon className="absolute inset-0 m-auto w-7 h-7 text-brand-400" />
         </div>
         <div className="text-center px-6">
-          <p className="text-white font-semibold">{label}</p>
-          <p className="text-gray-500 text-sm mt-1">{sub}</p>
+          <p className="text-rf-text font-semibold">{label}</p>
+          <p className="text-rf-mutedFg text-sm mt-1">{sub}</p>
         </div>
       </div>
     </div>
@@ -44,7 +44,7 @@ function ProcessingAnimation({ label, sub, variant = 'film' }) {
 function PhotoGuidedGenerationPlaceholder({ referenceUrl, contentType, t }) {
   const Icon = contentType === 'video' ? Film : Image
   return (
-    <div className="relative w-full max-w-xl mx-auto aspect-[4/5] max-h-[min(70vh,720px)] rounded-2xl overflow-hidden border border-brand-500/25 shadow-2xl shadow-brand-900/30 bg-gray-950">
+    <div className="relative w-full max-w-xl mx-auto aspect-[4/5] max-h-[min(70vh,720px)] rounded-2xl overflow-hidden border border-brand-500/25 shadow-2xl shadow-brand-900/30 bg-rf-page">
       {referenceUrl ? (
         <img
           src={referenceUrl}
@@ -54,15 +54,15 @@ function PhotoGuidedGenerationPlaceholder({ referenceUrl, contentType, t }) {
           aria-hidden
         />
       ) : null}
-      <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/90 to-gray-950/70" aria-hidden />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/55 to-black/35" aria-hidden />
       <div className="relative z-10 h-full min-h-[280px] flex flex-col items-center justify-center gap-5 px-6 text-center">
         <div className="relative">
           <div className="w-20 h-20 rounded-full border-4 border-brand-500/25 border-t-brand-500 animate-spin" />
           <Icon className="absolute inset-0 m-auto w-9 h-9 text-brand-400" aria-hidden />
         </div>
         <div className="space-y-2">
-          <p className="text-white text-lg font-semibold tracking-tight">{t('project.generatingProjectTitle')}</p>
-          <p className="text-gray-400 text-sm leading-relaxed max-w-sm mx-auto">
+          <p className="text-rf-text text-lg font-semibold tracking-tight">{t('project.generatingProjectTitle')}</p>
+          <p className="text-rf-mutedFg text-sm leading-relaxed max-w-sm mx-auto">
             {contentType === 'video'
               ? t('project.generatingProjectSubVideo')
               : t('project.generatingProjectSubPhoto')}
@@ -76,7 +76,7 @@ function PhotoGuidedGenerationPlaceholder({ referenceUrl, contentType, t }) {
 function ImageResult({ url }) {
   return (
     <div className="relative mx-auto w-full max-w-xl">
-      <div className="overflow-hidden rounded-2xl shadow-2xl shadow-brand-900/40 ring-4 ring-white/10">
+      <div className="overflow-hidden rounded-2xl shadow-2xl shadow-brand-900/40 ring-4 ring-black/15 dark:ring-white/15">
         <ZoomableImage
           src={url}
           alt=""
@@ -102,7 +102,7 @@ function ProjectDeleteFooter({ t, busy, disabled, onDelete }) {
         {busy ? <Spinner size="sm" /> : <Trash2 className="w-4 h-4 shrink-0" aria-hidden />}
         {busy ? t('project.deleteProjectBusy') : t('project.deleteProject')}
       </button>
-      <p className="text-[11px] text-gray-600 text-center mt-2 leading-snug">{t('project.deleteProjectHint')}</p>
+      <p className="text-[11px] text-rf-mutedFg text-center mt-2 leading-snug">{t('project.deleteProjectHint')}</p>
     </div>
   )
 }
@@ -148,7 +148,7 @@ function PhotoGuidedProjectBody({
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_minmax(280px,380px)] gap-8 lg:gap-10 items-start">
       <div className="flex flex-col gap-6 min-w-0">
-        <div className="rounded-2xl overflow-hidden bg-gray-900/50 border border-white/10">
+        <div className="rounded-2xl overflow-hidden bg-rf-sidebar border border-rf-border">
           {isDone && hasResult ? (
             showAsVideoPlayer ? (
               <div className="relative overflow-hidden rounded-2xl bg-black shadow-2xl shadow-brand-900/40 ring-4 ring-white/10">
@@ -177,8 +177,8 @@ function PhotoGuidedProjectBody({
             />
           ) : (
             <div className="aspect-[4/5] max-h-[min(70vh,640px)] flex flex-col items-center justify-center gap-3 px-6">
-              <Image className="w-16 h-16 text-gray-700" />
-              <p className="text-gray-500 text-sm text-center">
+              <Image className="w-16 h-16 text-rf-mutedFg" />
+              <p className="text-rf-mutedFg text-sm text-center">
                 {project.status === 'failed' ? t('project.failedSub') : t('project.noVideo')}
               </p>
             </div>
@@ -186,24 +186,24 @@ function PhotoGuidedProjectBody({
         </div>
 
         <div className="card">
-          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+          <h2 className="text-xs font-semibold text-rf-mutedFg uppercase tracking-wider mb-3 flex items-center gap-2">
             <Sparkles className="w-3.5 h-3.5 text-brand-400" />
             {t('project.promptLabel')}
           </h2>
           {project.generation?.image_caption && (
             <div className="mb-3">
-              <p className="text-xs text-gray-500 mb-1">{t('project.imageCaption')}</p>
-              <p className="text-xs text-gray-400 italic leading-relaxed">
+              <p className="text-xs text-rf-mutedFg mb-1">{t('project.imageCaption')}</p>
+              <p className="text-xs text-rf-mutedFg italic leading-relaxed">
                 {project.generation.image_caption}
               </p>
             </div>
           )}
           {project.generation?.final_prompt ? (
-            <p className="text-sm text-gray-300 leading-relaxed bg-gray-900/60 rounded-xl p-3 border border-white/5 font-mono whitespace-pre-wrap">
+            <p className="text-sm text-rf-mutedFg leading-relaxed bg-rf-well/60 rounded-xl p-3 border border-rf-border font-mono whitespace-pre-wrap">
               {project.generation.final_prompt}
             </p>
           ) : (
-            <p className="text-sm text-gray-500">{t('project.noPromptYet')}</p>
+            <p className="text-sm text-rf-mutedFg">{t('project.noPromptYet')}</p>
           )}
         </div>
       </div>
@@ -211,14 +211,14 @@ function PhotoGuidedProjectBody({
       <aside className="flex flex-col gap-4 min-w-0">
         {qualities.length > 0 && (
           <div className="card py-3">
-            <h2 className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-2">
+            <h2 className="text-[10px] font-semibold text-rf-mutedFg uppercase tracking-wider mb-2">
               {t('project.qualities')}
             </h2>
             <div className="flex flex-wrap gap-1.5">
               {qualities.map((q) => (
                 <span
                   key={q}
-                  className="text-[11px] px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-gray-300"
+                  className="text-[11px] px-2 py-0.5 rounded-full bg-rf-muted border border-rf-border text-rf-mutedFg"
                 >
                   {q}
                 </span>
@@ -262,7 +262,7 @@ function PhotoGuidedProjectBody({
           <button
             type="button"
             onClick={handleCreateVideo}
-            className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gray-900 hover:bg-gray-800 border border-white/10 text-white text-sm font-medium transition-colors"
+            className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-xl bg-rf-well hover:bg-rf-meter border border-rf-border text-rf-text text-sm font-medium transition-colors"
           >
             <Video className="w-5 h-5 shrink-0" />
             {t('project.createVideo')}
@@ -270,7 +270,7 @@ function PhotoGuidedProjectBody({
         )}
 
         <div className="card">
-          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+          <h2 className="text-xs font-semibold text-rf-mutedFg uppercase tracking-wider mb-3">
             {t('project.improvements')}
           </h2>
           <textarea
@@ -279,7 +279,7 @@ function PhotoGuidedProjectBody({
             placeholder={t('project.improvementsPlaceholder')}
             rows={3}
             disabled={isProcessing}
-            className="w-full rounded-xl bg-gray-900/80 border border-white/10 px-3 py-2.5 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500/40 mb-3 disabled:opacity-50"
+            className="w-full rounded-xl bg-rf-panel border border-rf-border px-3 py-2.5 text-sm text-rf-text placeholder:text-rf-mutedFg focus:outline-none focus:ring-2 focus:ring-brand-500/40 mb-3 disabled:opacity-50"
           />
           <button
             type="button"
@@ -293,14 +293,14 @@ function PhotoGuidedProjectBody({
 
         {project.images?.length > 0 && (
           <div className="card">
-            <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+            <h2 className="text-xs font-semibold text-rf-mutedFg uppercase tracking-wider mb-3">
               {t('project.referencePhotos')}
             </h2>
             <div className="grid grid-cols-2 gap-2">
               {project.images.map((img) => (
                 <div
                   key={img.id}
-                  className="aspect-[9/16] overflow-hidden rounded-lg bg-gray-800 ring-1 ring-white/10 transition-all hover:ring-brand-500/50"
+                  className="aspect-[9/16] overflow-hidden rounded-lg bg-rf-meter ring-1 ring-white/10 transition-all hover:ring-brand-500/50"
                 >
                   <ZoomableImage
                     variant="thumb"
@@ -369,7 +369,7 @@ export default function ProjectView() {
   if (!project) {
     return (
       <div className="text-center py-20">
-        <p className="text-gray-400">{t('project.notFound')}</p>
+        <p className="text-rf-mutedFg">{t('project.notFound')}</p>
         <Link to={`${APP_BASE}/dashboard`} className="btn-secondary mt-4 inline-block">{t('project.backDashboard')}</Link>
       </div>
     )
@@ -419,21 +419,21 @@ export default function ProjectView() {
             <div className="flex items-center gap-3 flex-wrap shrink-0">
               <Link
                 to={`${APP_BASE}/gallery`}
-                className="text-sm text-gray-400 hover:text-white transition-colors"
+                className="text-sm text-rf-mutedFg hover:text-rf-text transition-colors"
               >
                 {t('project.backGallery')}
               </Link>
-              <span className="text-gray-600 hidden sm:inline">·</span>
-              <Link to={`${APP_BASE}/dashboard`} className="text-gray-400 hover:text-white transition-colors">
+              <span className="text-rf-mutedFg hidden sm:inline">·</span>
+              <Link to={`${APP_BASE}/dashboard`} className="text-rf-mutedFg hover:text-rf-text transition-colors">
                 <ArrowLeft className="w-5 h-5" />
               </Link>
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-3 flex-wrap">
-                <h1 className="text-2xl font-bold text-white truncate">{project.title}</h1>
+                <h1 className="text-2xl font-bold text-rf-text truncate">{project.title}</h1>
                 <StatusBadge status={project.status} />
               </div>
-              <p className="text-gray-500 text-sm mt-0.5">
+              <p className="text-rf-mutedFg text-sm mt-0.5">
                 {isPhotoGuided
                   ? `${t('project.photoFlowBadge')} · ${new Date(project.created_at).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}`
                   : new Date(project.created_at).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}
@@ -443,7 +443,7 @@ export default function ProjectView() {
                   <p className="text-xs font-semibold text-amber-200/90 mb-2">
                     {t('project.cardAnalysisTest')}
                   </p>
-                  <pre className="text-[10px] leading-relaxed text-gray-300 overflow-x-auto max-h-56 overflow-y-auto font-mono whitespace-pre-wrap break-words">
+                  <pre className="text-[10px] leading-relaxed text-rf-mutedFg overflow-x-auto max-h-56 overflow-y-auto font-mono whitespace-pre-wrap break-words">
                     {JSON.stringify(project.product_meta.card_photo_analysis, null, 2)}
                   </pre>
                 </div>
@@ -503,9 +503,9 @@ export default function ProjectView() {
               <ProcessingAnimation label={t('project.processing')} sub={t('project.processingSub')} />
             ) : (
               <div className="max-w-[280px] mx-auto">
-                <div className="aspect-[9/16] rounded-3xl bg-gray-900 border-2 border-dashed border-white/15 flex flex-col items-center justify-center gap-3">
-                  <Film className="w-16 h-16 text-gray-700" />
-                  <p className="text-gray-500 text-sm text-center px-6">
+                <div className="aspect-[9/16] rounded-3xl bg-rf-well border-2 border-dashed border-rf-border flex flex-col items-center justify-center gap-3">
+                  <Film className="w-16 h-16 text-rf-mutedFg" />
+                  <p className="text-rf-mutedFg text-sm text-center px-6">
                     {project.status === 'failed' ? t('project.failedSub') : t('project.noVideo')}
                   </p>
                 </div>
@@ -515,33 +515,33 @@ export default function ProjectView() {
 
           <div className="space-y-6">
             <div className="card">
-              <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">{t('project.product')}</h2>
+              <h2 className="text-xs font-semibold text-rf-mutedFg uppercase tracking-wider mb-4">{t('project.product')}</h2>
               <div className="space-y-3">
                 <div>
-                  <p className="text-xs text-gray-500">{t('project.productTitle')}</p>
-                  <p className="text-white font-medium">{project.title}</p>
+                  <p className="text-xs text-rf-mutedFg">{t('project.productTitle')}</p>
+                  <p className="text-rf-text font-medium">{project.title}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500">{t('project.price')}</p>
+                  <p className="text-xs text-rf-mutedFg">{t('project.price')}</p>
                   <p className="text-brand-400 font-bold text-xl">
                     ${parseFloat(project.price).toLocaleString('en-US', { minimumFractionDigits: 2 })}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500">{t('project.description')}</p>
-                  <p className="text-gray-300 text-sm leading-relaxed">{project.description}</p>
+                  <p className="text-xs text-rf-mutedFg">{t('project.description')}</p>
+                  <p className="text-rf-mutedFg text-sm leading-relaxed">{project.description}</p>
                 </div>
               </div>
             </div>
 
             {project.images?.length > 0 && (
               <div className="card">
-                <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                <h2 className="text-xs font-semibold text-rf-mutedFg uppercase tracking-wider mb-3">
                   {t('project.photos', { count: project.images.length })}
                 </h2>
                 <div className="grid grid-cols-5 gap-2">
                   {project.images.map((img) => (
-                    <div key={img.id} className="aspect-[9/16] overflow-hidden rounded-lg bg-gray-800">
+                    <div key={img.id} className="aspect-[9/16] overflow-hidden rounded-lg bg-rf-meter">
                       <ZoomableImage
                         variant="thumb"
                         src={img.url}
@@ -556,14 +556,14 @@ export default function ProjectView() {
             )}
 
             <div className="card">
-              <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">{t('project.videoGen')}</h2>
+              <h2 className="text-xs font-semibold text-rf-mutedFg uppercase tracking-wider mb-4">{t('project.videoGen')}</h2>
 
               {isProcessing && (
                 <div className="flex items-center gap-3 p-3 bg-yellow-500/10 rounded-xl border border-yellow-500/20 mb-4">
                   <Clock className="w-5 h-5 text-yellow-400 flex-shrink-0" />
                   <div>
                     <p className="text-sm text-yellow-300 font-medium">{t('project.processing')}</p>
-                    <p className="text-xs text-gray-500">{t('project.processingSub')}</p>
+                    <p className="text-xs text-rf-mutedFg">{t('project.processingSub')}</p>
                   </div>
                 </div>
               )}
@@ -573,7 +573,7 @@ export default function ProjectView() {
                   <CheckCircle2 className="w-5 h-5 text-green-400 flex-shrink-0" />
                   <div>
                     <p className="text-sm text-green-300 font-medium">{t('project.ready')}</p>
-                    <p className="text-xs text-gray-500">{t('project.readySub')}</p>
+                    <p className="text-xs text-rf-mutedFg">{t('project.readySub')}</p>
                   </div>
                 </div>
               )}
@@ -583,7 +583,7 @@ export default function ProjectView() {
                   <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
                   <div>
                     <p className="text-sm text-red-300 font-medium">{t('project.failed')}</p>
-                    <p className="text-xs text-gray-500">{t('project.failedSub')}</p>
+                    <p className="text-xs text-rf-mutedFg">{t('project.failedSub')}</p>
                   </div>
                 </div>
               )}
@@ -598,19 +598,19 @@ export default function ProjectView() {
 
             {project.generation?.final_prompt && (
               <div className="card">
-                <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+                <h2 className="text-xs font-semibold text-rf-mutedFg uppercase tracking-wider mb-3 flex items-center gap-2">
                   <Sparkles className="w-3.5 h-3.5 text-brand-400" />
                   {t('project.promptSent')}
                 </h2>
                 {project.generation.image_caption && (
                   <div className="mb-3">
-                    <p className="text-xs text-gray-500 mb-1">{t('project.imageCaption')}</p>
-                    <p className="text-xs text-gray-400 italic leading-relaxed">
+                    <p className="text-xs text-rf-mutedFg mb-1">{t('project.imageCaption')}</p>
+                    <p className="text-xs text-rf-mutedFg italic leading-relaxed">
                       {project.generation.image_caption}
                     </p>
                   </div>
                 )}
-                <p className="text-xs text-gray-300 leading-relaxed bg-gray-900/60 rounded-xl p-3 border border-white/5 font-mono whitespace-pre-wrap">
+                <p className="text-xs text-rf-mutedFg leading-relaxed bg-rf-well/60 rounded-xl p-3 border border-rf-border font-mono whitespace-pre-wrap">
                   {project.generation.final_prompt}
                 </p>
               </div>

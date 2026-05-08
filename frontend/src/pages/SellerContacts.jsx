@@ -10,21 +10,17 @@ export default function SellerContacts() {
   const { siteName, seller } = useSite()
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="min-h-screen bg-rf-page text-rf-text">
       <SeoHead titleKey="seo.sellerContactsTitle" descriptionKey="seo.sellerContactsDescription" />
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 right-1/4 w-96 h-96 bg-brand-900/15 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 left-10 w-64 h-64 bg-purple-900/10 rounded-full blur-3xl" />
-      </div>
 
       <LandingNav />
 
       <main className="relative z-10 max-w-3xl w-full mx-auto px-6 pt-16 pb-16">
-        <h1 className="text-3xl sm:text-4xl font-bold text-white mb-8">{t('landing.sellerPageTitle')}</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold text-rf-text mb-8">{t('landing.sellerPageTitle')}</h1>
         {hasSellerProfile(seller) ? (
           <SellerLegalBlock showTitle={false} />
         ) : (
-          <p className="text-gray-400 text-sm leading-relaxed">{t('landing.sellerNotConfigured', { siteName })}</p>
+          <p className="text-rf-mutedFg text-sm leading-relaxed">{t('landing.sellerNotConfigured', { siteName })}</p>
         )}
       </main>
 

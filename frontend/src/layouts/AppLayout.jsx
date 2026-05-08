@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuthContext } from '../context/AuthContext'
 import { useSite } from '../context/SiteContext'
 import LanguageSwitcher from '../components/ui/LanguageSwitcher'
+import ThemeToggle from '../components/ui/ThemeToggle'
 import SeoHead from '../components/seo/SeoHead'
 import toast from 'react-hot-toast'
 import { APP_BASE } from '../constants/routes'
@@ -45,18 +46,18 @@ export default function AppLayout() {
   const generationsLeft = creditCost > 0 ? Math.floor(creditBalance / creditCost) : 0
 
   return (
-    <div className="min-h-screen bg-gray-950 flex">
+    <div className="min-h-screen bg-rf-page flex">
       <SeoHead
         titleKey="seo.appAreaTitle"
         descriptionKey="seo.appAreaDescription"
         noindex
       />
       {/* Sidebar */}
-      <aside className="w-64 flex-shrink-0 border-r border-white/10 bg-gray-900/50 backdrop-blur-sm flex flex-col h-[100dvh] min-h-0 sticky top-0 self-start">
-        <div className="p-6 border-b border-white/10 flex-shrink-0">
+      <aside className="w-64 flex-shrink-0 border-r border-rf-border bg-rf-sidebar backdrop-blur-sm flex flex-col h-[100dvh] min-h-0 sticky top-0 self-start">
+        <div className="p-6 border-b border-rf-border flex-shrink-0">
           <Link to="/" className="flex items-center gap-2">
             <Film className="w-7 h-7 text-brand-400" />
-            <span className="text-white font-bold text-xl gradient-text">{siteName}</span>
+            <span className="text-rf-text font-bold text-xl gradient-text">{siteName}</span>
           </Link>
         </div>
 
@@ -67,7 +68,7 @@ export default function AppLayout() {
               `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                 isActive
                   ? 'bg-brand-600/20 text-brand-300 border border-brand-500/30'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  : 'text-rf-mutedFg hover:text-rf-text hover:bg-rf-muted'
               }`
             }
           >
@@ -81,7 +82,7 @@ export default function AppLayout() {
               `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                 isActive
                   ? 'bg-brand-600/20 text-brand-300 border border-brand-500/30'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  : 'text-rf-mutedFg hover:text-rf-text hover:bg-rf-muted'
               }`
             }
           >
@@ -95,7 +96,7 @@ export default function AppLayout() {
               `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                 isActive
                   ? 'bg-brand-600/20 text-brand-300 border border-brand-500/30'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  : 'text-rf-mutedFg hover:text-rf-text hover:bg-rf-muted'
               }`
             }
           >
@@ -110,7 +111,7 @@ export default function AppLayout() {
               `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                 isActive
                   ? 'bg-brand-600/20 text-brand-300 border border-brand-500/30'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  : 'text-rf-mutedFg hover:text-rf-text hover:bg-rf-muted'
               }`
             }
           >
@@ -125,7 +126,7 @@ export default function AppLayout() {
               `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                 isActive
                   ? 'bg-brand-600/20 text-brand-300 border border-brand-500/30'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  : 'text-rf-mutedFg hover:text-rf-text hover:bg-rf-muted'
               }`
             }
           >
@@ -139,7 +140,7 @@ export default function AppLayout() {
               `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                 isActive
                   ? 'bg-brand-600/20 text-brand-300 border border-brand-500/30'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  : 'text-rf-mutedFg hover:text-rf-text hover:bg-rf-muted'
               }`
             }
           >
@@ -153,7 +154,7 @@ export default function AppLayout() {
               `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                 isActive
                   ? 'bg-brand-600/20 text-brand-300 border border-brand-500/30'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  : 'text-rf-mutedFg hover:text-rf-text hover:bg-rf-muted'
               }`
             }
           >
@@ -167,7 +168,7 @@ export default function AppLayout() {
               `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                 isActive
                   ? 'bg-brand-600/20 text-brand-300 border border-brand-500/30'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  : 'text-rf-mutedFg hover:text-rf-text hover:bg-rf-muted'
               }`
             }
           >
@@ -178,10 +179,10 @@ export default function AppLayout() {
 
         {/* Credits usage indicator */}
         {user && (
-          <div className="p-4 border-t border-white/10 flex-shrink-0 mt-auto">
+          <div className="p-4 border-t border-rf-border flex-shrink-0 mt-auto">
             <div className="card p-4 mb-4">
               <div className="flex items-center justify-between gap-2 mb-2">
-                <span className="text-xs text-gray-400 font-medium flex items-center gap-1.5">
+                <span className="text-xs text-rf-mutedFg font-medium flex items-center gap-1.5">
                   <Coins className="w-3.5 h-3.5 text-amber-400 shrink-0" aria-hidden />
                   {t('layout.creditsUsage')}
                 </span>
@@ -189,7 +190,7 @@ export default function AppLayout() {
                   {creditBalance}
                 </span>
               </div>
-              <div className="w-full bg-gray-800 rounded-full h-1.5">
+              <div className="w-full bg-rf-meter rounded-full h-1.5">
                 <div
                   className="h-1.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-300 transition-all duration-500"
                   style={{ width: `${creditsMeterPercent}%` }}
@@ -198,15 +199,16 @@ export default function AppLayout() {
               {creditBalance < creditCost && (
                 <p className="text-xs text-amber-400/90 mt-2">{t('layout.lowCredits')}</p>
               )}
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="text-xs text-rf-mutedFg mt-2">
                 <Link to={`${APP_BASE}/credits`} className="text-brand-400 hover:underline">
                   {t('layout.getCredits')}
                 </Link>
               </p>
             </div>
 
-            {/* Language switcher */}
-            <div className="mb-3">
+            {/* Theme + locale */}
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              <ThemeToggle />
               <LanguageSwitcher />
             </div>
 
@@ -224,12 +226,12 @@ export default function AppLayout() {
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">{user.name}</p>
-                <p className="text-xs text-gray-500">{billingPlanLabel(user, t)}</p>
+                <p className="text-sm font-medium text-rf-text truncate">{user.name}</p>
+                <p className="text-xs text-rf-mutedFg">{billingPlanLabel(user, t)}</p>
               </div>
               <button
                 onClick={handleLogout}
-                className="text-gray-500 hover:text-red-400 transition-colors p-1"
+                className="text-rf-mutedFg hover:text-red-400 transition-colors p-1"
                 title={t('nav.logout')}
               >
                 <LogOut className="w-4 h-4" />

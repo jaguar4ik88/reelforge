@@ -17,12 +17,12 @@ import Spinner from '../components/ui/Spinner'
 
 function StatCard({ label, value, icon: Icon }) {
   return (
-    <div className="card flex flex-col gap-2 rounded-2xl border border-white/10 p-4">
-      <div className="flex items-center gap-2 text-gray-500">
+    <div className="card flex flex-col gap-2 rounded-2xl border border-rf-border p-4">
+      <div className="flex items-center gap-2 text-rf-mutedFg">
         <Icon className="h-4 w-4 shrink-0 text-brand-400" />
         <span className="text-xs font-medium uppercase tracking-wide">{label}</span>
       </div>
-      <p className="text-2xl font-bold tabular-nums text-white">{value}</p>
+      <p className="text-2xl font-bold tabular-nums text-rf-text">{value}</p>
     </div>
   )
 }
@@ -76,12 +76,12 @@ export default function Dashboard() {
   return (
     <div>
       <div className="mb-10">
-        <h1 className="text-3xl font-bold text-white">
+        <h1 className="text-3xl font-bold text-rf-text">
           {user?.name
             ? t('dashboardHome.title', { name: user.name.split(' ')[0] })
             : t('dashboardHome.titleGuest')}
         </h1>
-        <p className="mt-2 max-w-xl text-gray-400">{t('dashboardHome.subtitle')}</p>
+        <p className="mt-2 max-w-xl text-rf-mutedFg">{t('dashboardHome.subtitle')}</p>
       </div>
 
       {loading && (
@@ -93,7 +93,7 @@ export default function Dashboard() {
       {!loading && home && (
         <>
           <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <h2 className="text-lg font-semibold text-white">{t('dashboardHome.overview')}</h2>
+            <h2 className="text-lg font-semibold text-rf-text">{t('dashboardHome.overview')}</h2>
             <Link to={`${APP_BASE}/gallery`} className="btn-secondary self-start px-5 py-2 text-sm sm:self-auto">
               {t('dashboardHome.viewGallery')}
             </Link>
@@ -106,7 +106,7 @@ export default function Dashboard() {
             <StatCard label={t('dashboardHome.stats.videos')} value={home.videos_generated} icon={VideoIcon} />
           </div>
 
-          <h3 className="mb-4 text-lg font-semibold text-white">{t('dashboardHome.recentProjects')}</h3>
+          <h3 className="mb-4 text-lg font-semibold text-rf-text">{t('dashboardHome.recentProjects')}</h3>
           {home.recent_projects?.length > 0 ? (
             <div className="mb-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {home.recent_projects.map((p) => (
@@ -114,12 +114,12 @@ export default function Dashboard() {
               ))}
             </div>
           ) : (
-            <p className="mb-12 text-sm text-gray-500">{t('dashboardHome.emptyProjects')}</p>
+            <p className="mb-12 text-sm text-rf-mutedFg">{t('dashboardHome.emptyProjects')}</p>
           )}
         </>
       )}
 
-      <h2 className="mb-4 text-lg font-semibold text-white">{t('dashboardHome.shortcuts')}</h2>
+      <h2 className="mb-4 text-lg font-semibold text-rf-text">{t('dashboardHome.shortcuts')}</h2>
       <div className="grid gap-4 sm:grid-cols-2">
         {shortcuts.map(({ to, icon: Icon, key, color }) => (
           <Link
@@ -130,13 +130,13 @@ export default function Dashboard() {
             <div
               className={`flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${color} shadow-lg`}
             >
-              <Icon className="h-7 w-7 text-white" />
+              <Icon className="h-7 w-7 text-rf-text" />
             </div>
             <div>
-              <h3 className="font-semibold text-white transition-colors group-hover:text-brand-300">
+              <h3 className="font-semibold text-rf-text transition-colors group-hover:text-brand-300">
                 {t(`nav.${key}`)}
               </h3>
-              <p className="mt-0.5 text-sm text-gray-500">{t(`dashboardHome.desc.${key}`)}</p>
+              <p className="mt-0.5 text-sm text-rf-mutedFg">{t(`dashboardHome.desc.${key}`)}</p>
             </div>
           </Link>
         ))}

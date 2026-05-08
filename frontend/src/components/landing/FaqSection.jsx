@@ -6,19 +6,19 @@ import { LANDING_FAQ_KEYS } from '../../constants/landingFaqKeys'
 function FaqItem({ q, a }) {
   const [open, setOpen] = useState(false)
   return (
-    <div className="border border-white/10 rounded-2xl overflow-hidden">
+    <div className="border border-rf-border rounded-2xl overflow-hidden">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-white/5 transition-colors"
+        className="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-rf-muted transition-colors"
       >
-        <span className="font-medium text-white">{q}</span>
+        <span className="font-medium text-rf-text">{q}</span>
         <ChevronDown
-          className={`w-5 h-5 text-gray-400 flex-shrink-0 ml-4 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+          className={`w-5 h-5 text-rf-mutedFg flex-shrink-0 ml-4 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
         />
       </button>
       {open && (
-        <div className="px-6 pb-5 text-gray-400 text-sm leading-relaxed border-t border-white/10 pt-4">
+        <div className="px-6 pb-5 text-rf-mutedFg text-sm leading-relaxed border-t border-rf-border pt-4">
           {a}
         </div>
       )}
@@ -31,10 +31,10 @@ export default function FaqSection({ className = '' }) {
   return (
     <section className={`max-w-3xl mx-auto px-6 ${className}`} aria-labelledby="landing-faq-heading">
       <div className="text-center mb-12">
-        <h2 id="landing-faq-heading" className="text-3xl font-bold mb-3 text-white">
+        <h2 id="landing-faq-heading" className="text-3xl font-bold mb-3 text-rf-text">
           {t('landing.faq.title')}
         </h2>
-        <p className="text-gray-400">{t('landing.faq.subtitle')}</p>
+        <p className="text-rf-mutedFg">{t('landing.faq.subtitle')}</p>
       </div>
       <div className="flex flex-col gap-3">
         {LANDING_FAQ_KEYS.map((key) => (

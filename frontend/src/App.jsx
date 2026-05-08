@@ -89,7 +89,7 @@ function LegacyProjectRedirect() {
 
 function FullScreenSpinner() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-950">
+    <div className="min-h-screen flex items-center justify-center bg-rf-page">
       <div className="w-12 h-12 rounded-full border-4 border-brand-500/30 border-t-brand-500 animate-spin" />
     </div>
   )

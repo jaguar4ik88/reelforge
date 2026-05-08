@@ -30,8 +30,8 @@ export default function AspectRatioSelector({ value, onChange, labelId }) {
                 ${wClass}
                 ${
                   selected
-                    ? 'bg-white text-gray-950 border-white shadow-sm'
-                    : 'border-white/20 bg-gray-900/40 text-gray-400 hover:border-white/35 hover:text-gray-200'
+                    ? 'bg-rf-text text-rf-page border-rf-text shadow-sm'
+                    : 'border-rf-border bg-rf-well/40 text-rf-mutedFg hover:border-brand-400/40 hover:text-rf-text'
                 }
               `}
               aria-pressed={selected}

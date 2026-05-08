@@ -65,13 +65,13 @@ export default function SubscriptionPlanCardsGrid({
             key={slug || plan.id}
             className={`relative flex min-w-0 h-full flex-col rounded-3xl border transition-all duration-200 ${
               plan.is_featured
-                ? 'border-brand-500/60 bg-gray-900 shadow-2xl shadow-brand-900/40 scale-[1.02]'
-                : 'border-white/10 bg-gray-900/60 hover:border-white/20'
+                ? 'border-brand-500/60 bg-rf-well shadow-2xl shadow-brand-900/40 scale-[1.02]'
+                : 'border-rf-border bg-rf-well/60 hover:border-rf-border'
             }`}
           >
             {plan.is_featured && (
               <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                <span className="bg-brand-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
+                <span className="bg-brand-500 text-rf-text text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
                   {t('pricing.popular')}
                 </span>
               </div>
@@ -79,17 +79,17 @@ export default function SubscriptionPlanCardsGrid({
 
             <div className="p-6 flex flex-col flex-1">
               <div className="flex items-center justify-between mb-4">
-                <span className="text-lg font-bold text-white">{plan.name}</span>
+                <span className="text-lg font-bold text-rf-text">{plan.name}</span>
                 <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${variant.gradient} flex items-center justify-center`}>
-                  <Icon className="w-4 h-4 text-white" />
+                  <Icon className="w-4 h-4 text-rf-text" />
                 </div>
               </div>
 
-              <p className="text-sm text-gray-400 mb-4 text-left min-h-[2.5rem]">{pickLocalizedDescription(plan, language)}</p>
+              <p className="text-sm text-rf-mutedFg mb-4 text-left min-h-[2.5rem]">{pickLocalizedDescription(plan, language)}</p>
 
               <div className="mb-1">
-                <span className="text-3xl xl:text-4xl font-extrabold text-white tabular-nums">${displayPrice}</span>
-                <span className="text-gray-400 text-sm ml-1">{t('pricing.perMonth')}</span>
+                <span className="text-3xl xl:text-4xl font-extrabold text-rf-text tabular-nums">${displayPrice}</span>
+                <span className="text-rf-mutedFg text-sm ml-1">{t('pricing.perMonth')}</span>
               </div>
               <div className="mb-4" />
 
@@ -103,7 +103,7 @@ export default function SubscriptionPlanCardsGrid({
                   className={`block text-center font-semibold py-3 rounded-xl mb-6 transition-all duration-200 active:scale-95 ${
                     plan.is_featured
                       ? 'bg-gradient-to-r from-brand-600 to-purple-600 hover:from-brand-500 hover:to-purple-500 text-white shadow-lg shadow-brand-900/40'
-                      : 'bg-white/10 hover:bg-white/15 text-white border border-white/15'
+                      : 'bg-rf-elevated hover:bg-white/15 text-rf-text border border-rf-border'
                   }`}
                 >
                   {t('pricing.startBtn')}
@@ -116,7 +116,7 @@ export default function SubscriptionPlanCardsGrid({
                   className={`mb-6 w-full font-semibold py-3 rounded-xl transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
                     plan.is_featured
                       ? 'bg-gradient-to-r from-brand-600 to-purple-600 hover:from-brand-500 hover:to-purple-500 text-white shadow-lg shadow-brand-900/40'
-                      : 'bg-white/10 hover:bg-white/15 text-white border border-white/15'
+                      : 'bg-rf-elevated hover:bg-white/15 text-rf-text border border-rf-border'
                   }`}
                 >
                   {isCurrentPlan

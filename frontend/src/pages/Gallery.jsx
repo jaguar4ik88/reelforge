@@ -65,16 +65,16 @@ function GalleryThumb({ project }) {
   if (project.status === 'processing') {
     return (
       <div
-        className="w-full flex flex-col items-center justify-center gap-2 bg-gray-800/80 text-brand-400 h-[150px]"
+        className="w-full flex flex-col items-center justify-center gap-2 bg-rf-meter/80 text-brand-400 h-[150px]"
       >
         <Loader2 className="w-8 h-8 animate-spin" />
-        <span className="text-[10px] uppercase tracking-wide text-gray-500">{t('gallery.thumbProcessing')}</span>
+        <span className="text-[10px] uppercase tracking-wide text-rf-mutedFg">{t('gallery.thumbProcessing')}</span>
       </div>
     )
   }
 
   return (
-    <div className="w-full h-[150px] flex flex-col items-center justify-center gap-1 bg-gray-800/90 text-gray-500 px-2">
+    <div className="w-full h-[150px] flex flex-col items-center justify-center gap-1 bg-rf-meter/90 text-rf-mutedFg px-2">
       <ImageIcon className="w-10 h-10 opacity-40" />
       <span className="text-[10px] text-center leading-tight">{t('gallery.thumbPlaceholder')}</span>
     </div>
@@ -105,12 +105,12 @@ export default function Gallery() {
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-white mb-1">{t('gallery.title')}</h1>
-        <p className="text-gray-400 text-sm">{t('gallery.subtitle')}</p>
+        <h1 className="text-3xl font-bold text-rf-text mb-1">{t('gallery.title')}</h1>
+        <p className="text-rf-mutedFg text-sm">{t('gallery.subtitle')}</p>
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-end gap-4 pb-2 border-b border-white/10">
-        <div className="flex items-center gap-2 text-white font-semibold shrink-0">
+      <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-end gap-4 pb-2 border-b border-rf-border">
+        <div className="flex items-center gap-2 text-rf-text font-semibold shrink-0">
           <span className="text-sm">{t('gallery.filters')}</span>
         </div>
 
@@ -139,7 +139,7 @@ export default function Gallery() {
                 className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm transition-colors ${
                   kind === id
                     ? 'bg-brand-600/25 text-brand-200 border border-brand-500/40'
-                    : 'text-gray-400 bg-gray-900/50 border border-white/10 hover:border-white/20'
+                    : 'text-rf-mutedFg bg-rf-sidebar border border-rf-border hover:border-rf-border'
                 }`}
               >
                 <Icon className={`w-4 h-4 shrink-0 ${id === 'processing' && kind === id ? 'text-amber-400' : ''}`} />
@@ -153,7 +153,7 @@ export default function Gallery() {
       {error && !loading ? (
         <div className="card text-center py-12 space-y-3 border border-red-500/30 bg-red-950/20">
           <p className="text-red-300 text-sm">{t('gallery.loadError')}</p>
-          <p className="text-gray-500 text-xs break-words max-w-lg mx-auto">{error}</p>
+          <p className="text-rf-mutedFg text-xs break-words max-w-lg mx-auto">{error}</p>
           <button type="button" onClick={() => refresh()} className="btn-secondary text-sm px-4 py-2">
             {t('gallery.retry')}
           </button>
@@ -163,7 +163,7 @@ export default function Gallery() {
           <Spinner size="lg" />
         </div>
       ) : projects.length === 0 ? (
-        <div className="card text-center py-16 text-gray-500">{t('gallery.empty')}</div>
+        <div className="card text-center py-16 text-rf-mutedFg">{t('gallery.empty')}</div>
       ) : (
         <>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -179,22 +179,22 @@ export default function Gallery() {
                 <Link
                   key={p.id}
                   to={`${APP_BASE}/projects/${p.id}`}
-                  className="group flex flex-col rounded-2xl overflow-hidden border border-white/10 bg-gray-900/60 hover:border-brand-500/40 transition-all"
+                  className="group flex flex-col rounded-2xl overflow-hidden border border-rf-border bg-rf-well/60 hover:border-brand-500/40 transition-all"
                 >
-                  <div className="relative w-full h-[150px] overflow-hidden bg-gray-800 flex items-center justify-center">
+                  <div className="relative w-full h-[150px] overflow-hidden bg-rf-meter flex items-center justify-center">
                     <GalleryThumb project={p} />
-                    <div className="absolute top-2 right-2 w-8 h-8 rounded-lg bg-black/55 backdrop-blur-sm flex items-center justify-center border border-white/10">
+                    <div className="absolute top-2 right-2 w-8 h-8 rounded-lg bg-black/55 backdrop-blur-sm flex items-center justify-center border border-rf-border">
                       {isVideoIcon ? (
-                        <Film className="w-4 h-4 text-white" />
+                        <Film className="w-4 h-4 text-rf-text" />
                       ) : (
-                        <ImageIcon className="w-4 h-4 text-white" />
+                        <ImageIcon className="w-4 h-4 text-rf-text" />
                       )}
                     </div>
                   </div>
                   <div className="p-3 flex flex-col gap-1.5 min-h-[4.5rem]">
                     <StatusBadge status={p.status} />
-                    <p className="font-medium text-white text-sm leading-snug line-clamp-2">{p.title}</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="font-medium text-rf-text text-sm leading-snug line-clamp-2">{p.title}</p>
+                    <p className="text-xs text-rf-mutedFg">
                       {new Date(p.created_at).toLocaleString(undefined, {
                         dateStyle: 'medium',
                         timeStyle: 'short',
@@ -207,32 +207,32 @@ export default function Gallery() {
           </div>
 
           {lastPage > 1 && (
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4 border-t border-white/10">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4 border-t border-rf-border">
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   disabled={!canPrev}
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-sm border border-white/15 bg-gray-900/50 text-white disabled:opacity-40 disabled:cursor-not-allowed hover:border-white/25"
+                  className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-sm border border-rf-border bg-rf-sidebar text-rf-text disabled:opacity-40 disabled:cursor-not-allowed hover:border-brand-400/45"
                 >
                   <ChevronLeft className="w-4 h-4" />
                   {t('gallery.prev')}
                 </button>
-                <span className="text-sm text-gray-400 px-2 tabular-nums">
+                <span className="text-sm text-rf-mutedFg px-2 tabular-nums">
                   {t('gallery.page', { current: page, total: lastPage })}
                 </span>
                 <button
                   type="button"
                   disabled={!canNext}
                   onClick={() => setPage((p) => p + 1)}
-                  className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-sm border border-white/15 bg-gray-900/50 text-white disabled:opacity-40 disabled:cursor-not-allowed hover:border-white/25"
+                  className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-sm border border-rf-border bg-rf-sidebar text-rf-text disabled:opacity-40 disabled:cursor-not-allowed hover:border-brand-400/45"
                 >
                   {t('gallery.next')}
                   <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
               {meta?.total != null && (
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-rf-mutedFg">
                   {t('gallery.totalProjects', { count: meta.total })}
                 </span>
               )}

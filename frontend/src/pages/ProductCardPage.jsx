@@ -351,7 +351,7 @@ export default function ProductCardPage() {
       className={`flex-1 flex items-center justify-center gap-2 py-3 px-2 rounded-lg text-sm font-semibold transition-all min-w-0 border ${
         isActive
           ? 'bg-brand-600/20 text-brand-300 border-brand-500/30'
-          : 'text-gray-400 border-transparent hover:text-white hover:bg-white/5'
+          : 'text-rf-mutedFg border-transparent hover:text-rf-text hover:bg-rf-muted'
       }`}
     >
       <Icon className="w-4 h-4 shrink-0" aria-hidden />
@@ -361,9 +361,9 @@ export default function ProductCardPage() {
 
   const generationSizeSelect = (
     <div className="space-y-2">
-      <label className="text-xs font-medium text-gray-300 flex items-center gap-1 uppercase tracking-wide">
+      <label className="text-xs font-medium text-rf-mutedFg flex items-center gap-1 uppercase tracking-wide">
         {t('infographic.exampleSizeLabel')}
-        <Info className="w-3 h-3 text-gray-600 normal-case" aria-hidden />
+        <Info className="w-3 h-3 text-rf-mutedFg normal-case" aria-hidden />
       </label>
       <select
         value={generationAspectRatio}
@@ -372,7 +372,7 @@ export default function ProductCardPage() {
         style={{ backgroundImage: SELECT_CHEVRON_BG }}
       >
         {GENERATION_ASPECT_RATIOS.map((ratio) => (
-          <option key={ratio} value={ratio} className="bg-gray-900 text-white">
+          <option key={ratio} value={ratio} className="bg-rf-well text-rf-text">
             {ratio}
           </option>
         ))}
@@ -394,16 +394,16 @@ export default function ProductCardPage() {
 
   const productPreviewBlock = (
     <div className="space-y-2">
-      <p className="text-xs font-medium text-gray-300">{t('infographic.yourProduct')}</p>
+      <p className="text-xs font-medium text-rf-mutedFg">{t('infographic.yourProduct')}</p>
       <button
         type="button"
         onClick={onPickImage}
-        className="relative w-full aspect-square max-h-44 rounded-xl border border-white/10 bg-white/5 overflow-hidden flex items-center justify-center hover:border-brand-500/40 transition-colors"
+        className="relative w-full aspect-square max-h-44 rounded-xl border border-rf-border bg-white/5 overflow-hidden flex items-center justify-center hover:border-brand-500/40 transition-colors"
       >
         {productPreviewUrl ? (
           <img src={productPreviewUrl} alt="" className="w-full h-full object-contain" />
         ) : (
-          <span className="text-xs text-gray-500 px-4 text-center">{t('infographic.tapToUploadProduct')}</span>
+          <span className="text-xs text-rf-mutedFg px-4 text-center">{t('infographic.tapToUploadProduct')}</span>
         )}
       </button>
     </div>
@@ -420,17 +420,17 @@ export default function ProductCardPage() {
           onClick={() => setCardGalleryModalOpen(false)}
         >
           <div
-            className="w-full max-w-2xl max-h-[85vh] rounded-2xl border border-white/10 bg-gray-900 shadow-xl p-4 flex flex-col gap-3"
+            className="w-full max-w-2xl max-h-[85vh] rounded-2xl border border-rf-border bg-rf-well shadow-xl p-4 flex flex-col gap-3"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between gap-2 shrink-0">
-              <h3 id="product-card-gallery-title" className="text-sm font-semibold text-white">
+              <h3 id="product-card-gallery-title" className="text-sm font-semibold text-rf-text">
                 {t('infographic.cardGalleryTitle')}
               </h3>
               <button
                 type="button"
                 onClick={() => setCardGalleryModalOpen(false)}
-                className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/10"
+                className="p-1.5 rounded-lg text-rf-mutedFg hover:text-rf-text hover:bg-rf-elevated"
                 aria-label="Close"
               >
                 <X className="w-4 h-4" />
@@ -438,9 +438,9 @@ export default function ProductCardPage() {
             </div>
             <div className="overflow-y-auto min-h-0 pr-1">
               {cardGalleryLoading ? (
-                <p className="text-sm text-gray-400 py-8 text-center">{t('infographic.cardGalleryLoading')}</p>
+                <p className="text-sm text-rf-mutedFg py-8 text-center">{t('infographic.cardGalleryLoading')}</p>
               ) : cardGalleryItems.length === 0 ? (
-                <p className="text-sm text-gray-400 py-8 text-center">{t('infographic.cardGalleryEmpty')}</p>
+                <p className="text-sm text-rf-mutedFg py-8 text-center">{t('infographic.cardGalleryEmpty')}</p>
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {cardGalleryItems.map((item) => {
@@ -456,7 +456,7 @@ export default function ProductCardPage() {
                         className={`rounded-xl overflow-hidden border-2 bg-white/5 aspect-[4/5] transition-colors ${
                           gallerySelected
                             ? 'border-brand-500 ring-2 ring-brand-500/40'
-                            : 'border-white/10 hover:border-brand-500/40'
+                            : 'border-rf-border hover:border-brand-500/40'
                         }`}
                       >
                         <img src={item.url} alt="" className="w-full h-full object-cover" />
@@ -474,11 +474,11 @@ export default function ProductCardPage() {
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div className="flex items-start gap-3 min-w-0">
             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-900/50 border border-brand-500/30">
-              <LayoutTemplate className="h-5 w-5 text-brand-400" aria-hidden />
+              <LayoutTemplate className="h-5 w-5 text-white" aria-hidden />
             </div>
             <div className="min-w-0">
-              <h1 className="text-2xl sm:text-3xl font-bold text-white">{t('productCard.title')}</h1>
-              <p className="text-sm text-gray-400 mt-1 max-w-2xl">{t('productCard.subtitle')}</p>
+              <h1 className="text-2xl sm:text-3xl font-bold text-rf-text">{t('productCard.title')}</h1>
+              <p className="text-sm text-rf-mutedFg mt-1 max-w-2xl">{t('productCard.subtitle')}</p>
             </div>
           </div>
           <button
@@ -492,7 +492,7 @@ export default function ProductCardPage() {
         </div>
 
         <div>
-          <div className="rounded-xl bg-white/5 p-1 flex gap-0.5 border border-white/10 shadow-sm" role="tablist">
+          <div className="rounded-xl bg-white/5 p-1 flex gap-0.5 border border-rf-border shadow-sm" role="tablist">
             {tabBtn('example', 'infographic.tabExample', Images, sidebarTab === 'example')}
             {tabBtn('template', 'infographic.tabTemplate', LayoutGrid, sidebarTab === 'template')}
             {tabBtn('prompt', 'infographic.tabPrompt', AlignLeft, sidebarTab === 'prompt')}
@@ -501,9 +501,9 @@ export default function ProductCardPage() {
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
-        <section className="card relative border border-white/10 rounded-3xl bg-gray-900/40 p-5 sm:p-6">
+        <section className="card relative border border-rf-border rounded-3xl bg-rf-well/40 p-5 sm:p-6">
           <div className="flex items-start justify-between gap-4 mb-5">
-            <h2 className="text-lg font-semibold text-white">{t('productCard.photosStepTitle')}</h2>
+            <h2 className="text-lg font-semibold text-rf-text">{t('productCard.photosStepTitle')}</h2>
             <span className="text-2xl font-black italic text-brand-400/90 tabular-nums" aria-hidden>
               01
             </span>
@@ -514,22 +514,22 @@ export default function ProductCardPage() {
 
             {sidebarTab === 'example' && (
               <>
-                <p className="text-xs font-medium text-gray-200 flex items-center gap-1 pt-1">
+                <p className="text-xs font-medium text-rf-mutedFg flex items-center gap-1 pt-1">
                   {t('infographic.exampleStyleHeading')}
-                  <Info className="w-3 h-3 text-gray-500 shrink-0" aria-hidden />
+                  <Info className="w-3 h-3 text-rf-mutedFg shrink-0" aria-hidden />
                 </p>
                 <button
                   type="button"
                   onClick={onPickStyleExample}
-                  className="relative w-full min-h-[140px] rounded-xl border-2 border-dashed border-white/20 bg-white/[0.03] hover:border-brand-500/40 hover:bg-white/[0.05] transition-colors flex flex-col items-center justify-center gap-2 px-4 py-6 text-center"
+                  className="relative w-full min-h-[140px] rounded-xl border-2 border-dashed border-rf-border bg-white/[0.03] hover:border-brand-500/40 hover:bg-white/[0.05] transition-colors flex flex-col items-center justify-center gap-2 px-4 py-6 text-center"
                 >
                   {styleExamplePreviewUrl ? (
                     <img src={styleExamplePreviewUrl} alt="" className="max-h-36 w-full object-contain rounded-lg" />
                   ) : (
                     <>
-                      <Upload className="w-8 h-8 text-gray-500" aria-hidden />
-                      <span className="text-sm font-medium text-white">{t('infographic.exampleUploadTitle')}</span>
-                      <span className="text-[11px] text-gray-500 max-w-[240px]">{t('infographic.exampleUploadSub')}</span>
+                      <Upload className="w-8 h-8 text-rf-mutedFg" aria-hidden />
+                      <span className="text-sm font-medium text-rf-text">{t('infographic.exampleUploadTitle')}</span>
+                      <span className="text-[11px] text-rf-mutedFg max-w-[240px]">{t('infographic.exampleUploadSub')}</span>
                     </>
                   )}
                 </button>
@@ -553,14 +553,14 @@ export default function ProductCardPage() {
 
             {sidebarTab === 'template' && (
               <>
-                <p className="text-xs font-medium text-gray-300 flex items-center gap-1 pt-1">
+                <p className="text-xs font-medium text-rf-mutedFg flex items-center gap-1 pt-1">
                   {t('infographic.exampleCardLabel')}
-                  <Info className="w-3 h-3 text-gray-600" aria-hidden />
+                  <Info className="w-3 h-3 text-rf-mutedFg" aria-hidden />
                 </p>
                 <button
                   type="button"
                   onClick={onPickTemplateExampleFile}
-                  className="relative w-full min-h-[120px] rounded-xl border-2 border-dashed border-white/20 bg-white/[0.03] hover:border-brand-500/40 transition-colors flex flex-col items-center justify-center gap-2 px-4 py-5 text-center"
+                  className="relative w-full min-h-[120px] rounded-xl border-2 border-dashed border-rf-border bg-white/[0.03] hover:border-brand-500/40 transition-colors flex flex-col items-center justify-center gap-2 px-4 py-5 text-center"
                 >
                   {templateExamplePreviewUrl ? (
                     <img src={templateExamplePreviewUrl} alt="" className="max-h-32 w-full object-contain rounded-lg" />
@@ -568,8 +568,8 @@ export default function ProductCardPage() {
                     <span className="text-xs text-brand-300 px-2">{selectedCardGalleryFilename}</span>
                   ) : (
                     <>
-                      <Upload className="w-7 h-7 text-gray-500" aria-hidden />
-                      <span className="text-xs text-gray-500">{t('infographic.exampleCardUploadHint')}</span>
+                      <Upload className="w-7 h-7 text-rf-mutedFg" aria-hidden />
+                      <span className="text-xs text-rf-mutedFg">{t('infographic.exampleCardUploadHint')}</span>
                     </>
                   )}
                 </button>
@@ -592,17 +592,17 @@ export default function ProductCardPage() {
             )}
 
             {sidebarTab === 'prompt' && (
-              <p className="text-sm text-gray-500 leading-relaxed pt-1">{t('infographic.promptHint')}</p>
+              <p className="text-sm text-rf-mutedFg leading-relaxed pt-1">{t('infographic.promptHint')}</p>
             )}
           </div>
 
           <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={onProductFiles} />
         </section>
 
-        <section className="card relative border border-white/10 rounded-3xl bg-gray-900/40 flex-1 min-w-0 p-5 sm:p-6 lg:sticky lg:top-24">
+        <section className="card relative border border-rf-border rounded-3xl bg-rf-well/40 flex-1 min-w-0 p-5 sm:p-6 lg:sticky lg:top-24">
           <div className="flex items-start justify-between gap-4 mb-5">
-            <h2 className="text-lg font-semibold text-white">{t('productCard.formStepTitle')}</h2>
-            <span className="text-2xl font-black italic text-gray-500 tabular-nums" aria-hidden>
+            <h2 className="text-lg font-semibold text-rf-text">{t('productCard.formStepTitle')}</h2>
+            <span className="text-2xl font-black italic text-rf-mutedFg tabular-nums" aria-hidden>
               02
             </span>
           </div>
@@ -610,9 +610,9 @@ export default function ProductCardPage() {
           {sidebarTab === 'example' && (
             <div className="space-y-4">
               <div className="space-y-2">
-                <label className="text-xs font-medium text-gray-300 flex items-center gap-1">
+                <label className="text-xs font-medium text-rf-mutedFg flex items-center gap-1">
                   {t('infographic.exampleTitleLabel')}
-                  <Info className="w-3 h-3 text-gray-600" aria-hidden />
+                  <Info className="w-3 h-3 text-rf-mutedFg" aria-hidden />
                 </label>
                 <input
                   type="text"
@@ -624,9 +624,9 @@ export default function ProductCardPage() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-medium text-gray-300 flex items-center gap-1">
+                <label className="text-xs font-medium text-rf-mutedFg flex items-center gap-1">
                   {t('infographic.exampleCharacteristicsLabel')}
-                  <Info className="w-3 h-3 text-gray-600" aria-hidden />
+                  <Info className="w-3 h-3 text-rf-mutedFg" aria-hidden />
                 </label>
                 <textarea
                   value={exampleCharacteristics}
@@ -654,9 +654,9 @@ export default function ProductCardPage() {
           {sidebarTab === 'template' && (
             <div className="space-y-4">
               <div className="space-y-2">
-                <label className="text-xs font-medium text-gray-300 flex items-center gap-1">
+                <label className="text-xs font-medium text-rf-mutedFg flex items-center gap-1">
                   {t('infographic.productNameRequired')}
-                  <Info className="w-3 h-3 text-gray-600" aria-hidden />
+                  <Info className="w-3 h-3 text-rf-mutedFg" aria-hidden />
                 </label>
                 <div className="relative">
                   <input
@@ -667,15 +667,15 @@ export default function ProductCardPage() {
                     className="input-field text-sm py-2.5 pr-16"
                     maxLength={200}
                   />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-gray-500 tabular-nums pointer-events-none">
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-rf-mutedFg tabular-nums pointer-events-none">
                     {productName.length}/200
                   </span>
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-medium text-gray-300 flex items-center gap-1">
+                <label className="text-xs font-medium text-rf-mutedFg flex items-center gap-1">
                   {t('infographic.templateCharacteristicsEachLine')}
-                  <Info className="w-3 h-3 text-gray-600" aria-hidden />
+                  <Info className="w-3 h-3 text-rf-mutedFg" aria-hidden />
                 </label>
                 <textarea
                   value={templateCharacteristics}
@@ -687,9 +687,9 @@ export default function ProductCardPage() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-medium text-gray-300 flex items-center gap-1 uppercase tracking-wide">
+                <label className="text-xs font-medium text-rf-mutedFg flex items-center gap-1 uppercase tracking-wide">
                   {t('infographic.cardOutputSizeLabel')}
-                  <Info className="w-3 h-3 text-gray-600 normal-case" aria-hidden />
+                  <Info className="w-3 h-3 text-rf-mutedFg normal-case" aria-hidden />
                 </label>
                 <select
                   value={templateCardAspectRatio}
@@ -698,7 +698,7 @@ export default function ProductCardPage() {
                   style={{ backgroundImage: SELECT_CHEVRON_BG }}
                 >
                   {TEMPLATE_CARD_ASPECT_RATIOS.map((ratio) => (
-                    <option key={ratio} value={ratio} className="bg-gray-900 text-white">
+                    <option key={ratio} value={ratio} className="bg-rf-well text-rf-text">
                       {ratio}
                     </option>
                   ))}
@@ -720,7 +720,7 @@ export default function ProductCardPage() {
           {sidebarTab === 'prompt' && (
             <div className="space-y-4">
               <div className="space-y-2">
-                <label className="text-xs font-medium text-gray-300">{t('infographic.promptLabel')}</label>
+                <label className="text-xs font-medium text-rf-mutedFg">{t('infographic.promptLabel')}</label>
                 <textarea
                   lang="en"
                   dir="ltr"

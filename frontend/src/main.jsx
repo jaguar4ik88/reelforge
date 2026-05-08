@@ -5,29 +5,34 @@ import { HelmetProvider } from 'react-helmet-async'
 import { Toaster } from 'react-hot-toast'
 import App from './App'
 import { SiteProvider } from './context/SiteContext'
+import { ThemeProvider, hydrateThemeFromStorage } from './context/ThemeContext'
 import './i18n'
 import './index.css'
+
+hydrateThemeFromStorage()
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
       <HelmetProvider>
         <SiteProvider>
-          <App />
+          <ThemeProvider>
+            <App />
+          </ThemeProvider>
         </SiteProvider>
         <Toaster
           position="top-right"
           toastOptions={{
             style: {
-              background: '#1e1b4b',
-              color: '#fff',
-              border: '1px solid #4c1d95',
+              background: 'var(--rf-sidebar)',
+              color: 'var(--rf-text)',
+              border: '1px solid var(--rf-border)',
             },
-            success: { iconTheme: { primary: '#a855f7', secondary: '#fff' } },
-            error:   { iconTheme: { primary: '#ef4444', secondary: '#fff' } },
+            success: { iconTheme: { primary: '#a855f7', secondary: 'var(--rf-text)' } },
+            error: { iconTheme: { primary: '#ef4444', secondary: 'var(--rf-text)' } },
           }}
         />
       </HelmetProvider>
     </BrowserRouter>
-  </React.StrictMode>
+  </React.StrictMode>,
 )

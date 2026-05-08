@@ -125,7 +125,7 @@ export default function AdminUserDetail() {
           <ArrowLeft className="w-4 h-4" />
           {t('admin.users.backToList')}
         </Link>
-        <p className="text-gray-500">{t('admin.users.notFound')}</p>
+        <p className="text-rf-mutedFg">{t('admin.users.notFound')}</p>
       </div>
     )
   }
@@ -137,39 +137,39 @@ export default function AdminUserDetail() {
         {t('admin.users.backToList')}
       </Link>
 
-      <h1 className="text-3xl font-bold text-white mb-1">{user.name}</h1>
-      <p className="text-gray-400 text-sm mb-8">{user.email}</p>
+      <h1 className="text-3xl font-bold text-rf-text mb-1">{user.name}</h1>
+      <p className="text-rf-mutedFg text-sm mb-8">{user.email}</p>
 
       <div className="grid gap-6 md:grid-cols-2 mb-10">
-        <div className="rounded-2xl border border-white/10 bg-gray-900/50 p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">{t('admin.users.profileSection')}</h2>
+        <div className="rounded-2xl border border-rf-border bg-rf-sidebar p-6">
+          <h2 className="text-lg font-semibold text-rf-text mb-4">{t('admin.users.profileSection')}</h2>
           <dl className="space-y-2 text-sm">
             <div className="flex justify-between gap-4">
-              <dt className="text-gray-500">{t('admin.users.colRole')}</dt>
-              <dd className="text-white capitalize">{user.role}</dd>
+              <dt className="text-rf-mutedFg">{t('admin.users.colRole')}</dt>
+              <dd className="text-rf-text capitalize">{user.role}</dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt className="text-gray-500">{t('admin.users.fieldPlan')}</dt>
-              <dd className="text-white capitalize">{user.plan}</dd>
+              <dt className="text-rf-mutedFg">{t('admin.users.fieldPlan')}</dt>
+              <dd className="text-rf-text capitalize">{user.plan}</dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt className="text-gray-500">{t('admin.users.fieldLocale')}</dt>
-              <dd className="text-white">{user.locale ?? '—'}</dd>
+              <dt className="text-rf-mutedFg">{t('admin.users.fieldLocale')}</dt>
+              <dd className="text-rf-text">{user.locale ?? '—'}</dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt className="text-gray-500">{t('admin.users.fieldRegistered')}</dt>
-              <dd className="text-gray-300">
+              <dt className="text-rf-mutedFg">{t('admin.users.fieldRegistered')}</dt>
+              <dd className="text-rf-mutedFg">
                 {user.created_at ? new Date(user.created_at).toLocaleString() : '—'}
               </dd>
             </div>
           </dl>
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-gray-900/50 p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">{t('admin.users.creditsSection')}</h2>
+        <div className="rounded-2xl border border-rf-border bg-rf-sidebar p-6">
+          <h2 className="text-lg font-semibold text-rf-text mb-4">{t('admin.users.creditsSection')}</h2>
           <form onSubmit={handleSaveCredits} className="space-y-4">
             <div>
-              <label htmlFor="admin-balance" className="block text-sm text-gray-400 mb-1">
+              <label htmlFor="admin-balance" className="block text-sm text-rf-mutedFg mb-1">
                 {t('admin.users.balanceLabel')}
               </label>
               <input
@@ -178,9 +178,9 @@ export default function AdminUserDetail() {
                 min={0}
                 value={balanceInput}
                 onChange={(e) => setBalanceInput(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl border border-white/10 bg-gray-950 text-white focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+                className="w-full px-4 py-2.5 rounded-xl border border-rf-border bg-rf-page text-rf-text focus:outline-none focus:ring-2 focus:ring-amber-500/40"
               />
-              <p className="text-xs text-gray-500 mt-2">{t('admin.users.balanceHint')}</p>
+              <p className="text-xs text-rf-mutedFg mt-2">{t('admin.users.balanceHint')}</p>
             </div>
             <button type="submit" disabled={saving} className="btn-primary w-full sm:w-auto">
               {saving ? t('common.loading') : t('admin.users.saveCredits')}
@@ -207,24 +207,24 @@ export default function AdminUserDetail() {
       )}
 
       {user && !canDeleteTarget && (
-        <p className="text-sm text-gray-500 mb-10">{t('admin.users.deleteAdminForbidden')}</p>
+        <p className="text-sm text-rf-mutedFg mb-10">{t('admin.users.deleteAdminForbidden')}</p>
       )}
 
-      <div className="border-t border-white/10 pt-10">
-        <h2 className="text-xl font-semibold text-white mb-2 flex items-center gap-2">
+      <div className="border-t border-rf-border pt-10">
+        <h2 className="text-xl font-semibold text-rf-text mb-2 flex items-center gap-2">
           <History className="w-5 h-5 text-brand-400" />
           {t('admin.users.purchaseHistoryTitle')}
         </h2>
-        <p className="text-gray-500 text-sm mb-4">{t('admin.users.purchaseHistorySubtitle')}</p>
+        <p className="text-rf-mutedFg text-sm mb-4">{t('admin.users.purchaseHistorySubtitle')}</p>
         {historyLoading ? (
-          <p className="text-gray-500 text-sm">{t('common.loading')}</p>
+          <p className="text-rf-mutedFg text-sm">{t('common.loading')}</p>
         ) : purchases.length === 0 ? (
-          <p className="text-gray-500">{t('credits.purchaseHistoryEmpty')}</p>
+          <p className="text-rf-mutedFg">{t('credits.purchaseHistoryEmpty')}</p>
         ) : (
-          <div className="overflow-x-auto rounded-2xl border border-white/10 bg-gray-900/40">
+          <div className="overflow-x-auto rounded-2xl border border-rf-border bg-rf-well/40">
             <table className="min-w-full text-left text-sm">
               <thead>
-                <tr className="border-b border-white/10 text-gray-400">
+                <tr className="border-b border-rf-border text-rf-mutedFg">
                   <th className="px-4 py-3 font-medium">{t('credits.purchaseHistoryDate')}</th>
                   <th className="px-4 py-3 font-medium">{t('credits.purchaseHistoryItem')}</th>
                   <th className="px-4 py-3 font-medium text-right">{t('credits.purchaseHistoryCredits')}</th>
@@ -250,11 +250,11 @@ export default function AdminUserDetail() {
                   const statusLabel = t(statusKey, row.status)
 
                   return (
-                    <tr key={`${row.source}-${row.id}`} className="border-b border-white/5 text-gray-200">
-                      <td className="px-4 py-3 whitespace-nowrap text-gray-400">{date}</td>
+                    <tr key={`${row.source}-${row.id}`} className="border-b border-rf-border text-rf-text">
+                      <td className="px-4 py-3 whitespace-nowrap text-rf-mutedFg">{date}</td>
                       <td className="px-4 py-3">
-                        <div className="font-medium text-white">{row.title}</div>
-                        <div className="text-xs text-gray-500 mt-0.5">{kindLabel}</div>
+                        <div className="font-medium text-rf-text">{row.title}</div>
+                        <div className="text-xs text-rf-mutedFg mt-0.5">{kindLabel}</div>
                       </td>
                       <td className="px-4 py-3 text-right tabular-nums">
                         {row.credits != null ? `+${row.credits}` : '—'}
@@ -262,7 +262,7 @@ export default function AdminUserDetail() {
                       <td className="px-4 py-3 text-right tabular-nums">
                         <div>{usd}</div>
                         {row.amount_uah != null && (
-                          <div className="text-xs text-gray-500">{row.amount_uah} UAH</div>
+                          <div className="text-xs text-rf-mutedFg">{row.amount_uah} UAH</div>
                         )}
                       </td>
                       <td className="px-4 py-3">
@@ -291,7 +291,7 @@ export default function AdminUserDetail() {
           </div>
         )}
         {!historyLoading && purchaseMeta.total > 0 && purchaseMeta.last_page > 1 && (
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-4 text-sm text-gray-400">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-4 text-sm text-rf-mutedFg">
             <p>
               {t('credits.purchaseHistoryPage', {
                 current: purchaseMeta.current_page,
@@ -304,7 +304,7 @@ export default function AdminUserDetail() {
                 type="button"
                 disabled={purchaseMeta.current_page <= 1 || historyLoading}
                 onClick={() => loadPurchasesPage(purchaseMeta.current_page - 1)}
-                className="px-3 py-1.5 rounded-lg border border-white/15 bg-gray-900/60 text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-800/80"
+                className="px-3 py-1.5 rounded-lg border border-rf-border bg-rf-well/60 text-rf-text disabled:opacity-40 disabled:cursor-not-allowed hover:bg-rf-meter/80"
               >
                 {t('credits.purchaseHistoryPrev')}
               </button>
@@ -312,7 +312,7 @@ export default function AdminUserDetail() {
                 type="button"
                 disabled={purchaseMeta.current_page >= purchaseMeta.last_page || historyLoading}
                 onClick={() => loadPurchasesPage(purchaseMeta.current_page + 1)}
-                className="px-3 py-1.5 rounded-lg border border-white/15 bg-gray-900/60 text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-800/80"
+                className="px-3 py-1.5 rounded-lg border border-rf-border bg-rf-well/60 text-rf-text disabled:opacity-40 disabled:cursor-not-allowed hover:bg-rf-meter/80"
               >
                 {t('credits.purchaseHistoryNext')}
               </button>

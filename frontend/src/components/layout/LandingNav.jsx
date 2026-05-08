@@ -3,6 +3,7 @@ import { Link, NavLink } from 'react-router-dom'
 import { Film, Menu, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from '../ui/LanguageSwitcher'
+import ThemeToggle from '../ui/ThemeToggle'
 import { useSite } from '../../context/SiteContext'
 
 export default function LandingNav() {
@@ -21,7 +22,7 @@ export default function LandingNav() {
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
           <Film className="w-8 h-8 text-brand-400" />
-          <span className="text-white font-bold text-2xl gradient-text">{siteName}</span>
+          <span className="text-rf-text font-bold text-2xl gradient-text">{siteName}</span>
         </Link>
 
         {/* Desktop nav links */}
@@ -33,8 +34,8 @@ export default function LandingNav() {
               className={({ isActive }) =>
                 `px-4 py-2 rounded-xl text-sm font-medium transition-colors duration-150 ${
                   isActive
-                    ? 'text-white bg-white/10'
-                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                    ? 'text-rf-text bg-rf-elevated'
+                    : 'text-rf-mutedFg hover:text-rf-text hover:bg-rf-muted'
                 }`
               }
             >
@@ -45,13 +46,16 @@ export default function LandingNav() {
 
         {/* Right side */}
         <div className="hidden md:flex items-center gap-3">
-          <Link to="/login"    className="btn-secondary text-sm">{t('landing.ctaLogin')}</Link>
+          <ThemeToggle />
+          <Link to="/login" className="btn-secondary text-sm">
+            {t('landing.ctaLogin')}
+          </Link>
           <LanguageSwitcher />
         </div>
 
         {/* Mobile burger */}
         <button
-          className="md:hidden text-gray-400 hover:text-white"
+          className="md:hidden text-rf-mutedFg hover:text-rf-text"
           onClick={() => setMobileOpen(o => !o)}
         >
           {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -60,7 +64,7 @@ export default function LandingNav() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden mt-4 p-4 rounded-2xl bg-gray-900/80 backdrop-blur-sm border border-white/10 flex flex-col gap-2">
+        <div className="md:hidden mt-4 p-4 rounded-2xl bg-rf-panel backdrop-blur-sm border border-rf-border flex flex-col gap-2">
           {navLinks.map(({ to, label }) => (
             <NavLink
               key={to}
@@ -68,15 +72,18 @@ export default function LandingNav() {
               onClick={() => setMobileOpen(false)}
               className={({ isActive }) =>
                 `px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                  isActive ? 'text-white bg-white/10' : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  isActive ? 'text-rf-text bg-rf-elevated' : 'text-rf-mutedFg hover:text-rf-text hover:bg-rf-muted'
                 }`
               }
             >
               {label}
             </NavLink>
           ))}
-          <div className="border-t border-white/10 pt-3 mt-1 flex flex-col gap-2">
-            <Link to="/login"    className="btn-secondary text-sm text-center" onClick={() => setMobileOpen(false)}>
+          <div className="border-t border-rf-border pt-3 mt-1 flex flex-col gap-2">
+            <div className="flex justify-center py-1">
+              <ThemeToggle />
+            </div>
+            <Link to="/login" className="btn-secondary text-sm text-center" onClick={() => setMobileOpen(false)}>
               {t('landing.ctaLogin')}
             </Link>
             {registrationEnabled && (

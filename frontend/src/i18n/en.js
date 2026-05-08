@@ -19,6 +19,11 @@ export default {
       logout:     'Logout',
     },
 
+    theme: {
+      switchToLight: 'Switch to light theme',
+      switchToDark: 'Switch to dark theme',
+    },
+
     productCard: {
       title: 'Product card',
       subtitle:

@@ -20,7 +20,7 @@ export default function SubscriptionPlanFeaturesList({ features, className = '',
         if (!key) return null
         const label = t(`pricing.features.${key}`, params)
         return (
-          <li key={`${key}-${i}`} className={`flex items-start gap-2.5 ${compact ? 'text-sm' : 'text-sm'} text-gray-300`}>
+          <li key={`${key}-${i}`} className={`flex items-start gap-2.5 ${compact ? 'text-sm' : 'text-sm'} text-rf-mutedFg`}>
             <Check className="w-4 h-4 text-brand-400 flex-shrink-0 mt-0.5" />
             <span>{label}</span>
           </li>

@@ -2,7 +2,7 @@ export default function FormField({ label, error, children }) {
   return (
     <div className="space-y-1.5">
       {label && (
-        <label className="block text-sm font-medium text-gray-300">
+        <label className="block text-sm font-medium text-rf-mutedFg">
           {label}
         </label>
       )}

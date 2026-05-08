@@ -35,11 +35,11 @@ export default function ForgotPassword() {
     <div className="w-full max-w-md">
       <SeoHead titleKey="seo.forgotPasswordTitle" descriptionKey="seo.forgotPasswordDescription" />
       <div className="card">
-        <h1 className="text-2xl font-bold text-white mb-1">{t('auth.forgotPasswordTitle')}</h1>
-        <p className="text-gray-400 text-sm mb-8">{t('auth.forgotPasswordSub')}</p>
+        <h1 className="text-2xl font-bold text-rf-text mb-1">{t('auth.forgotPasswordTitle')}</h1>
+        <p className="text-rf-mutedFg text-sm mb-8">{t('auth.forgotPasswordSub')}</p>
 
         {sent ? (
-          <p className="text-gray-300 text-sm leading-relaxed">{t('auth.resetLinkSentDetail')}</p>
+          <p className="text-rf-mutedFg text-sm leading-relaxed">{t('auth.resetLinkSentDetail')}</p>
         ) : (
           <form onSubmit={submit} className="space-y-5">
             <FormField label={t('auth.email')} error={errors.email?.[0]}>
@@ -64,7 +64,7 @@ export default function ForgotPassword() {
           </form>
         )}
 
-        <p className="text-center text-sm text-gray-500 mt-6">
+        <p className="text-center text-sm text-rf-mutedFg mt-6">
           <Link to="/login" className="text-brand-400 hover:text-brand-300 font-medium">
             {t('auth.backToLogin')}
           </Link>
