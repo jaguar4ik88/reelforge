@@ -31,13 +31,13 @@ export default function GeneratePanel({ productDescription = '' }) {
 
   return (
     <div className="card space-y-5">
-      <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+      <h2 className="text-xs font-semibold text-rf-mutedFg uppercase tracking-wider">
         AI-генерация изображений
       </h2>
 
       {/* Тип контента */}
       <div>
-        <p className="text-sm text-gray-400 mb-2">Тип контента</p>
+        <p className="text-sm text-rf-mutedFg mb-2">Тип контента</p>
         <div className="flex gap-2 flex-wrap">
           {CONTENT_TYPES.map(({ id, label, icon: Icon }) => (
             <button
@@ -45,8 +45,8 @@ export default function GeneratePanel({ productDescription = '' }) {
               onClick={() => setContentType(id)}
               className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium border transition-colors
                 ${contentType === id
-                  ? 'bg-brand-600 border-brand-600 text-white'
-                  : 'border-gray-700 text-gray-400 hover:border-gray-500 hover:text-gray-200'
+                  ? 'bg-brand-600 border-brand-600 text-rf-text'
+                  : 'border-rf-border text-rf-mutedFg hover:border-brand-400/35 hover:text-rf-text'
                 }`}
             >
               <Icon className="w-4 h-4" />
@@ -58,7 +58,7 @@ export default function GeneratePanel({ productDescription = '' }) {
 
       {/* Стиль сцены */}
       <div>
-        <p className="text-sm text-gray-400 mb-2">Стиль сцены</p>
+        <p className="text-sm text-rf-mutedFg mb-2">Стиль сцены</p>
         <div className="grid grid-cols-2 gap-2">
           {STYLES.map(({ id, emoji, label }) => (
             <button
@@ -67,7 +67,7 @@ export default function GeneratePanel({ productDescription = '' }) {
               className={`flex items-center gap-2 p-3 rounded-xl text-sm font-medium border transition-colors
                 ${style === id
                   ? 'border-brand-500 bg-brand-600/10 text-brand-300'
-                  : 'border-gray-700 text-gray-400 hover:border-gray-600 hover:text-gray-200'
+                  : 'border-rf-border text-rf-mutedFg hover:border-brand-400/35 hover:text-rf-text'
                 }`}
             >
               <span>{emoji}</span>
@@ -92,13 +92,13 @@ export default function GeneratePanel({ productDescription = '' }) {
       {/* Прогресс-бар */}
       {isGenerating && (
         <div className="space-y-2">
-          <div className="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
+          <div className="w-full bg-rf-meter rounded-full h-2 overflow-hidden">
             <div
               className="h-2 bg-brand-500 rounded-full transition-all duration-500"
               style={{ width: `${progress}%` }}
             />
           </div>
-          <p className="text-xs text-gray-500 text-center">
+          <p className="text-xs text-rf-mutedFg text-center">
             {status === 'loading' ? 'Отправляем задачу...' : 'Генерируем изображение...'}
           </p>
         </div>
@@ -109,7 +109,7 @@ export default function GeneratePanel({ productDescription = '' }) {
         <div className="space-y-3">
           <div className="grid grid-cols-1 gap-3">
             {images.map((url, i) => (
-              <div key={i} className="relative group rounded-xl overflow-hidden bg-gray-900">
+              <div key={i} className="relative group rounded-xl overflow-hidden bg-rf-well">
                 <img src={url} alt={`Generated ${i + 1}`} className="w-full object-cover rounded-xl" />
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                   <a

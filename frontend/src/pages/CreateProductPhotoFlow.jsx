@@ -220,18 +220,18 @@ export default function CreateProductPhotoFlow({ flowVariant = 'photoOnly' }) {
   return (
     <div className="max-w-6xl mx-auto space-y-8 pb-12 px-1 sm:px-0">
       <div>
-        <h1 className="text-3xl font-bold text-white mb-1">
+        <h1 className="text-3xl font-bold text-rf-text mb-1">
           {flowVariant === 'videoOnly' ? t('photoFlow.pageTitleVideo') : t('photoFlow.title')}
         </h1>
-        <p className="text-gray-400">
+        <p className="text-rf-mutedFg">
           {flowVariant === 'videoOnly' ? t('photoFlow.pageSubtitleVideo') : t('photoFlow.subtitle')}
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
-      <section className="card relative border border-white/10 rounded-3xl bg-gray-900/40">
+      <section className="card relative border border-rf-border rounded-3xl bg-rf-well/40">
         <div className="flex items-start justify-between gap-4 mb-5">
-          <h2 className="text-lg font-semibold text-white">{t('photoFlow.yourProduct')}</h2>
+          <h2 className="text-lg font-semibold text-rf-text">{t('photoFlow.yourProduct')}</h2>
           <span className="text-2xl font-black italic text-brand-400/90 tabular-nums" aria-hidden>
             01
           </span>
@@ -239,9 +239,9 @@ export default function CreateProductPhotoFlow({ flowVariant = 'photoOnly' }) {
 
         <ImageUploader files={files} onChange={setFiles} maxFiles={4} minRequiredForHint={1} />
 
-        <p className="text-sm text-gray-500 mt-4">{t('photoFlow.uploadMultiHint')}</p>
+        <p className="text-sm text-rf-mutedFg mt-4">{t('photoFlow.uploadMultiHint')}</p>
 
-        <div className="flex items-center justify-between mt-2 text-xs text-gray-500">
+        <div className="flex items-center justify-between mt-2 text-xs text-rf-mutedFg">
           <span>{t('photoFlow.photoCount', { count: files.length })}</span>
           {files.length > 0 && (
             <button type="button" onClick={clearFiles} className="text-brand-400 hover:text-brand-300 underline-offset-2 hover:underline">
@@ -251,8 +251,8 @@ export default function CreateProductPhotoFlow({ flowVariant = 'photoOnly' }) {
         </div>
 
         <div className="mt-6 space-y-4">
-          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{t('photoFlow.productDetailsTitle')}</p>
-          <p className="text-xs text-gray-500 leading-relaxed">{t('photoFlow.productDetailsSub')}</p>
+          <p className="text-xs font-medium text-rf-mutedFg uppercase tracking-wide">{t('photoFlow.productDetailsTitle')}</p>
+          <p className="text-xs text-rf-mutedFg leading-relaxed">{t('photoFlow.productDetailsSub')}</p>
           <input
             type="text"
             className="input-field w-full"
@@ -262,7 +262,7 @@ export default function CreateProductPhotoFlow({ flowVariant = 'photoOnly' }) {
             disabled={!hasPhotos}
           />
           <div>
-            <label className="text-xs text-gray-500 block mb-1.5">{t('photoFlow.category')}</label>
+            <label className="text-xs text-rf-mutedFg block mb-1.5">{t('photoFlow.category')}</label>
             <select
               className="input-field w-full"
               value={category}
@@ -279,10 +279,10 @@ export default function CreateProductPhotoFlow({ flowVariant = 'photoOnly' }) {
         </div>
       </section>
 
-      <section className="card relative border border-white/10 rounded-3xl bg-gray-900/40 lg:sticky lg:top-24">
+      <section className="card relative border border-rf-border rounded-3xl bg-rf-well/40 lg:sticky lg:top-24">
         <div className="flex items-start justify-between gap-4 mb-5">
-          <h2 className="text-lg font-semibold text-white">{t('photoFlow.configureGeneration')}</h2>
-          <span className="text-2xl font-black italic text-gray-500 tabular-nums" aria-hidden>
+          <h2 className="text-lg font-semibold text-rf-text">{t('photoFlow.configureGeneration')}</h2>
+          <span className="text-2xl font-black italic text-rf-mutedFg tabular-nums" aria-hidden>
             02
           </span>
         </div>
@@ -290,8 +290,8 @@ export default function CreateProductPhotoFlow({ flowVariant = 'photoOnly' }) {
         <div>
           {showContentTypeSwitcher && (
             <section className="mb-6">
-              <h3 className="text-sm font-semibold text-white mb-3">{t('photoFlow.contentType')}</h3>
-              <div className="flex rounded-xl bg-gray-900/80 p-1 border border-white/10 gap-1">
+              <h3 className="text-sm font-semibold text-rf-text mb-3">{t('photoFlow.contentType')}</h3>
+              <div className="flex rounded-xl bg-rf-panel p-1 border border-rf-border gap-1">
                 {contentTypes.map(({ id, labelKey }) => {
                   const Icon = CONTENT_ICONS[id]
                   const active = contentType === id
@@ -304,8 +304,8 @@ export default function CreateProductPhotoFlow({ flowVariant = 'photoOnly' }) {
                       title={disabled ? t('photoFlow.videoTabDisabledTitle') : undefined}
                       onClick={() => !disabled && setContentType(id)}
                       className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-1 rounded-lg text-sm font-medium transition-all min-w-0
-                        ${disabled ? 'opacity-45 cursor-not-allowed text-gray-500' : ''}
-                        ${active && !disabled ? 'bg-white text-gray-950 shadow' : !disabled ? 'text-gray-400 hover:text-white' : ''}`}
+                        ${disabled ? 'opacity-45 cursor-not-allowed text-rf-mutedFg' : ''}
+                        ${active && !disabled ? 'bg-rf-text text-rf-page shadow' : !disabled ? 'text-rf-mutedFg hover:text-rf-text' : ''}`}
                     >
                       <Icon className="w-4 h-4 shrink-0" />
                       <span className="truncate">{t(labelKey)}</span>
@@ -326,7 +326,7 @@ export default function CreateProductPhotoFlow({ flowVariant = 'photoOnly' }) {
           {contentType === 'photo' && (
             <section className="space-y-6 mb-6">
               <div>
-                <h3 className="text-sm font-semibold text-white mb-3">{t('photoFlow.photo.sceneTitle')}</h3>
+                <h3 className="text-sm font-semibold text-rf-text mb-3">{t('photoFlow.photo.sceneTitle')}</h3>
                 <div className="grid gap-3 sm:grid-cols-3">
                   {photoSceneOptions.map(({ id, titleKey, subKey }) => {
                     const active = sceneStyle === id
@@ -338,21 +338,21 @@ export default function CreateProductPhotoFlow({ flowVariant = 'photoOnly' }) {
                         className={`text-left rounded-2xl border p-3 sm:p-4 transition-all flex flex-col h-full
                           ${active
                             ? 'border-brand-500 bg-brand-600/10 ring-1 ring-brand-500/40'
-                            : 'border-white/10 bg-gray-900/40 hover:border-white/20'}`}
+                            : 'border-rf-border bg-rf-well/40 hover:border-rf-border'}`}
                       >
-                        <p className="font-semibold text-white text-sm leading-tight">{t(titleKey)}</p>
-                        <p className="text-xs text-gray-500 mt-1 flex-1">{t(subKey)}</p>
+                        <p className="font-semibold text-rf-text text-sm leading-tight">{t(titleKey)}</p>
+                        <p className="text-xs text-rf-mutedFg mt-1 flex-1">{t(subKey)}</p>
                       </button>
                     )
                   })}
                 </div>
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-white mb-1">{t('photoFlow.photo.wishesLabel')}</h3>
+                <h3 className="text-sm font-semibold text-rf-text mb-1">{t('photoFlow.photo.wishesLabel')}</h3>
                 <p className="text-xs text-amber-400/90 mb-2 leading-relaxed border border-amber-500/20 rounded-lg px-2.5 py-1.5 bg-amber-500/5">
                   {t('photoFlow.promptEnglishNote')}
                 </p>
-                <p className="text-sm text-gray-500 mb-3">{t('photoFlow.photo.wishesHint')}</p>
+                <p className="text-sm text-rf-mutedFg mb-3">{t('photoFlow.photo.wishesHint')}</p>
                 <textarea
                   className="input-field min-h-[100px] resize-y"
                   placeholder={t('photoFlow.photo.wishesPlaceholder')}
@@ -360,7 +360,7 @@ export default function CreateProductPhotoFlow({ flowVariant = 'photoOnly' }) {
                   onChange={(e) => setPhotoPrompt(e.target.value.slice(0, 2000))}
                   maxLength={2000}
                 />
-                <p className="text-xs text-gray-600 text-right mt-1">{photoPrompt.length}/2000</p>
+                <p className="text-xs text-rf-mutedFg text-right mt-1">{photoPrompt.length}/2000</p>
               </div>
             </section>
           )}
@@ -368,7 +368,7 @@ export default function CreateProductPhotoFlow({ flowVariant = 'photoOnly' }) {
           {contentType === 'video' && (
             <section className="space-y-6 mb-6">
               <div>
-                <h3 className="text-sm font-semibold text-white mb-3">{t('photoFlow.video.durationTitle')}</h3>
+                <h3 className="text-sm font-semibold text-rf-text mb-3">{t('photoFlow.video.durationTitle')}</h3>
                 <div className="flex flex-wrap gap-2">
                   {(pricing.video ?? DEFAULT_PHOTO_FLOW.video).map((tier) => {
                     const active = videoDuration === tier.seconds
@@ -379,8 +379,8 @@ export default function CreateProductPhotoFlow({ flowVariant = 'photoOnly' }) {
                         onClick={() => setVideoDuration(tier.seconds)}
                         className={`px-4 py-2.5 rounded-xl text-sm font-medium border transition-all
                           ${active
-                            ? 'border-brand-500 bg-brand-600/15 text-white ring-1 ring-brand-500/40'
-                            : 'border-white/10 bg-gray-900/50 text-gray-300 hover:border-white/20'}`}
+                            ? 'border-brand-500 bg-brand-600/15 text-rf-text ring-1 ring-brand-500/40'
+                            : 'border-rf-border bg-rf-sidebar text-rf-mutedFg hover:border-rf-border'}`}
                       >
                         {t('photoFlow.video.durationSeconds', { seconds: tier.seconds })}
                       </button>
@@ -389,11 +389,11 @@ export default function CreateProductPhotoFlow({ flowVariant = 'photoOnly' }) {
                 </div>
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-white mb-1">{t('photoFlow.video.descriptionTitle')}</h3>
+                <h3 className="text-sm font-semibold text-rf-text mb-1">{t('photoFlow.video.descriptionTitle')}</h3>
                 <p className="text-xs text-amber-400/90 mb-2 leading-relaxed border border-amber-500/20 rounded-lg px-2.5 py-1.5 bg-amber-500/5">
                   {t('photoFlow.promptEnglishNote')}
                 </p>
-                <p className="text-sm text-gray-500 mb-3">{t('photoFlow.video.descriptionHint')}</p>
+                <p className="text-sm text-rf-mutedFg mb-3">{t('photoFlow.video.descriptionHint')}</p>
                 <textarea
                   className="input-field min-h-[120px] resize-y"
                   placeholder={t('photoFlow.video.descriptionPlaceholder')}
@@ -401,31 +401,31 @@ export default function CreateProductPhotoFlow({ flowVariant = 'photoOnly' }) {
                   onChange={(e) => setVideoDescription(e.target.value.slice(0, 2000))}
                   maxLength={2000}
                 />
-                <p className="text-xs text-gray-600 text-right mt-1">{videoDescription.length}/2000</p>
+                <p className="text-xs text-rf-mutedFg text-right mt-1">{videoDescription.length}/2000</p>
               </div>
             </section>
           )}
 
           {contentType === 'photo' && (
-            <div className="mb-6 rounded-2xl border border-white/10 bg-gray-900/30 overflow-hidden">
+            <div className="mb-6 rounded-2xl border border-rf-border bg-rf-well/30 overflow-hidden">
               <button
                 type="button"
                 onClick={() => setAdvancedOpen((o) => !o)}
                 aria-expanded={advancedOpen}
-                className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left text-sm font-semibold text-white hover:bg-white/5 transition-colors"
+                className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left text-sm font-semibold text-rf-text hover:bg-rf-muted transition-colors"
               >
                 <span>{t('photoFlow.advanced.title')}</span>
                 <ChevronDown
-                  className={`w-5 h-5 shrink-0 text-gray-400 transition-transform duration-200 ${advancedOpen ? 'rotate-180' : ''}`}
+                  className={`w-5 h-5 shrink-0 text-rf-mutedFg transition-transform duration-200 ${advancedOpen ? 'rotate-180' : ''}`}
                   aria-hidden
                 />
               </button>
               {advancedOpen && (
-                <div className="border-t border-white/10 px-4 pb-4 pt-1">
-                  <p id="photo-flow-format-label" className="text-sm font-semibold text-white mb-3">
+                <div className="border-t border-rf-border px-4 pb-4 pt-1">
+                  <p id="photo-flow-format-label" className="text-sm font-semibold text-rf-text mb-3">
                     {t('photoFlow.advanced.formatLabel')}
                   </p>
-                  <p className="text-xs text-gray-500 mb-3">{t('photoFlow.advanced.formatHint')}</p>
+                  <p className="text-xs text-rf-mutedFg mb-3">{t('photoFlow.advanced.formatHint')}</p>
                   <AspectRatioSelector
                     labelId="photo-flow-format-label"
                     value={outputAspectRatio}

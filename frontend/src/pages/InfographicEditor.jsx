@@ -492,19 +492,19 @@ export default function InfographicEditor() {
 
   return (
     <div className="flex flex-row gap-0 h-[calc(100dvh-3rem)] min-h-[480px] -m-2 sm:-m-4 lg:-m-6">
-      <aside className="w-full max-w-[300px] shrink-0 flex flex-col border-r border-white/10 bg-gray-900/60 min-h-0">
-        <div className="p-4 border-b border-white/10 shrink-0">
+      <aside className="w-full max-w-[300px] shrink-0 flex flex-col border-r border-rf-border bg-rf-well/60 min-h-0">
+        <div className="p-4 border-b border-rf-border shrink-0">
           <div className="flex items-center gap-2">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-900/50 border border-brand-500/30">
-              <LayoutTemplate className="h-4 w-4 text-brand-400" aria-hidden />
+              <LayoutTemplate className="h-4 w-4 text-white" aria-hidden />
             </div>
-            <h2 className="text-base font-bold text-white leading-tight">{t('infographic.sidebarTitle')}</h2>
+            <h2 className="text-base font-bold text-rf-text leading-tight">{t('infographic.sidebarTitle')}</h2>
           </div>
         </div>
 
         <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-4">
           <div className="space-y-2">
-            <p className="text-xs font-semibold text-white">{t('infographic.productPhotoSection')}</p>
+            <p className="text-xs font-semibold text-rf-text">{t('infographic.productPhotoSection')}</p>
             <button
               type="button"
               onClick={onPickProductPhoto}
@@ -516,14 +516,14 @@ export default function InfographicEditor() {
             <label className="flex items-start gap-2 cursor-pointer">
               <input
                 type="checkbox"
-                className="mt-0.5 rounded border-white/20 bg-gray-900 text-brand-500 focus:ring-brand-500/40"
+                className="mt-0.5 rounded border-rf-border bg-rf-well text-brand-500 focus:ring-brand-500/40"
                 checked={cutOutEnabled}
                 onChange={(e) => setCutOutEnabled(e.target.checked)}
                 disabled={cutoutBusy}
               />
-              <span className="text-[11px] text-gray-400 leading-snug">{t('infographic.cutOutLabel')}</span>
+              <span className="text-[11px] text-rf-mutedFg leading-snug">{t('infographic.cutOutLabel')}</span>
             </label>
-            <p className="text-[10px] text-gray-600 leading-relaxed">{t('infographic.cutOutHint')}</p>
+            <p className="text-[10px] text-rf-mutedFg leading-relaxed">{t('infographic.cutOutHint')}</p>
             <input
               ref={productFileInputRef}
               type="file"
@@ -534,12 +534,12 @@ export default function InfographicEditor() {
           </div>
 
           <div>
-            <p className="text-xs font-semibold text-white mb-1">{t('infographic.canvasEditorReferenceGridTitle')}</p>
-            <p className="text-[11px] text-gray-500 leading-relaxed mb-3">{t('infographic.canvasEditorReferenceGridHint')}</p>
-            <p className="text-[10px] text-gray-600 leading-relaxed mb-2">{t('infographic.templateManifestHint')}</p>
+            <p className="text-xs font-semibold text-rf-text mb-1">{t('infographic.canvasEditorReferenceGridTitle')}</p>
+            <p className="text-[11px] text-rf-mutedFg leading-relaxed mb-3">{t('infographic.canvasEditorReferenceGridHint')}</p>
+            <p className="text-[10px] text-rf-mutedFg leading-relaxed mb-2">{t('infographic.templateManifestHint')}</p>
 
             {cardGalleryLoading ? (
-              <p className="text-xs text-gray-500 py-6 text-center">{t('infographic.cardGalleryLoading')}</p>
+              <p className="text-xs text-rf-mutedFg py-6 text-center">{t('infographic.cardGalleryLoading')}</p>
             ) : (
               <div className="grid grid-cols-2 gap-2">
                 <button
@@ -548,11 +548,11 @@ export default function InfographicEditor() {
                   className={`rounded-xl border-2 aspect-[4/5] flex flex-col items-center justify-center gap-1.5 bg-white/5 transition-colors ${
                     selectedReferenceFilename === null
                       ? 'border-brand-500 ring-2 ring-brand-500/35'
-                      : 'border-white/10 hover:border-brand-500/40'
+                      : 'border-rf-border hover:border-brand-500/40'
                   }`}
                 >
-                  <Ban className="w-6 h-6 text-gray-500" aria-hidden />
-                  <span className="text-[10px] text-gray-400 px-1 text-center leading-snug">
+                  <Ban className="w-6 h-6 text-rf-mutedFg" aria-hidden />
+                  <span className="text-[10px] text-rf-mutedFg px-1 text-center leading-snug">
                     {t('infographic.canvasEditorPlainBackground')}
                   </span>
                 </button>
@@ -568,12 +568,12 @@ export default function InfographicEditor() {
                       title={hasEditorLayers ? t('infographic.templateHasTextLayers') : item.filename}
                       onClick={() => applyReferenceBackground(item)}
                       className={`relative rounded-xl overflow-hidden border-2 aspect-[4/5] transition-colors ${
-                        sel ? 'border-brand-500 ring-2 ring-brand-500/35' : 'border-white/10 hover:border-brand-500/40'
+                        sel ? 'border-brand-500 ring-2 ring-brand-500/35' : 'border-rf-border hover:border-brand-500/40'
                       }`}
                     >
                       {hasEditorLayers ? (
                         <span
-                          className="absolute top-1 right-1 z-[1] flex items-center justify-center rounded-md bg-brand-600/90 p-0.5 text-white shadow-sm"
+                          className="absolute top-1 right-1 z-[1] flex items-center justify-center rounded-md bg-brand-600/90 p-0.5 text-rf-text shadow-sm"
                           aria-hidden
                         >
                           <Layers2 className="h-3 w-3" />
@@ -587,12 +587,12 @@ export default function InfographicEditor() {
             )}
 
             {!cardGalleryLoading && cardGalleryItems.length === 0 && (
-              <p className="text-[11px] text-gray-600 mt-2">{t('infographic.canvasTemplatesEmpty')}</p>
+              <p className="text-[11px] text-rf-mutedFg mt-2">{t('infographic.canvasTemplatesEmpty')}</p>
             )}
           </div>
 
-          <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3 space-y-2">
-            <p className="text-[11px] text-gray-400 leading-relaxed">{t('infographic.canvasEditorCallout')}</p>
+          <div className="rounded-lg border border-rf-border bg-white/[0.03] p-3 space-y-2">
+            <p className="text-[11px] text-rf-mutedFg leading-relaxed">{t('infographic.canvasEditorCallout')}</p>
             <Link
               to={`${APP_BASE}/product-card`}
               className="text-xs font-medium text-brand-300 hover:text-brand-200 underline-offset-2 hover:underline"
@@ -601,7 +601,7 @@ export default function InfographicEditor() {
             </Link>
           </div>
 
-          <p className="text-[11px] text-gray-500 leading-relaxed">{t('infographic.hint')}</p>
+          <p className="text-[11px] text-rf-mutedFg leading-relaxed">{t('infographic.hint')}</p>
           <input
             ref={decorativeFileInputRef}
             type="file"
@@ -612,8 +612,8 @@ export default function InfographicEditor() {
         </div>
       </aside>
 
-      <div className="flex-1 flex flex-col min-w-0 min-h-0 gap-0 bg-gray-950/80">
-        <header className="shrink-0 flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-b border-white/10 bg-gray-900/40">
+      <div className="flex-1 flex flex-col min-w-0 min-h-0 gap-0 bg-rf-page">
+        <header className="shrink-0 flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-b border-rf-border bg-rf-well/40">
           <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
@@ -675,21 +675,21 @@ export default function InfographicEditor() {
             </div>
           </div>
 
-          <div className="shrink-0 flex items-center justify-center gap-3 py-3 border-t border-white/10 bg-gray-900/30">
-            <span className="text-[11px] text-gray-500 hidden sm:inline">{t('infographic.canvasEditorZoom')}</span>
+          <div className="shrink-0 flex items-center justify-center gap-3 py-3 border-t border-rf-border bg-rf-well/30">
+            <span className="text-[11px] text-rf-mutedFg hidden sm:inline">{t('infographic.canvasEditorZoom')}</span>
             <button
               type="button"
               onClick={zoomOut}
-              className="p-2 rounded-lg border border-white/10 text-gray-300 hover:bg-white/5"
+              className="p-2 rounded-lg border border-rf-border text-rf-mutedFg hover:bg-rf-muted"
               aria-label="Zoom out"
             >
               <Minus className="w-4 h-4" />
             </button>
-            <span className="text-xs font-medium text-gray-300 tabular-nums w-12 text-center">{zoomPercent}%</span>
+            <span className="text-xs font-medium text-rf-mutedFg tabular-nums w-12 text-center">{zoomPercent}%</span>
             <button
               type="button"
               onClick={zoomIn}
-              className="p-2 rounded-lg border border-white/10 text-gray-300 hover:bg-white/5"
+              className="p-2 rounded-lg border border-rf-border text-rf-mutedFg hover:bg-rf-muted"
             >
               <Plus className="w-4 h-4" />
             </button>

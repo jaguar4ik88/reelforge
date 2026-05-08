@@ -29,23 +29,23 @@ export default function SellerLegalBlock({ compact = false, plain = false, showT
     )
     return (
       <div className={compact ? 'text-xs' : 'text-sm'}>
-        <dt className="text-gray-500">{t(labelKey)}</dt>
-        <dd className="text-gray-300 mt-0.5">{inner}</dd>
+        <dt className="text-rf-mutedFg">{t(labelKey)}</dt>
+        <dd className="text-rf-mutedFg mt-0.5">{inner}</dd>
       </div>
     )
   }
 
   const sectionClass = compact
-    ? 'border-t border-white/10 pt-4 mt-6 text-left'
+    ? 'border-t border-rf-border pt-4 mt-6 text-left'
     : plain
       ? 'text-left'
-      : 'rounded-2xl border border-white/10 bg-gray-900/40 p-6 text-left'
+      : 'rounded-2xl border border-rf-border bg-rf-well/40 p-6 text-left'
 
   const titleClass = compact
-    ? 'text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3'
+    ? 'text-xs font-semibold text-rf-mutedFg uppercase tracking-wide mb-3'
     : plain
-      ? 'text-sm font-semibold text-gray-400 mb-3'
-      : 'text-lg font-semibold text-white mb-4'
+      ? 'text-sm font-semibold text-rf-mutedFg mb-3'
+      : 'text-lg font-semibold text-rf-text mb-4'
 
   const ariaLabel = showTitle ? t('landing.sellerSectionTitle') : t('landing.sellerPageTitle')
 

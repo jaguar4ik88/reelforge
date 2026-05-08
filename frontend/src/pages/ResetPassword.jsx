@@ -50,8 +50,8 @@ export default function ResetPassword() {
       <div className="w-full max-w-md">
         <SeoHead titleKey="seo.resetPasswordTitle" descriptionKey="seo.resetPasswordDescription" />
         <div className="card">
-          <h1 className="text-2xl font-bold text-white mb-1">{t('auth.resetPasswordTitle')}</h1>
-          <p className="text-gray-400 text-sm mb-6">{t('auth.resetLinkInvalid')}</p>
+          <h1 className="text-2xl font-bold text-rf-text mb-1">{t('auth.resetPasswordTitle')}</h1>
+          <p className="text-rf-mutedFg text-sm mb-6">{t('auth.resetLinkInvalid')}</p>
           <Link to="/forgot-password" className="text-brand-400 hover:text-brand-300 text-sm font-medium">
             {t('auth.requestNewResetLink')}
           </Link>
@@ -64,8 +64,8 @@ export default function ResetPassword() {
     <div className="w-full max-w-md">
       <SeoHead titleKey="seo.resetPasswordTitle" descriptionKey="seo.resetPasswordDescription" />
       <div className="card">
-        <h1 className="text-2xl font-bold text-white mb-1">{t('auth.resetPasswordTitle')}</h1>
-        <p className="text-gray-400 text-sm mb-8">{t('auth.resetPasswordSub')}</p>
+        <h1 className="text-2xl font-bold text-rf-text mb-1">{t('auth.resetPasswordTitle')}</h1>
+        <p className="text-rf-mutedFg text-sm mb-8">{t('auth.resetPasswordSub')}</p>
 
         <form onSubmit={submit} className="space-y-5">
           <FormField label={t('auth.newPassword')} error={errors.password?.[0]}>
@@ -102,7 +102,7 @@ export default function ResetPassword() {
           </button>
         </form>
 
-        <p className="text-center text-sm text-gray-500 mt-6">
+        <p className="text-center text-sm text-rf-mutedFg mt-6">
           <Link to="/login" className="text-brand-400 hover:text-brand-300 font-medium">
             {t('auth.backToLogin')}
           </Link>

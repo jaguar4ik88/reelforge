@@ -6,6 +6,7 @@ import { useSite } from '../context/SiteContext'
 import toast from 'react-hot-toast'
 import { ADMIN_BASE, isAdminRole } from '../constants/routes'
 import SeoHead from '../components/seo/SeoHead'
+import ThemeToggle from '../components/ui/ThemeToggle'
 
 export default function AdminLayout() {
   const { t } = useTranslation()
@@ -20,17 +21,17 @@ export default function AdminLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 flex">
+    <div className="min-h-screen bg-rf-page flex">
       <SeoHead
         titleKey="seo.appAreaTitle"
         descriptionKey="seo.appAreaDescription"
         noindex
       />
-      <aside className="w-64 flex-shrink-0 border-r border-white/10 bg-gray-900/50 backdrop-blur-sm flex flex-col h-[100dvh] min-h-0 sticky top-0 self-start">
-        <div className="p-6 border-b border-white/10 flex-shrink-0">
+      <aside className="w-64 flex-shrink-0 border-r border-rf-border bg-rf-sidebar backdrop-blur-sm flex flex-col h-[100dvh] min-h-0 sticky top-0 self-start">
+        <div className="p-6 border-b border-rf-border flex-shrink-0">
           <Link to={`${ADMIN_BASE}/dashboard`} className="flex items-center gap-2">
             <Film className="w-7 h-7 text-amber-400" />
-            <span className="text-white font-bold text-xl">{t('admin.nav.brandTitle', { siteName })}</span>
+            <span className="text-rf-text font-bold text-xl">{t('admin.nav.brandTitle', { siteName })}</span>
           </Link>
         </div>
         <nav className="flex-1 min-h-0 overflow-y-auto p-4 space-y-1">
@@ -41,7 +42,7 @@ export default function AdminLayout() {
               `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                 isActive
                   ? 'bg-amber-600/20 text-amber-300 border border-amber-500/30'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  : 'text-rf-mutedFg hover:text-rf-text hover:bg-rf-muted'
               }`
             }
           >
@@ -55,7 +56,7 @@ export default function AdminLayout() {
                 `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                   isActive
                     ? 'bg-amber-600/20 text-amber-300 border border-amber-500/30'
-                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                    : 'text-rf-mutedFg hover:text-rf-text hover:bg-rf-muted'
                 }`
               }
             >
@@ -69,7 +70,7 @@ export default function AdminLayout() {
               `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                 isActive
                   ? 'bg-amber-600/20 text-amber-300 border border-amber-500/30'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  : 'text-rf-mutedFg hover:text-rf-text hover:bg-rf-muted'
               }`
             }
           >
@@ -82,7 +83,7 @@ export default function AdminLayout() {
               `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                 isActive
                   ? 'bg-amber-600/20 text-amber-300 border border-amber-500/30'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  : 'text-rf-mutedFg hover:text-rf-text hover:bg-rf-muted'
               }`
             }
           >
@@ -90,12 +91,15 @@ export default function AdminLayout() {
             {t('admin.nav.subscriptionPlans')}
           </NavLink>
         </nav>
-        <div className="p-4 border-t border-white/10 flex-shrink-0 mt-auto">
-          <p className="text-xs text-gray-500 truncate mb-3">{user?.email}</p>
+        <div className="p-4 border-t border-rf-border flex-shrink-0 mt-auto flex flex-col gap-3">
+          <div className="flex justify-center">
+            <ThemeToggle />
+          </div>
+          <p className="text-xs text-rf-mutedFg truncate">{user?.email}</p>
           <button
             type="button"
             onClick={handleLogout}
-            className="flex items-center gap-2 text-sm text-gray-400 hover:text-red-400 transition-colors"
+            className="flex items-center gap-2 text-sm text-rf-mutedFg hover:text-red-400 transition-colors"
           >
             <LogOut className="w-4 h-4" />
             {t('nav.logout')}

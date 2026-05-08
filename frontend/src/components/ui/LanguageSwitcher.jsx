@@ -11,7 +11,7 @@ export default function LanguageSwitcher({ compact = false }) {
   const { user } = useAuthContext()
 
   return (
-    <div className="flex items-center gap-1 bg-white/5 rounded-lg p-1">
+    <div className="flex items-center gap-1 bg-rf-muted rounded-lg p-1">
       {LANGS.map(({ code, flag, label }) => (
         <button
           key={code}
@@ -19,7 +19,7 @@ export default function LanguageSwitcher({ compact = false }) {
           className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold transition-all duration-150
             ${locale === code
               ? 'bg-brand-600 text-white shadow-sm'
-              : 'text-gray-400 hover:text-white hover:bg-white/10'
+              : 'text-rf-mutedFg hover:text-rf-text hover:bg-rf-elevated'
             }`}
           title={code === 'uk' ? 'Українська' : 'English'}
         >

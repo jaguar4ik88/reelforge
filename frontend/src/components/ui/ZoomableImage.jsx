@@ -72,7 +72,7 @@ export default function ZoomableImage({
                 e.stopPropagation()
                 setOpen(false)
               }}
-              className="absolute right-3 top-3 z-10 cursor-pointer rounded-full bg-white/10 p-2.5 text-white transition-colors hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400"
+              className="absolute right-3 top-3 z-10 cursor-pointer rounded-full bg-rf-elevated p-2.5 text-rf-text transition-colors hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400"
               aria-label={t('common.close')}
             >
               <X className="h-6 w-6" strokeWidth={1.75} />

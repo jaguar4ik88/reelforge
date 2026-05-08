@@ -20,6 +20,11 @@ export default {
       logout:      'Вийти',
     },
 
+    theme: {
+      switchToLight: 'Світла тема',
+      switchToDark: 'Темна тема',
+    },
+
     productCard: {
       title: 'Картка товару',
       subtitle:

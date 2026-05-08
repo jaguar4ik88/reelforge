@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import StatusBadge from './ui/StatusBadge'
 
 const statusIcons = {
-  draft:      <FileEdit className="w-5 h-5 text-gray-400" />,
+  draft:      <FileEdit className="w-5 h-5 text-rf-mutedFg" />,
   processing: <Clock className="w-5 h-5 text-yellow-400 animate-spin-slow" />,
   done:       <CheckCircle2 className="w-5 h-5 text-green-400" />,
   failed:     <AlertCircle className="w-5 h-5 text-red-400" />,
@@ -23,9 +23,9 @@ export default function ProjectCard({ project, onDelete }) {
   const showVideoThumb = Boolean(generatedUrl) && isMp4Url(generatedUrl)
 
   return (
-    <div className="card group hover:border-white/20 transition-all duration-200">
+    <div className="card group hover:border-rf-border transition-all duration-200">
       <Link to={`${APP_BASE}/projects/${project.id}`} className="block">
-        <div className="aspect-[9/16] rounded-xl overflow-hidden bg-gray-800 mb-4 relative">
+        <div className="aspect-[9/16] rounded-xl overflow-hidden bg-rf-meter mb-4 relative">
           {showVideoThumb && thumbUrl ? (
             <video
               src={thumbUrl}
@@ -42,7 +42,7 @@ export default function ProjectCard({ project, onDelete }) {
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
-              <Film className="w-12 h-12 text-gray-600" />
+              <Film className="w-12 h-12 text-rf-mutedFg" />
             </div>
           )}
           {project.status === 'done' && (
@@ -56,7 +56,7 @@ export default function ProjectCard({ project, onDelete }) {
 
         <div className="space-y-2">
           <div className="flex items-start justify-between gap-2">
-            <h3 className="font-semibold text-white truncate leading-tight">{project.title}</h3>
+            <h3 className="font-semibold text-rf-text truncate leading-tight">{project.title}</h3>
             {statusIcons[project.status]}
           </div>
           <div className="flex items-center justify-between">
@@ -65,16 +65,16 @@ export default function ProjectCard({ project, onDelete }) {
             </span>
             <StatusBadge status={project.status} />
           </div>
-          <p className="text-xs text-gray-500 line-clamp-2">{project.description}</p>
+          <p className="text-xs text-rf-mutedFg line-clamp-2">{project.description}</p>
         </div>
       </Link>
 
       <div
-        className={`mt-4 flex items-center border-t border-white/10 pt-4 ${
+        className={`mt-4 flex items-center border-t border-rf-border pt-4 ${
           typeof onDelete === 'function' ? 'justify-between' : 'justify-start'
         }`}
       >
-        <span className="text-xs text-gray-600">
+        <span className="text-xs text-rf-mutedFg">
           {new Date(project.created_at).toLocaleDateString()}
         </span>
         {typeof onDelete === 'function' && (
@@ -84,7 +84,7 @@ export default function ProjectCard({ project, onDelete }) {
               e.preventDefault()
               onDelete(project.id)
             }}
-            className="text-gray-600 hover:text-red-400 transition-colors p-1 rounded"
+            className="text-rf-mutedFg hover:text-red-400 transition-colors p-1 rounded"
             title={t('common.delete')}
           >
             <Trash2 className="w-4 h-4" />

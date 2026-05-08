@@ -11,9 +11,48 @@
     scroll-behavior: smooth;
   }
 
+  /* Theme tokens — toggled via `data-theme` on <html> (see ThemeContext + index.html) */
+  :root[data-theme='light'] {
+    --rf-page: #f8fafc;
+    --rf-panel: rgb(248 250 252 / 0.92);
+    --rf-sidebar: rgb(248 250 252 / 0.95);
+    --rf-muted: rgb(15 23 42 / 0.05);
+    --rf-elevated: rgb(15 23 42 / 0.08);
+    --rf-well: #eef2f7;
+    --rf-well-hover: #e2e8f0;
+    --rf-text: #0f172a;
+    --rf-text-muted: #64748b;
+    --rf-border: rgb(15 23 42 / 0.12);
+    --rf-input-bg: rgb(15 23 42 / 0.04);
+    --rf-input-border: rgb(15 23 42 / 0.14);
+    --rf-meter: #e2e8f0;
+    --rf-carousel: rgb(248 250 252 / 0.95);
+    --rf-or-divider: #f8fafc;
+    --rf-glass-bg: rgb(255 255 255 / 0.72);
+  }
+
+  :root[data-theme='dark'] {
+    --rf-page: #030712;
+    --rf-panel: rgb(17 24 39 / 0.65);
+    --rf-sidebar: rgb(17 24 39 / 0.5);
+    --rf-muted: rgb(255 255 255 / 0.05);
+    --rf-elevated: rgb(255 255 255 / 0.1);
+    --rf-well: #111827;
+    --rf-well-hover: #1f2937;
+    --rf-text: #f3f4f6;
+    --rf-text-muted: #9ca3af;
+    --rf-border: rgb(255 255 255 / 0.1);
+    --rf-input-bg: rgb(255 255 255 / 0.05);
+    --rf-input-border: rgb(255 255 255 / 0.15);
+    --rf-meter: #1f2937;
+    --rf-carousel: rgb(3 7 18 / 0.4);
+    --rf-or-divider: #030712;
+    --rf-glass-bg: rgb(255 255 255 / 0.05);
+  }
+
   body {
     font-family: 'Inter', system-ui, sans-serif;
-    @apply bg-gray-950 text-gray-100;
+    @apply antialiased bg-rf-page text-rf-text transition-colors duration-150;
   }
 
   ::-webkit-scrollbar {
@@ -21,7 +60,7 @@
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-gray-900;
+    background-color: var(--rf-meter);
   }
 
   ::-webkit-scrollbar-thumb {
@@ -50,7 +89,8 @@
 
 @layer components {
   .glass {
-    @apply bg-white/5 backdrop-blur-sm border border-white/10;
+    @apply backdrop-blur-sm border border-rf-border rounded-2xl;
+    background-color: var(--rf-glass-bg);
   }
 
   .gradient-text {
@@ -64,9 +104,9 @@
   }
 
   .btn-secondary {
-    @apply bg-white/10 hover:bg-white/15 border border-white/20 text-white font-medium
-           px-5 py-2.5 rounded-xl transition-all duration-200 active:scale-95
-           disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply font-medium px-5 py-2.5 rounded-xl transition-all duration-200 active:scale-95
+           disabled:opacity-50 disabled:cursor-not-allowed border bg-rf-muted border-rf-border text-rf-text
+           hover:bg-rf-elevated;
   }
 
   .btn-danger {
@@ -75,9 +115,9 @@
   }
 
   .input-field {
-    @apply w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-white
-           placeholder-gray-500 focus:outline-none focus:border-brand-500 focus:ring-2
-           focus:ring-brand-500/20 transition-all duration-200;
+    @apply w-full rounded-xl px-4 py-3 focus:outline-none focus:border-brand-500 focus:ring-2
+           focus:ring-brand-500/20 transition-all duration-200 border bg-rf-input border-rf-inputBorder
+           text-rf-text placeholder:text-rf-mutedFg;
   }
 
   .card {

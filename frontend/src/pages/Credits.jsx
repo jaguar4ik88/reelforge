@@ -231,7 +231,7 @@ export default function Credits() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
-      <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+      <h1 className="text-3xl font-bold text-rf-text flex items-center gap-3">
           <Coins className="w-8 h-8 text-brand-400" />
           {t('credits.pageTitle')}
         </h1>
@@ -240,7 +240,7 @@ export default function Credits() {
 
       <div className="mb-10">
         
-        <p className="text-gray-400 mt-2">{t('credits.pageSubtitle')}</p>
+        <p className="text-rf-mutedFg mt-2">{t('credits.pageSubtitle')}</p>
         {checkout?.billing_provider === 'wayforpay' && checkout?.wayforpay_available && (
           <p className="text-sm text-amber-200/90 mt-3 border border-amber-500/30 rounded-xl px-4 py-3 bg-amber-950/30">
             {t('credits.wayforpayCheckoutNote', {
@@ -257,13 +257,13 @@ export default function Credits() {
       </div>
 
       {loading ? (
-        <div className="text-gray-400">{t('common.loading')}</div>
+        <div className="text-rf-mutedFg">{t('common.loading')}</div>
       ) : (
         <>
           {subscriptionPlans.length > 0 && (
             <div className="mb-12">
-              <h2 className="text-xl font-semibold text-white mb-2">{t('credits.subscriptionsTitle')}</h2>
-              <p className="text-gray-400 text-sm mb-4">{t('credits.subscriptionsSubtitle')}</p>
+              <h2 className="text-xl font-semibold text-rf-text mb-2">{t('credits.subscriptionsTitle')}</h2>
+              <p className="text-rf-mutedFg text-sm mb-4">{t('credits.subscriptionsSubtitle')}</p>
               {!(checkout?.billing_provider === 'wayforpay' && checkout?.wayforpay_available) && (
                 <p className="text-sm text-amber-200/85 mb-6 border border-amber-500/25 rounded-xl px-4 py-3 bg-amber-950/25 max-w-3xl">
                   {t('credits.subscriptionsWayforpayOnly')}
@@ -284,20 +284,20 @@ export default function Credits() {
 
           {packages.length > 0 && (
             <>
-              <h2 className="text-xl font-semibold text-white mb-2">{t('credits.oneTimeTitle')}</h2>
-              <p className="text-gray-500 text-sm mb-6">{t('credits.oneTimeSubtitle')}</p>
+              <h2 className="text-xl font-semibold text-rf-text mb-2">{t('credits.oneTimeTitle')}</h2>
+              <p className="text-rf-mutedFg text-sm mb-6">{t('credits.oneTimeSubtitle')}</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {packages.map((pkg) => (
             <div
               key={pkg.slug}
-              className="rounded-2xl border border-white/10 bg-gray-900/60 p-6 flex flex-col"
+              className="rounded-2xl border border-rf-border bg-rf-well/60 p-6 flex flex-col"
             >
-              <div className="text-lg font-bold text-white mb-1">{pkg.name}</div>
-              <div className="text-3xl font-extrabold text-white mb-1">
+              <div className="text-lg font-bold text-rf-text mb-1">{pkg.name}</div>
+              <div className="text-3xl font-extrabold text-rf-text mb-1">
                 ${Number(pkg.price_usd).toFixed(2)}{' '}
-                <span className="text-sm font-normal text-gray-500">USD</span>
+                <span className="text-sm font-normal text-rf-mutedFg">USD</span>
               </div>
-              <div className="text-gray-400 text-sm mb-4">
+              <div className="text-rf-mutedFg text-sm mb-4">
                 {pkg.credits_amount} {t('pricing.packages.credits')}
               </div>
               {checkout?.billing_provider === 'wayforpay' && checkout?.wayforpay_available && pkg.amount_uah && (
@@ -324,21 +324,21 @@ export default function Credits() {
             </>
           )}
 
-          <div className="mt-12 border-t border-white/10 pt-10">
-            <h2 className="text-xl font-semibold text-white mb-2 flex items-center gap-2">
+          <div className="mt-12 border-t border-rf-border pt-10">
+            <h2 className="text-xl font-semibold text-rf-text mb-2 flex items-center gap-2">
               <History className="w-5 h-5 text-brand-400" />
               {t('credits.purchaseHistoryTitle')}
             </h2>
-            <p className="text-gray-500 text-sm mb-4">{t('credits.purchaseHistorySubtitle')}</p>
+            <p className="text-rf-mutedFg text-sm mb-4">{t('credits.purchaseHistorySubtitle')}</p>
             {historyLoading ? (
-              <p className="text-gray-500 text-sm">{t('common.loading')}</p>
+              <p className="text-rf-mutedFg text-sm">{t('common.loading')}</p>
             ) : purchases.length === 0 ? (
-              <p className="text-gray-500">{t('credits.purchaseHistoryEmpty')}</p>
+              <p className="text-rf-mutedFg">{t('credits.purchaseHistoryEmpty')}</p>
             ) : (
-              <div className="overflow-x-auto rounded-2xl border border-white/10 bg-gray-900/40">
+              <div className="overflow-x-auto rounded-2xl border border-rf-border bg-rf-well/40">
                 <table className="min-w-full text-left text-sm">
                   <thead>
-                    <tr className="border-b border-white/10 text-gray-400">
+                    <tr className="border-b border-rf-border text-rf-mutedFg">
                       <th className="px-4 py-3 font-medium">{t('credits.purchaseHistoryDate')}</th>
                       <th className="px-4 py-3 font-medium">{t('credits.purchaseHistoryItem')}</th>
                       <th className="px-4 py-3 font-medium text-right">{t('credits.purchaseHistoryCredits')}</th>
@@ -364,11 +364,11 @@ export default function Credits() {
                       const statusLabel = t(statusKey, row.status)
 
                       return (
-                        <tr key={`${row.source}-${row.id}`} className="border-b border-white/5 text-gray-200">
-                          <td className="px-4 py-3 whitespace-nowrap text-gray-400">{date}</td>
+                        <tr key={`${row.source}-${row.id}`} className="border-b border-rf-border text-rf-text">
+                          <td className="px-4 py-3 whitespace-nowrap text-rf-mutedFg">{date}</td>
                           <td className="px-4 py-3">
-                            <div className="font-medium text-white">{row.title}</div>
-                            <div className="text-xs text-gray-500 mt-0.5">{kindLabel}</div>
+                            <div className="font-medium text-rf-text">{row.title}</div>
+                            <div className="text-xs text-rf-mutedFg mt-0.5">{kindLabel}</div>
                           </td>
                           <td className="px-4 py-3 text-right tabular-nums">
                             {row.credits != null ? `+${row.credits}` : '—'}
@@ -376,7 +376,7 @@ export default function Credits() {
                           <td className="px-4 py-3 text-right tabular-nums">
                             <div>{usd}</div>
                             {row.amount_uah != null && (
-                              <div className="text-xs text-gray-500">{row.amount_uah} UAH</div>
+                              <div className="text-xs text-rf-mutedFg">{row.amount_uah} UAH</div>
                             )}
                           </td>
                           <td className="px-4 py-3">
@@ -405,7 +405,7 @@ export default function Credits() {
               </div>
             )}
             {!historyLoading && purchaseMeta.total > 0 && purchaseMeta.last_page > 1 && (
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-4 text-sm text-gray-400">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-4 text-sm text-rf-mutedFg">
                 <p>
                   {t('credits.purchaseHistoryPage', {
                     current: purchaseMeta.current_page,
@@ -418,7 +418,7 @@ export default function Credits() {
                     type="button"
                     disabled={purchaseMeta.current_page <= 1 || historyLoading}
                     onClick={() => loadPurchasesPage(purchaseMeta.current_page - 1)}
-                    className="px-3 py-1.5 rounded-lg border border-white/15 bg-gray-900/60 text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-800/80"
+                    className="px-3 py-1.5 rounded-lg border border-rf-border bg-rf-well/60 text-rf-text disabled:opacity-40 disabled:cursor-not-allowed hover:bg-rf-meter/80"
                   >
                     {t('credits.purchaseHistoryPrev')}
                   </button>
@@ -426,7 +426,7 @@ export default function Credits() {
                     type="button"
                     disabled={purchaseMeta.current_page >= purchaseMeta.last_page || historyLoading}
                     onClick={() => loadPurchasesPage(purchaseMeta.current_page + 1)}
-                    className="px-3 py-1.5 rounded-lg border border-white/15 bg-gray-900/60 text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-800/80"
+                    className="px-3 py-1.5 rounded-lg border border-rf-border bg-rf-well/60 text-rf-text disabled:opacity-40 disabled:cursor-not-allowed hover:bg-rf-meter/80"
                   >
                     {t('credits.purchaseHistoryNext')}
                   </button>
@@ -438,7 +438,7 @@ export default function Credits() {
       )}
 
       {!loading && packages.length === 0 && subscriptionPlans.length === 0 && (
-        <p className="text-gray-500">{t('credits.empty')}</p>
+        <p className="text-rf-mutedFg">{t('credits.empty')}</p>
       )}
     </div>
   )

@@ -8,7 +8,7 @@ const PLACEHOLDER_COUNT = 3
 const MARQUEE_DURATION_SEC = 120
 
 const cardShell =
-  'relative h-52 w-40 flex-shrink-0 overflow-hidden rounded-xl border border-white/10 bg-gray-900/60 shadow-lg sm:h-64 sm:w-48'
+  'relative h-52 w-40 flex-shrink-0 overflow-hidden rounded-xl border border-rf-border bg-rf-well/60 shadow-lg sm:h-64 sm:w-48'
 
 function usePrefersReducedMotion() {
   const [reduced, setReduced] = useState(() =>
@@ -61,7 +61,7 @@ export default function ProductCardCarousel() {
     ]
     return (
       <div
-        className="relative mx-auto max-w-6xl rounded-2xl border border-white/10 bg-gray-950/40 px-2 py-6 sm:px-4"
+        className="relative mx-auto max-w-6xl rounded-2xl border border-rf-border bg-rf-carousel px-2 py-6 sm:px-4"
         role="region"
         aria-label={t('landing.cardExamples.sliderLabel')}
       >
@@ -74,7 +74,7 @@ export default function ProductCardCarousel() {
               <span className="mb-2 text-xs font-semibold uppercase tracking-wider text-brand-400/80">
                 {t('landing.cardExamples.placeholderBadge', { n: i + 1 })}
               </span>
-              <p className="max-w-[10rem] text-xs leading-relaxed text-gray-400">{t('landing.cardExamples.empty')}</p>
+              <p className="max-w-[10rem] text-xs leading-relaxed text-rf-mutedFg">{t('landing.cardExamples.empty')}</p>
             </div>
           ))}
         </div>
@@ -98,11 +98,11 @@ export default function ProductCardCarousel() {
   if (prefersReducedMotion) {
     return (
       <div
-        className="relative mx-auto max-w-6xl rounded-2xl border border-white/10 bg-gray-950/40 px-2 py-4 sm:px-4"
+        className="relative mx-auto max-w-6xl rounded-2xl border border-rf-border bg-rf-carousel px-2 py-4 sm:px-4"
         role="region"
         aria-label={t('landing.cardExamples.sliderLabel')}
       >
-        <p className="mb-3 text-center text-xs text-gray-500">{t('landing.cardExamples.reducedMotionHint')}</p>
+        <p className="mb-3 text-center text-xs text-rf-mutedFg">{t('landing.cardExamples.reducedMotionHint')}</p>
         <div className="flex gap-4 overflow-x-auto pb-2 pt-1 [scrollbar-width:thin] sm:gap-6">{imageCards('static')}</div>
       </div>
     )
@@ -110,16 +110,16 @@ export default function ProductCardCarousel() {
 
   return (
     <div
-      className="relative mx-auto max-w-6xl overflow-hidden rounded-2xl border border-white/10 bg-gray-950/40 py-6"
+      className="relative mx-auto max-w-6xl overflow-hidden rounded-2xl border border-rf-border bg-rf-carousel py-6"
       role="region"
       aria-label={t('landing.cardExamples.sliderLabel')}
     >
       <div
-        className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-gray-950 sm:w-20"
+        className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-rf-page sm:w-20"
         aria-hidden
       />
       <div
-        className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-gray-950 sm:w-20"
+        className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-rf-page sm:w-20"
         aria-hidden
       />
 

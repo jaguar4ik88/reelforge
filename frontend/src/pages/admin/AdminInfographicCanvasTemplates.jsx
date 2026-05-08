@@ -89,8 +89,8 @@ export default function AdminInfographicCanvasTemplates() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-1">{t('admin.infographicCanvas.title')}</h1>
-          <p className="text-gray-400 text-sm max-w-xl">{t('admin.infographicCanvas.subtitle')}</p>
+          <h1 className="text-3xl font-bold text-rf-text mb-1">{t('admin.infographicCanvas.title')}</h1>
+          <p className="text-rf-mutedFg text-sm max-w-xl">{t('admin.infographicCanvas.subtitle')}</p>
         </div>
         <label className="btn-primary inline-flex items-center gap-2 justify-center cursor-pointer shrink-0">
           <input
@@ -110,7 +110,7 @@ export default function AdminInfographicCanvasTemplates() {
           <Spinner size="lg" />
         </div>
       ) : items.length === 0 ? (
-        <div className="card text-center py-20 text-gray-500">{t('admin.infographicCanvas.empty')}</div>
+        <div className="card text-center py-20 text-rf-mutedFg">{t('admin.infographicCanvas.empty')}</div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {items.map((row) => {
@@ -119,20 +119,20 @@ export default function AdminInfographicCanvasTemplates() {
             return (
               <article
                 key={name}
-                className="rounded-2xl border border-white/10 bg-gray-900/50 overflow-hidden flex flex-col"
+                className="rounded-2xl border border-rf-border bg-rf-sidebar overflow-hidden flex flex-col"
               >
-                <div className="aspect-[3/4] bg-gray-800 relative">
+                <div className="aspect-[3/4] bg-rf-meter relative">
                   {row.url ? (
                     <img src={displayUrl(row.url)} alt="" className="w-full h-full object-cover" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-600 text-sm px-4 text-center">
+                    <div className="w-full h-full flex items-center justify-center text-rf-mutedFg text-sm px-4 text-center">
                       {name}
                     </div>
                   )}
                 </div>
 
                 <div className="p-4 flex-1 flex flex-col gap-2">
-                  <p className="text-sm font-mono text-gray-300 truncate" title={name}>
+                  <p className="text-sm font-mono text-rf-mutedFg truncate" title={name}>
                     {name}
                   </p>
                   {row.editor?.texts?.length > 0 && (
@@ -167,7 +167,7 @@ export default function AdminInfographicCanvasTemplates() {
         </div>
       )}
 
-      <p className="mt-8 text-xs text-gray-500 leading-relaxed max-w-2xl">{t('admin.infographicCanvas.hint')}</p>
+      <p className="mt-8 text-xs text-rf-mutedFg leading-relaxed max-w-2xl">{t('admin.infographicCanvas.hint')}</p>
     </div>
   )
 }

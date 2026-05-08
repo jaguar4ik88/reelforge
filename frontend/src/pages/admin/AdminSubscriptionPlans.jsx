@@ -42,8 +42,8 @@ export default function AdminSubscriptionPlans() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-1">{t('admin.subscriptionPlans.title')}</h1>
-          <p className="text-gray-400 text-sm">{t('admin.subscriptionPlans.subtitle')}</p>
+          <h1 className="text-3xl font-bold text-rf-text mb-1">{t('admin.subscriptionPlans.title')}</h1>
+          <p className="text-rf-mutedFg text-sm">{t('admin.subscriptionPlans.subtitle')}</p>
         </div>
         <Link
           to={`${ADMIN_BASE}/subscription-plans/new`}
@@ -59,12 +59,12 @@ export default function AdminSubscriptionPlans() {
           <Spinner />
         </div>
       ) : rows.length === 0 ? (
-        <div className="card text-center py-20 text-gray-500">{t('admin.subscriptionPlans.empty')}</div>
+        <div className="card text-center py-20 text-rf-mutedFg">{t('admin.subscriptionPlans.empty')}</div>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-white/10 bg-gray-900/40">
-          <table className="min-w-full text-left text-sm text-gray-200">
+        <div className="overflow-x-auto rounded-2xl border border-rf-border bg-rf-well/40">
+          <table className="min-w-full text-left text-sm text-rf-text">
             <thead>
-              <tr className="border-b border-white/10 text-gray-400">
+              <tr className="border-b border-rf-border text-rf-mutedFg">
                 <th className="px-4 py-3 font-medium">{t('admin.subscriptionPlans.colSlug')}</th>
                 <th className="px-4 py-3 font-medium">{t('admin.subscriptionPlans.colName')}</th>
                 <th className="px-4 py-3 font-medium">{t('admin.subscriptionPlans.colCredits')}</th>
@@ -77,9 +77,9 @@ export default function AdminSubscriptionPlans() {
             </thead>
             <tbody>
               {rows.map((row) => (
-                <tr key={row.id} className="border-b border-white/5">
-                  <td className="px-4 py-3 font-mono text-xs text-gray-400">{row.slug}</td>
-                  <td className="px-4 py-3 font-medium text-white">{row.name}</td>
+                <tr key={row.id} className="border-b border-rf-border">
+                  <td className="px-4 py-3 font-mono text-xs text-rf-mutedFg">{row.slug}</td>
+                  <td className="px-4 py-3 font-medium text-rf-text">{row.name}</td>
                   <td className="px-4 py-3 tabular-nums">{row.monthly_credits}</td>
                   <td className="px-4 py-3 tabular-nums">${Number(row.price_usd).toFixed(2)}</td>
                   <td className="px-4 py-3">{row.is_featured ? '✓' : '—'}</td>

@@ -62,8 +62,8 @@ export default function Login() {
     <div className="w-full max-w-md">
       <SeoHead titleKey="seo.loginTitle" descriptionKey="seo.loginDescription" />
       <div className="card">
-        <h1 className="text-2xl font-bold text-white mb-1">{t('auth.loginTitle')}</h1>
-        <p className="text-gray-400 text-sm mb-8">{t('auth.loginSub', { siteName })}</p>
+        <h1 className="text-2xl font-bold text-rf-text mb-1">{t('auth.loginTitle')}</h1>
+        <p className="text-rf-mutedFg text-sm mb-8">{t('auth.loginSub', { siteName })}</p>
 
         <form onSubmit={submit} className="space-y-5">
           <FormField label={t('auth.email')} error={errors.email?.[0]}>
@@ -111,26 +111,26 @@ export default function Login() {
           <>
             <div className="relative my-8">
               <div className="absolute inset-0 flex items-center" aria-hidden>
-                <div className="w-full border-t border-gray-700/80" />
+                <div className="w-full border-t border-rf-border/80" />
               </div>
               <div className="relative flex justify-center text-xs uppercase tracking-wide">
-                <span className="bg-gray-950/90 px-3 text-gray-500">{t('auth.orContinueWith')}</span>
+                <span className="bg-rf-orDivider px-3 text-rf-mutedFg">{t('auth.orContinueWith')}</span>
               </div>
             </div>
 
             <div className="grid gap-3">
               <a
                 href={getOAuthRedirectUrl('google')}
-                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border border-gray-700 bg-gray-900/50
-                  text-white text-sm font-medium hover:bg-gray-800/80 transition-colors"
+                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border border-rf-border bg-rf-sidebar
+                  text-rf-text text-sm font-medium hover:bg-rf-meter/80 transition-colors"
               >
                 <GoogleGlyph />
                 {t('auth.continueGoogle')}
               </a>
               <a
                 href={getOAuthRedirectUrl('apple')}
-                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border border-gray-700 bg-gray-900/50
-                  text-white text-sm font-medium hover:bg-gray-800/80 transition-colors"
+                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border border-rf-border bg-rf-sidebar
+                  text-rf-text text-sm font-medium hover:bg-rf-meter/80 transition-colors"
               >
                 <AppleGlyph />
                 {t('auth.continueApple')}
@@ -142,7 +142,7 @@ export default function Login() {
         )}
 
         {registrationEnabled && (
-        <p className="text-center text-sm text-gray-500 mt-6">
+        <p className="text-center text-sm text-rf-mutedFg mt-6">
           {t('auth.noAccount')}{' '}
           <Link to="/register" className="text-brand-400 hover:text-brand-300 font-medium">
             {t('auth.createFree')}
@@ -179,7 +179,7 @@ function GoogleGlyph() {
 
 function AppleGlyph() {
   return (
-    <svg className="w-5 h-5 shrink-0 text-white" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+    <svg className="w-5 h-5 shrink-0 text-rf-text" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
       <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
     </svg>
   )

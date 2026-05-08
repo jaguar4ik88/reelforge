@@ -94,8 +94,8 @@ export default function Profile() {
     <div className="max-w-4xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-1">{t('profile.title')}</h1>
-        <p className="text-gray-400">{t('profile.subtitle')}</p>
+        <h1 className="text-3xl font-bold text-rf-text mb-1">{t('profile.title')}</h1>
+        <p className="text-rf-mutedFg">{t('profile.subtitle')}</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -120,7 +120,7 @@ export default function Profile() {
                 className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-brand-600 hover:bg-brand-500 flex items-center justify-center transition-colors shadow-lg"
                 title={t('profile.changeAvatar')}
               >
-                <Camera className="w-4 h-4 text-white" />
+                <Camera className="w-4 h-4 text-rf-text" />
               </button>
               <input
                 ref={avatarFile}
@@ -131,12 +131,12 @@ export default function Profile() {
               />
             </div>
 
-            <p className="text-white font-semibold text-lg">{user?.name}</p>
-            <p className="text-gray-400 text-sm">{user?.email}</p>
+            <p className="text-rf-text font-semibold text-lg">{user?.name}</p>
+            <p className="text-rf-mutedFg text-sm">{user?.email}</p>
             <span className={`mt-2 status-badge ${
               userHasPaidPlanHighlight(user)
                 ? 'bg-brand-600/20 text-brand-300 border border-brand-500/30'
-                : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
+                : 'bg-gray-500/20 text-rf-mutedFg border border-gray-500/30'
             }`}>
               {user?.subscription?.name?.trim()
                 ? user.subscription.name
@@ -148,14 +148,14 @@ export default function Profile() {
 
           {/* Plan info */}
           <div className="card">
-            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+            <h3 className="text-xs font-semibold text-rf-mutedFg uppercase tracking-wider mb-4 flex items-center gap-2">
               <Zap className="w-3.5 h-3.5" />
               {t('profile.planInfo')}
             </h3>
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-400">{t('profile.currentPlan')}</span>
-                <span className="text-white font-medium text-right">
+                <span className="text-rf-mutedFg">{t('profile.currentPlan')}</span>
+                <span className="text-rf-text font-medium text-right">
                   {user?.subscription?.name?.trim()
                     ? user.subscription.name
                     : user?.plan === 'pro'
@@ -165,8 +165,8 @@ export default function Profile() {
               </div>
               {user?.subscription?.current_period_end && (
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">{t('profile.subscriptionRenews')}</span>
-                  <span className="text-white font-medium tabular-nums text-right">
+                  <span className="text-rf-mutedFg">{t('profile.subscriptionRenews')}</span>
+                  <span className="text-rf-text font-medium tabular-nums text-right">
                     {new Date(user.subscription.current_period_end).toLocaleDateString(locale, {
                       year: 'numeric',
                       month: 'short',
@@ -176,18 +176,18 @@ export default function Profile() {
                 </div>
               )}
               {user?.subscription?.monthly_credits != null && (
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-rf-mutedFg">
                   {t('profile.subscriptionCreditsHint', { count: user.subscription.monthly_credits })}
                 </p>
               )}
               <div>
                 <div className="flex justify-between text-sm mb-1.5">
-                  <span className="text-gray-400">{t('profile.videosUsed')}</span>
+                  <span className="text-rf-mutedFg">{t('profile.videosUsed')}</span>
                   <span className="text-brand-400 font-semibold">
                     {user?.videos_this_month} {t('profile.outOf')} {user?.video_limit}
                   </span>
                 </div>
-                <div className="w-full bg-gray-800 rounded-full h-1.5">
+                <div className="w-full bg-rf-meter rounded-full h-1.5">
                   <div
                     className="h-1.5 rounded-full bg-gradient-to-r from-brand-500 to-purple-500"
                     style={{ width: `${Math.min(((user?.videos_this_month ?? 0) / (user?.video_limit ?? 10)) * 100, 100)}%` }}
@@ -195,7 +195,7 @@ export default function Profile() {
                 </div>
               </div>
               <div className="flex justify-between items-center text-sm pt-2 border-t border-gray-800/80">
-                <span className="text-gray-400 flex items-center gap-1.5">
+                <span className="text-rf-mutedFg flex items-center gap-1.5">
                   <Coins className="w-3.5 h-3.5 text-amber-400" aria-hidden />
                   {t('profile.creditsBalance')}
                 </span>
@@ -204,7 +204,7 @@ export default function Profile() {
                 </span>
               </div>
               {user?.credits?.video_generation_cost != null && (
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-rf-mutedFg">
                   {t('profile.creditsPerVideoHint', { count: user.credits.video_generation_cost })}
                 </p>
               )}
@@ -222,11 +222,11 @@ export default function Profile() {
           {/* Member since */}
           {user?.created_at && (
             <div className="card">
-              <div className="flex items-center gap-2 text-xs text-gray-500 uppercase tracking-wider font-semibold mb-3">
+              <div className="flex items-center gap-2 text-xs text-rf-mutedFg uppercase tracking-wider font-semibold mb-3">
                 <Calendar className="w-3.5 h-3.5" />
                 {t('profile.memberSince')}
               </div>
-              <p className="text-white text-sm">
+              <p className="text-rf-text text-sm">
                 {new Date(user.created_at).toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' })}
               </p>
             </div>
@@ -237,7 +237,7 @@ export default function Profile() {
         <div className="lg:col-span-2 space-y-6">
           {/* Personal info form */}
           <div className="card">
-            <h2 className="text-sm font-semibold text-white mb-5 flex items-center gap-2">
+            <h2 className="text-sm font-semibold text-rf-text mb-5 flex items-center gap-2">
               <User className="w-4 h-4 text-brand-400" />
               {t('profile.personalInfo')}
             </h2>
@@ -249,17 +249,17 @@ export default function Profile() {
                   <img src={avatarPreview} alt="preview" className="w-10 h-10 rounded-full object-cover" />
                   <div className="flex-1 min-w-0">
                     <p className="text-xs text-brand-300">{t('profile.changeAvatar')}</p>
-                    <p className="text-xs text-gray-500 truncate">{avatarBlob.name}</p>
+                    <p className="text-xs text-rf-mutedFg truncate">{avatarBlob.name}</p>
                   </div>
                   <button type="button" onClick={() => { setAvatarBlob(null); setAvatarPreview(user?.avatar_url) }}
-                    className="text-gray-500 hover:text-red-400 text-xs">✕</button>
+                    className="text-rf-mutedFg hover:text-red-400 text-xs">✕</button>
                 </div>
               )}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <FormField label={t('profile.name')} error={profileErrors.name?.[0]}>
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-rf-mutedFg" />
                     <input type="text" className="input-field pl-10"
                       value={profileForm.name} onChange={setPf('name')} required />
                   </div>
@@ -267,7 +267,7 @@ export default function Profile() {
 
                 <FormField label={t('profile.email')} error={profileErrors.email?.[0]}>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-rf-mutedFg" />
                     <input type="email" className="input-field pl-10"
                       value={profileForm.email} onChange={setPf('email')} required />
                   </div>
@@ -276,7 +276,7 @@ export default function Profile() {
 
               <FormField label={t('profile.language')} error={profileErrors.locale?.[0]}>
                 <div className="relative">
-                  <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                  <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-rf-mutedFg" />
                   <select
                     className="input-field pl-10 appearance-none cursor-pointer"
                     value={profileForm.locale}
@@ -300,7 +300,7 @@ export default function Profile() {
 
           {/* Change password */}
           <div className="card">
-            <h2 className="text-sm font-semibold text-white mb-5 flex items-center gap-2">
+            <h2 className="text-sm font-semibold text-rf-text mb-5 flex items-center gap-2">
               <Lock className="w-4 h-4 text-brand-400" />
               {t('profile.changePassword')}
             </h2>
