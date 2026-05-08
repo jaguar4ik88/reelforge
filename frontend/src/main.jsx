@@ -6,6 +6,7 @@ import { Toaster } from 'react-hot-toast'
 import App from './App'
 import { SiteProvider } from './context/SiteContext'
 import { ThemeProvider, hydrateThemeFromStorage } from './context/ThemeContext'
+import GtmRouteListener from './analytics/GtmRouteListener'
 import './i18n'
 import './index.css'
 
@@ -14,6 +15,7 @@ hydrateThemeFromStorage()
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
+      <GtmRouteListener />
       <HelmetProvider>
         <SiteProvider>
           <ThemeProvider>

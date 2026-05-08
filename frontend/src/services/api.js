@@ -105,6 +105,9 @@ export const photoFlowApi = {
   },
   /** AI vision: name, category, qualities from reference images. */
   analyzeProduct: (projectId) => api.post(`/projects/${projectId}/product-analysis`),
+  /** AI vision → saves marketplace-style text to project.description */
+  generateProductDescription: (projectId) =>
+    api.post(`/projects/${projectId}/generate-product-description`),
   startGeneration: (projectId, payload) =>
     api.post(`/projects/${projectId}/photo-generations`, payload),
 }

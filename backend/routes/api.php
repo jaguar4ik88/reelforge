@@ -74,6 +74,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('projects/from-photo', [PhotoGuidedProjectController::class, 'store']);
     Route::post('projects/{project}/product-analysis', [PhotoGuidedProjectController::class, 'analyzeProduct']);
+    Route::post('projects/{project}/generate-product-description', [PhotoGuidedProjectController::class, 'generateProductDescription']);
     Route::post('projects/{project}/photo-generations', [PhotoGuidedProjectController::class, 'startGeneration']);
     Route::get('projects/compact', [ProjectController::class, 'compactIndex']);
     Route::apiResource('projects', ProjectController::class)->only(['index', 'show', 'update', 'destroy']);

@@ -7,7 +7,7 @@ import { APP_BASE } from '../constants/routes'
 import StatusBadge from '../components/ui/StatusBadge'
 import Spinner from '../components/ui/Spinner'
 import ZoomableImage from '../components/ui/ZoomableImage'
-import { projectsApi } from '../services/api'
+import { projectsApi, photoFlowApi } from '../services/api'
 import {
   Download,
   ArrowLeft,
@@ -21,6 +21,7 @@ import {
   Share2,
   Video,
   Trash2,
+  FileText,
 } from 'lucide-react'
 
 function ProcessingAnimation({ label, sub, variant = 'film' }) {
@@ -116,8 +117,10 @@ function PhotoGuidedProjectBody({
   onShare,
   onDeleteProject,
   deleteBusy,
+  refreshProject,
 }) {
   const [improveNote, setImproveNote] = useState('')
+  const [describeBusy, setDescribeBusy] = useState(false)
   const genStatus = project.generation?.status
   const generationRunning =
     genStatus === 'pending' || genStatus === 'processing'
@@ -144,6 +147,28 @@ function PhotoGuidedProjectBody({
   const qualities = Array.isArray(project.product_meta?.qualities)
     ? project.product_meta.qualities
     : []
+
+  const handleGenerateDescription = async () => {
+    if (!project?.id || describeBusy) return
+    setDescribeBusy(true)
+    try {
+      const { data: body } = await photoFlowApi.generateProductDescription(project.id)
+      if (body?.success === false) {
+        toast.error(typeof body.message === 'string' ? body.message : t('project.generateProductDescriptionError'))
+        return
+      }
+      toast.success(body?.message || t('project.generateProductDescriptionSuccess'))
+      await refreshProject()
+    } catch (err) {
+      const msg =
+        err?.response?.data?.message || err?.message || t('project.generateProductDescriptionError')
+      toast.error(msg)
+    } finally {
+      setDescribeBusy(false)
+    }
+  }
+
+  const hasRefPhotos = Boolean(project.images?.length)
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_minmax(280px,380px)] gap-8 lg:gap-10 items-start">
@@ -268,6 +293,27 @@ function PhotoGuidedProjectBody({
             {t('project.createVideo')}
           </button>
         )}
+
+        <div className="card">
+          <h2 className="text-xs font-semibold text-rf-mutedFg uppercase tracking-wider mb-3 flex items-center gap-2">
+            <FileText className="w-3.5 h-3.5 text-brand-400" />
+            {t('project.listingDescriptionHeading')}
+          </h2>
+          <p className="text-sm text-rf-mutedFg leading-relaxed whitespace-pre-wrap min-h-[3rem] mb-3">
+            {String(project.description || '').trim() !== ''
+              ? project.description
+              : t('project.productDescriptionEmptyHint')}
+          </p>
+          <button
+            type="button"
+            onClick={handleGenerateDescription}
+            disabled={describeBusy || !hasRefPhotos}
+            className="btn-secondary w-full inline-flex items-center justify-center gap-2 py-3 text-sm font-medium disabled:opacity-45 disabled:cursor-not-allowed"
+          >
+            {describeBusy ? <Spinner size="sm" /> : <Sparkles className="w-4 h-4 shrink-0" aria-hidden />}
+            {describeBusy ? t('project.generateProductDescriptionBusy') : t('project.generateProductDescription')}
+          </button>
+        </div>
 
         <div className="card">
           <h2 className="text-xs font-semibold text-rf-mutedFg uppercase tracking-wider mb-3">
@@ -487,6 +533,7 @@ export default function ProjectView() {
           onShare={handleShare}
           onDeleteProject={handleDeleteProject}
           deleteBusy={deleteBusy}
+          refreshProject={refresh}
         />
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

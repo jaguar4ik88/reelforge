@@ -51,6 +51,8 @@ return [
         'quantity_max_plan' => 'Your subscription allows at most :max items in one generation. Choose fewer or upgrade your plan.',
         'stub_quality_1' => 'Product is visible in the frame',
         'stub_quality_2' => 'Add an image-analysis API key for automatic descriptions',
+        'description_generated' => 'Product description saved.',
+        'description_stub_suffix' => 'Add OPENAI_API_KEY on the server for a longer AI-written description.',
     ],
     'infographic_by_example' => [
         'need_example' => 'Upload an example card image or pick one from the gallery.',
