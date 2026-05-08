@@ -15,7 +15,7 @@ class ProjectResource extends JsonResource
             'title'          => $this->title,
             'price'          => $this->price,
             'description'    => $this->description,
-            'status'         => $this->status,
+            'status'         => $this->resolveGalleryStatus(),
             'template'       => $this->when(
                 ($this->creation_flow ?? 'template') !== 'photo_guided' && $this->relationLoaded('template') && $this->template !== null,
                 fn () => [
@@ -70,5 +70,34 @@ class ProjectResource extends JsonResource
             ),
             'created_at'  => $this->created_at->toISOString(),
         ];
+    }
+
+    /**
+     * Gallery / list UI: photo-guided projects with a queued or running generation job
+     * should read as "processing", not "draft", even if the row was not yet updated.
+     */
+    private function resolveGalleryStatus(): string
+    {
+        $raw = (string) $this->status;
+
+        if (($this->creation_flow ?? 'template') !== 'photo_guided') {
+            return $raw;
+        }
+
+        if ($this->relationLoaded('latestGenerationJob')) {
+            $job = $this->latestGenerationJob;
+            if ($job !== null && in_array($job->status, ['pending', 'processing'], true)) {
+                return 'processing';
+            }
+        }
+
+        if ($this->relationLoaded('generationJobs')) {
+            $hasActive = $this->generationJobs->contains(fn ($j) => in_array($j->status, ['pending', 'processing'], true));
+            if ($hasActive) {
+                return 'processing';
+            }
+        }
+
+        return $raw;
     }
 }

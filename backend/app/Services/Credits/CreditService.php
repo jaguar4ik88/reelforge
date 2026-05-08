@@ -55,7 +55,16 @@ class CreditService
     /**
      * Pricing shown on the photo-guided project page (improvements + batch generate).
      *
-     * @return array{improvement: int, photo_per_image: int, photo_scene_credits: array<string, int>, card_per_image: int, card_by_example: int, card_by_prompt: int, video: array<int, array{seconds: int, credits: int}>}
+     * @return array{
+     *     improvement: int,
+     *     photo_per_image: int,
+     *     photo_scene_credits: array<string, int>,
+     *     photo_ui_scene_lines: array<string, string>,
+     *     card_per_image: int,
+     *     card_by_example: int,
+     *     card_by_prompt: int,
+     *     video: array<int, array{seconds: int, credits: int}>
+     * }
      */
     public function getPhotoFlowPricing(): array
     {
@@ -78,10 +87,16 @@ class CreditService
         $cardByExample = (int) config('platform.credits.photo_flow.card_by_example', 2);
         $cardByPrompt = (int) config('platform.credits.photo_flow.card_by_prompt', 1);
 
+        $uiLines = config('prompts.ui_scene_lines', []);
+        $photoUiSceneLines = is_array($uiLines)
+            ? array_map(static fn ($v): string => is_string($v) ? $v : '', $uiLines)
+            : [];
+
         return [
             'improvement' => (int) config('platform.credits.photo_flow.improvement', 1),
             'photo_per_image' => $basePhoto,
             'photo_scene_credits' => $sceneCredits,
+            'photo_ui_scene_lines' => $photoUiSceneLines,
             'card_per_image' => $cardByPrompt,
             'card_by_example' => $cardByExample,
             'card_by_prompt' => $cardByPrompt,
