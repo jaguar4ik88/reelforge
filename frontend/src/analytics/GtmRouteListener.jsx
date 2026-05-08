@@ -1,23 +1,40 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useLocation } from 'react-router-dom'
+import { GA_MEASUREMENT_ID } from './googleAnalyticsId'
 
 /**
- * Pushes a virtual page view on client-side navigation so GTM/GA4 can record SPA routes.
- * In GTM, add a trigger: Custom Event = virtualPageView (or map this event in your container).
+ * SPA navigation: dataLayer push for GTM + gtag config for GA4 (`gtag.js` in index.html).
+ * Skips the first effect run to avoid duplicating the initial page_view from inline gtag in index.html.
+ * If GA4 is also fired from inside GTM, disable one path to avoid duplicate page_view.
  */
 export default function GtmRouteListener() {
   const location = useLocation()
+  const skipFirst = useRef(true)
 
   useEffect(() => {
-    const dl = window.dataLayer
-    if (!Array.isArray(dl)) {
+    if (skipFirst.current) {
+      skipFirst.current = false
       return
     }
-    dl.push({
-      event: 'virtualPageView',
-      virtualPageURL: `${location.pathname}${location.search}`,
-      virtualPageTitle: typeof document !== 'undefined' ? document.title : '',
-    })
+
+    const pagePath = `${location.pathname}${location.search}`
+    const pageTitle = typeof document !== 'undefined' ? document.title : ''
+
+    const dl = window.dataLayer
+    if (Array.isArray(dl)) {
+      dl.push({
+        event: 'virtualPageView',
+        virtualPageURL: pagePath,
+        virtualPageTitle: pageTitle,
+      })
+    }
+
+    if (typeof window.gtag === 'function') {
+      window.gtag('config', GA_MEASUREMENT_ID, {
+        page_path: pagePath,
+        page_title: pageTitle,
+      })
+    }
   }, [location.pathname, location.search])
 
   return null
