@@ -18,6 +18,7 @@ use App\Services\Project\PhotoGuidedProjectService;
 use App\Services\Subscriptions\SubscriptionEntitlementService;
 use App\Services\Vision\ProductCardPhotoAnalysisService;
 use App\Services\Vision\ProductImageCaptionService;
+use App\Services\Vision\ProductListingDescriptionService;
 use App\Services\Vision\ProductPhotoAnalysisService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -30,6 +31,7 @@ class PhotoGuidedProjectController extends Controller
         private readonly ProductImageCaptionService $captionService,
         private readonly ProductCardPhotoAnalysisService $cardPhotoAnalysis,
         private readonly ProductPhotoAnalysisService $productPhotoAnalysisService,
+        private readonly ProductListingDescriptionService $listingDescriptionService,
         private readonly ProductPromptBuilder $promptBuilder,
         private readonly WishesPromptEnrichmentService $wishesEnrichment,
         private readonly CreditService $creditService,
@@ -92,6 +94,31 @@ class PhotoGuidedProjectController extends Controller
             'data' => [
                 'product' => $meta,
                 'project' => new ProjectResource($project->fresh()->load(['template', 'images'])),
+            ],
+        ]);
+    }
+
+    /**
+     * AI vision: full product listing description saved to Project model field `description`.
+     */
+    public function generateProductDescription(Request $request, Project $project): JsonResponse
+    {
+        $this->authorizeProject($project, $request);
+
+        abort_if(! $project->isPhotoGuided(), 422, __('messages.photo_guided.not_photo_project'));
+        abort_if($project->images()->count() < 1, 422, __('messages.photo_guided.need_reference_image'));
+
+        $locale = (string) $request->header('X-Locale', 'uk');
+        $text = $this->listingDescriptionService->generate($project->fresh(['images']), $locale);
+
+        $project->forceFill(['description' => $text])->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => __('messages.photo_guided.description_generated'),
+            'data' => [
+                'description' => $text,
+                'project' => new ProjectResource($project->fresh()->load(['template', 'images', 'generationJobs', 'latestGenerationJob'])),
             ],
         ]);
     }
@@ -225,7 +252,7 @@ class PhotoGuidedProjectController extends Controller
             $job = DB::transaction(function () use ($request, $project, $validated, $caption, $prompt, $cost, $cardVisual, $enriched) {
                 $fill = [
                     'final_prompt' => $prompt,
-                    'status'       => 'processing',
+                    'status' => 'processing',
                 ];
                 if (is_array($cardVisual) && $cardVisual !== []) {
                     $meta = $project->product_meta_json;

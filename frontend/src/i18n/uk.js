@@ -749,6 +749,13 @@ export default {
       improveAction:      'Покращити',
       improveSoon:        'Ітеративні покращення з’являться незабаром.',
       qualities:          'Якості',
+      listingDescriptionHeading: 'Опис товару',
+      generateProductDescription: 'Згенерувати опис товару',
+      generateProductDescriptionBusy: 'Генеруємо…',
+      generateProductDescriptionSuccess: 'Опис товару збережено.',
+      generateProductDescriptionError: 'Не вдалося згенерувати опис. Спробуйте пізніше.',
+      productDescriptionEmptyHint:
+        'Поки немає опису — його можна згенерувати з референсних фото.',
       referencePhotos:    'Референсні фото',
       deleteProject:      'Видалити проєкт',
       deleteProjectConfirm:

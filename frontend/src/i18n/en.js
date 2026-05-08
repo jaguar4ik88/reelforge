@@ -737,6 +737,13 @@ export default {
       improveAction:      'Refine',
       improveSoon:        'Iterative refinements will be available soon.',
       qualities:          'Highlights',
+      listingDescriptionHeading: 'Product listing description',
+      generateProductDescription: 'Generate description',
+      generateProductDescriptionBusy: 'Generating…',
+      generateProductDescriptionSuccess: 'Product description saved.',
+      generateProductDescriptionError: 'Could not generate description. Try again later.',
+      productDescriptionEmptyHint:
+        'No description yet — we can draft one from your reference photos.',
       referencePhotos:    'Reference photos',
       deleteProject:      'Delete project',
       deleteProjectConfirm:
