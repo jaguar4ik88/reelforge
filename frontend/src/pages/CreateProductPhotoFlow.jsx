@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Camera, Clapperboard, ChevronDown, Sparkles } from 'lucide-react'
+import { Camera, Clapperboard, ChevronDown } from 'lucide-react'
 import toast from 'react-hot-toast'
 import ImageUploader from '../components/ImageUploader'
 import Spinner from '../components/ui/Spinner'
@@ -29,6 +29,7 @@ const DEFAULT_PHOTO_FLOW = {
     { seconds: 5, credits: 10 },
     { seconds: 20, credits: 20 },
   ],
+  photo_ui_scene_lines: {},
 }
 
 export default function CreateProductPhotoFlow({ flowVariant = 'photoOnly' }) {
@@ -43,12 +44,9 @@ export default function CreateProductPhotoFlow({ flowVariant = 'photoOnly' }) {
 
   const [files, setFiles] = useState([])
   const [loading, setLoading] = useState(false)
-  /** Reuse after running “Analyze photos” on step 1 so Generate does not create a second draft. */
-  const [analysisProjectId, setAnalysisProjectId] = useState(null)
-  const [analyzedFileSignature, setAnalyzedFileSignature] = useState('')
-  const [analysisQualities, setAnalysisQualities] = useState([])
-  const [analyzing, setAnalyzing] = useState(false)
-  const [fileChangeInvalidated, setFileChangeInvalidated] = useState(false)
+  /** Same upload batch reuses one draft project ID until files are cleared or replaced. */
+  const [draftProjectId, setDraftProjectId] = useState(null)
+  const [draftFilesSignature, setDraftFilesSignature] = useState('')
 
   const [productName, setProductName] = useState('')
   const [category, setCategory] = useState('other')
@@ -77,26 +75,10 @@ export default function CreateProductPhotoFlow({ flowVariant = 'photoOnly' }) {
     [files]
   )
 
-  /** Draft project from last successful analysis, matching current files (optional; generate can create a new project). */
-  const analysisSynced =
-    analysisProjectId != null && analyzedFileSignature === filesSignature && files.length >= 1
-
-  /** Generate requires photos and a product name; analysis is optional. */
+  /** Generate requires photos and a product name. */
   const canStartGeneration = files.length >= 1 && productName.trim() !== ''
 
-  /** AI analysis can run on photos only; API still needs a string title — we send a placeholder if empty. */
-  const analyzeReady = files.length >= 1
-
-  useEffect(() => {
-    if (!analyzedFileSignature) return
-    if (filesSignature !== analyzedFileSignature) {
-      setAnalysisProjectId(null)
-      setAnalyzedFileSignature('')
-      setAnalysisQualities([])
-      setFileChangeInvalidated(true)
-      setProductName('')
-    }
-  }, [filesSignature, analyzedFileSignature])
+  const hasPhotos = files.length >= 1
 
   const photoSceneOptions = [
     { id: 'from_wishes', titleKey: 'photoFlow.scene.fromWishes.title', subKey: 'photoFlow.scene.fromWishes.sub' },
@@ -137,10 +119,8 @@ export default function CreateProductPhotoFlow({ flowVariant = 'photoOnly' }) {
     setBatchCount(1)
     setAdvancedOpen(false)
     setOutputAspectRatio('3:4')
-    setAnalysisProjectId(null)
-    setAnalyzedFileSignature('')
-    setAnalysisQualities([])
-    setFileChangeInvalidated(false)
+    setDraftProjectId(null)
+    setDraftFilesSignature('')
   }, [flowVariant])
 
   const userWishesForApi = useMemo(() => {
@@ -167,47 +147,6 @@ export default function CreateProductPhotoFlow({ flowVariant = 'photoOnly' }) {
     generationCost >= 1 &&
     creditBalance >= generationCost &&
     (contentType !== 'video' || videoTabAllowed)
-
-  const handleRunPhotoAnalysis = async () => {
-    if (files.length < 1) {
-      toast.error(t('photoFlow.validation.photoRequired'))
-      return
-    }
-    const name = productName.trim() || t('photoFlow.temporaryNameForApi')
-    setAnalyzing(true)
-    try {
-      let projectId = analysisProjectId
-      const sameAsLastAnalyze = projectId && filesSignature === analyzedFileSignature
-      if (!sameAsLastAnalyze) {
-        const { data: createRes } = await photoFlowApi.createFromPhoto(files, {
-          productName: name,
-          category,
-        })
-        projectId = createRes.data.id
-      }
-      const { data: anRes } = await photoFlowApi.analyzeProduct(projectId)
-      const p = anRes.data?.product
-      if (p) {
-        if (typeof p.name === 'string' && p.name.trim() !== '') {
-          setProductName(p.name.slice(0, 200))
-        }
-        if (typeof p.category === 'string' && CATEGORY_IDS.includes(p.category)) {
-          setCategory(p.category)
-        }
-        const qs = Array.isArray(p.qualities) ? p.qualities : []
-        setAnalysisQualities(qs)
-      }
-      setAnalysisProjectId(projectId)
-      setAnalyzedFileSignature(filesSignature)
-      setFileChangeInvalidated(false)
-      toast.success(t('photoFlow.analyzeSuccess'))
-    } catch (err) {
-      const msg = err.response?.data?.message ?? t('common.error')
-      toast.error(msg)
-    } finally {
-      setAnalyzing(false)
-    }
-  }
 
   const handleGenerate = async () => {
     if (files.length < 1) {
@@ -243,14 +182,16 @@ export default function CreateProductPhotoFlow({ flowVariant = 'photoOnly' }) {
     setLoading(true)
     try {
       let projectId
-      if (analysisProjectId && filesSignature === analyzedFileSignature) {
-        projectId = analysisProjectId
+      if (draftProjectId != null && draftFilesSignature === filesSignature) {
+        projectId = draftProjectId
       } else {
         const { data: createRes } = await photoFlowApi.createFromPhoto(files, {
           productName: name,
           category,
         })
         projectId = createRes.data.id
+        setDraftProjectId(projectId)
+        setDraftFilesSignature(filesSignature)
       }
 
       const payload = {
@@ -267,7 +208,7 @@ export default function CreateProductPhotoFlow({ flowVariant = 'photoOnly' }) {
       const { data: genRes } = await photoFlowApi.startGeneration(projectId, payload)
 
       toast.success(genRes.message || t('photoFlow.generateQueued'))
-      navigate(`${APP_BASE}/projects/${projectId}`)
+      navigate(`${APP_BASE}/projects/${projectId}`, { replace: true })
     } catch (err) {
       const msg = err.response?.data?.message ?? t('common.error')
       toast.error(msg)
@@ -309,75 +250,33 @@ export default function CreateProductPhotoFlow({ flowVariant = 'photoOnly' }) {
           )}
         </div>
 
-        <div className="mt-6 space-y-2">
-          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{t('photoFlow.analyzeBlockTitle')}</p>
-          <p className="text-xs text-gray-500 leading-relaxed">{t('photoFlow.analyzeHint')}</p>
-          <button
-            type="button"
-            onClick={handleRunPhotoAnalysis}
-            disabled={!analyzeReady || analyzing || loading}
-            className="btn-secondary w-full flex items-center justify-center gap-2 py-3 disabled:opacity-45 disabled:cursor-not-allowed"
-          >
-            {analyzing && <Spinner size="sm" />}
-            {!analyzing && <Sparkles className="w-4 h-4 shrink-0" aria-hidden />}
-            {analyzing ? t('photoFlow.analyzingPhotos') : t('photoFlow.analyzePhotos')}
-          </button>
-        </div>
-
-        {fileChangeInvalidated && analyzeReady && (
-          <p className="text-xs text-amber-200/80 mt-3 rounded-lg border border-amber-500/20 bg-amber-950/20 px-3 py-2">
-            {t('photoFlow.photosChangedReanalyze')}
-          </p>
-        )}
-
-        {analysisQualities.length > 0 && (
-          <div className="mt-4 rounded-2xl border border-white/10 bg-gray-900/50 px-4 py-3">
-            <p className="text-xs font-medium text-gray-400 mb-2">{t('photoFlow.qualitiesFromAi')}</p>
-            <ul className="list-disc list-inside text-sm text-gray-200 space-y-0.5">
-              {analysisQualities.map((q, i) => (
-                <li key={`${i}-${q}`}>{q}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {analyzeReady && (
-          <div className="mt-6 space-y-4">
-            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{t('photoFlow.nameAfterAnalysisTitle')}</p>
-            <p className="text-xs text-gray-500 -mt-1">{t('photoFlow.nameAfterAnalysisSub')}</p>
-            <input
-              type="text"
+        <div className="mt-6 space-y-4">
+          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{t('photoFlow.productDetailsTitle')}</p>
+          <p className="text-xs text-gray-500 leading-relaxed">{t('photoFlow.productDetailsSub')}</p>
+          <input
+            type="text"
+            className="input-field w-full"
+            value={productName}
+            onChange={(e) => setProductName(e.target.value.slice(0, 200))}
+            placeholder={t('photoFlow.productName')}
+            disabled={!hasPhotos}
+          />
+          <div>
+            <label className="text-xs text-gray-500 block mb-1.5">{t('photoFlow.category')}</label>
+            <select
               className="input-field w-full"
-              value={productName}
-              onChange={(e) => setProductName(e.target.value.slice(0, 200))}
-              placeholder={t('photoFlow.productName')}
-            />
-            <div>
-              <label className="text-xs text-gray-500 block mb-1.5">{t('photoFlow.category')}</label>
-              <select
-                className="input-field w-full"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-              >
-                {CATEGORY_IDS.map((id) => (
-                  <option key={id} value={id}>
-                    {t(`photoFlow.categories.${id}`)}
-                  </option>
-                ))}
-              </select>
-            </div>
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              disabled={!hasPhotos}
+            >
+              {CATEGORY_IDS.map((id) => (
+                <option key={id} value={id}>
+                  {t(`photoFlow.categories.${id}`)}
+                </option>
+              ))}
+            </select>
           </div>
-        )}
-
-        {analyzeReady && !analysisSynced && !fileChangeInvalidated && !analyzing && (
-          <p className="text-xs text-gray-500 mt-4 leading-relaxed">{t('photoFlow.runAnalyzeOptional')}</p>
-        )}
-
-        {analysisSynced && (
-          <p className="text-xs text-brand-400/90 mt-4">
-            {flowVariant === 'videoOnly' ? t('photoFlow.step1ReadyHintVideo') : t('photoFlow.step1ReadyHint')}
-          </p>
-        )}
+        </div>
       </section>
 
       <section className="card relative border border-white/10 rounded-3xl bg-gray-900/40 lg:sticky lg:top-24">
@@ -550,7 +449,7 @@ export default function CreateProductPhotoFlow({ flowVariant = 'photoOnly' }) {
             <button
               type="button"
               onClick={handleGenerate}
-              disabled={loading || analyzing || !canStartGeneration || !standardGenerateAllowed}
+              disabled={loading || !canStartGeneration || !standardGenerateAllowed}
               className="btn-primary flex-1 flex items-center justify-center gap-2 py-3 min-w-0 disabled:opacity-45 disabled:cursor-not-allowed"
             >
               {loading && <Spinner size="sm" />}
@@ -564,7 +463,7 @@ export default function CreateProductPhotoFlow({ flowVariant = 'photoOnly' }) {
                 id="photo-flow-quantity"
                 value={batchCount}
                 onChange={(e) => setBatchCount(Number(e.target.value))}
-                disabled={loading || analyzing}
+                disabled={loading}
                 className="input-field w-full py-3 min-h-[48px] text-center"
               >
                 {Array.from({ length: maxBatchQuantity }, (_, i) => i + 1).map((n) => (

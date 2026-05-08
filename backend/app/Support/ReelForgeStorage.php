@@ -29,17 +29,23 @@ class ReelForgeStorage
 
     public static function avatarsPath(int $userId): string
     {
-        return self::userContentPrefix() . "/{$userId}/avatars";
+        return self::userContentPrefix()."/{$userId}/avatars";
     }
 
     public static function projectImagesPath(Project $project): string
     {
-        return self::userContentPrefix() . "/{$project->user_id}/projects/{$project->id}/images";
+        return self::userContentPrefix()."/{$project->user_id}/projects/{$project->id}/images";
+    }
+
+    /** Uploads + generated assets: `{prefix}/{userId}/projects/{projectId}` */
+    public static function projectRootPath(Project $project): string
+    {
+        return self::userContentPrefix()."/{$project->user_id}/projects/{$project->id}";
     }
 
     public static function projectVideoRelativePath(int $userId, int $projectId): string
     {
-        return self::userContentPrefix() . "/{$userId}/projects/{$projectId}/video.mp4";
+        return self::userContentPrefix()."/{$userId}/projects/{$projectId}/video.mp4";
     }
 
     public static function url(string $disk, ?string $path, int $expiresHours = 2): ?string

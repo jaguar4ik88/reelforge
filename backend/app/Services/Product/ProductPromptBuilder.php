@@ -39,7 +39,8 @@ class ProductPromptBuilder
         }
 
         $caption = trim($imageCaption);
-        if ($caption !== '') {
+        // Photo flow: rely on reference pixels + structured scene/style; omit vision/meta caption.
+        if ($caption !== '' && $contentType !== 'photo') {
             $parts[] = 'Reference image description (from analysis): '.$caption;
         }
 

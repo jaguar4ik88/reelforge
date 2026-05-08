@@ -54,6 +54,9 @@ PROMPT,
         ]),
 
         'studio' => implode(', ', [
+            'catalog / studio shot — isolated product on clean white seamless background, soft even lighting, sharp detail',
+            'strip from the reference all watermarks, shop URLs, stock marks, subtitles, captions, stickers, badges, price tags as overlay, screenshots UI text, promo banners, QR codes as graphic overlays, and any typography not physically printed on the product',
+            'output must contain no watermark, no added text, no extra logos beyond what is molded or printed on the product itself',
             'professional studio product photography',
             'clean white seamless background',
             'three-point softbox lighting',
@@ -73,6 +76,23 @@ PROMPT,
         'minimal' => 'minimalist product photo, marble surface, elegant composition, luxury brand aesthetic',
 
         'outdoor' => 'outdoor product photography, natural environment, golden hour lighting',
+    ],
+
+    /**
+     * Optional short “Scene:” lines for client-side prompt preview tooling.
+     * Source of truth for photo scene wording alongside `styles` (server prompt uses `styles`).
+     *
+     * @var array<string, string>
+     */
+    'ui_scene_lines' => [
+        'from_wishes' =>
+            'Scene: follow the user wishes as the primary art direction — composition, lighting, setting, and mood come from their description.',
+        'no_watermark' =>
+            'Scene: remove watermarks, shop URLs, stickers, screenshots UI text, and overlaid typography from the reference; place the product on a clean neutral studio background; final image — no captions or added graphics beyond physical print on the product; sharp, listing-ready.',
+        'studio' =>
+            'Scene: strip watermarks and all non-physical overlaid text from the reference; isolated catalog hero — clean white seamless background, soft even lighting, sharp product detail — no captions, stamps, or added graphics except molded or printed marks on the product itself.',
+        'environment' =>
+            'Scene: product placed in a believable real-world environment; natural light, depth, context.',
     ],
 
     'content_types' => [

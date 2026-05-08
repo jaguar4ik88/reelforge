@@ -118,20 +118,33 @@ export function useProjectFilterOptions() {
 
 export function useProject(id) {
   const [project, setProject] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(!!id)
 
-  const fetch = useCallback(async () => {
-    if (!id) return
-    setLoading(true)
-    try {
-      const { data: body } = await projectsApi.get(id)
-      setProject(body.data)
-    } finally {
+  const fetchProject = useCallback(
+    async (silent = false) => {
+      if (!id) return
+      if (!silent) setLoading(true)
+      try {
+        const { data: body } = await projectsApi.get(id)
+        setProject(body.data)
+      } finally {
+        if (!silent) setLoading(false)
+      }
+    },
+    [id],
+  )
+
+  useEffect(() => {
+    if (!id) {
+      setProject(null)
       setLoading(false)
+      return
     }
-  }, [id])
+    fetchProject(false)
+  }, [id, fetchProject])
 
-  useEffect(() => { fetch() }, [fetch])
+  /** Silent reload — no full-page spinner (for polling while generation runs). */
+  const refreshSilent = useCallback(() => fetchProject(true), [fetchProject])
 
-  return { project, loading, refresh: fetch }
+  return { project, loading, refresh: refreshSilent }
 }

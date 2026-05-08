@@ -175,7 +175,10 @@ class PhotoGuidedProjectController extends Controller
         $project->refresh();
 
         $firstImage = $project->images()->orderBy('order')->first();
-        $caption = $this->captionService->describe($firstImage);
+        $contentTypeForCaption = (string) ($validated['content_type'] ?? '');
+        $caption = $contentTypeForCaption === 'photo'
+            ? ''
+            : $this->captionService->describe($firstImage);
         $rawWishes = $validated['user_wishes'] ?? '';
 
         $cardAnalysisJson = null;
@@ -220,7 +223,10 @@ class PhotoGuidedProjectController extends Controller
         try {
             $cardVisual = $cardVisualForStore;
             $job = DB::transaction(function () use ($request, $project, $validated, $caption, $prompt, $cost, $cardVisual, $enriched) {
-                $fill = ['final_prompt' => $prompt];
+                $fill = [
+                    'final_prompt' => $prompt,
+                    'status'       => 'processing',
+                ];
                 if (is_array($cardVisual) && $cardVisual !== []) {
                     $meta = $project->product_meta_json;
                     if (! is_array($meta)) {

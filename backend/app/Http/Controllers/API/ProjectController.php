@@ -70,7 +70,7 @@ class ProjectController extends Controller
         return response()->json([
             'success' => true,
             'message' => '',
-            'data'    => new ProjectResource($project->load(['template', 'images', 'generationJobs'])),
+            'data'    => new ProjectResource($project->load(['template', 'images', 'generationJobs', 'latestGenerationJob'])),
         ]);
     }
 

@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useEffect, useRef, useState, useCallback } from 'react'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import toast from 'react-hot-toast'
 import { useProject } from '../hooks/useProjects'
@@ -7,6 +7,7 @@ import { APP_BASE } from '../constants/routes'
 import StatusBadge from '../components/ui/StatusBadge'
 import Spinner from '../components/ui/Spinner'
 import ZoomableImage from '../components/ui/ZoomableImage'
+import { projectsApi } from '../services/api'
 import {
   Download,
   ArrowLeft,
@@ -19,6 +20,7 @@ import {
   Sparkles,
   Share2,
   Video,
+  Trash2,
 } from 'lucide-react'
 
 function ProcessingAnimation({ label, sub, variant = 'film' }) {
@@ -33,6 +35,38 @@ function ProcessingAnimation({ label, sub, variant = 'film' }) {
         <div className="text-center px-6">
           <p className="text-white font-semibold">{label}</p>
           <p className="text-gray-500 text-sm mt-1">{sub}</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function PhotoGuidedGenerationPlaceholder({ referenceUrl, contentType, t }) {
+  const Icon = contentType === 'video' ? Film : Image
+  return (
+    <div className="relative w-full max-w-xl mx-auto aspect-[4/5] max-h-[min(70vh,720px)] rounded-2xl overflow-hidden border border-brand-500/25 shadow-2xl shadow-brand-900/30 bg-gray-950">
+      {referenceUrl ? (
+        <img
+          src={referenceUrl}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover scale-110 blur-lg opacity-35"
+          draggable={false}
+          aria-hidden
+        />
+      ) : null}
+      <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/90 to-gray-950/70" aria-hidden />
+      <div className="relative z-10 h-full min-h-[280px] flex flex-col items-center justify-center gap-5 px-6 text-center">
+        <div className="relative">
+          <div className="w-20 h-20 rounded-full border-4 border-brand-500/25 border-t-brand-500 animate-spin" />
+          <Icon className="absolute inset-0 m-auto w-9 h-9 text-brand-400" aria-hidden />
+        </div>
+        <div className="space-y-2">
+          <p className="text-white text-lg font-semibold tracking-tight">{t('project.generatingProjectTitle')}</p>
+          <p className="text-gray-400 text-sm leading-relaxed max-w-sm mx-auto">
+            {contentType === 'video'
+              ? t('project.generatingProjectSubVideo')
+              : t('project.generatingProjectSubPhoto')}
+          </p>
         </div>
       </div>
     </div>
@@ -56,9 +90,39 @@ function ImageResult({ url }) {
 
 const IMPROVE_CREDIT_COST = 1
 
-function PhotoGuidedProjectBody({ project, t }) {
+function ProjectDeleteFooter({ t, busy, disabled, onDelete }) {
+  return (
+    <div className="pt-3 mt-1 border-t border-red-500/20">
+      <button
+        type="button"
+        onClick={onDelete}
+        disabled={disabled || busy}
+        className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-xl border border-red-500/35 bg-red-950/25 text-red-200 text-sm font-medium hover:bg-red-950/45 transition-colors disabled:opacity-45 disabled:cursor-not-allowed"
+      >
+        {busy ? <Spinner size="sm" /> : <Trash2 className="w-4 h-4 shrink-0" aria-hidden />}
+        {busy ? t('project.deleteProjectBusy') : t('project.deleteProject')}
+      </button>
+      <p className="text-[11px] text-gray-600 text-center mt-2 leading-snug">{t('project.deleteProjectHint')}</p>
+    </div>
+  )
+}
+
+function PhotoGuidedProjectBody({
+  project,
+  t,
+  canDownload,
+  downloadUrl,
+  downloadName,
+  onShare,
+  onDeleteProject,
+  deleteBusy,
+}) {
   const [improveNote, setImproveNote] = useState('')
-  const isProcessing = project.status === 'processing'
+  const genStatus = project.generation?.status
+  const generationRunning =
+    genStatus === 'pending' || genStatus === 'processing'
+  const isProcessing =
+    project.status === 'processing' || generationRunning
   const isDone         = project.status === 'done'
   const hasResult      = Boolean(project.result_url)
   const genSettings    = project.generation?.settings ?? {}
@@ -82,8 +146,8 @@ function PhotoGuidedProjectBody({ project, t }) {
     : []
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[1fr_minmax(300px,400px)] gap-8 lg:gap-10 items-start">
-      <div>
+    <div className="grid grid-cols-1 lg:grid-cols-[1fr_minmax(280px,380px)] gap-8 lg:gap-10 items-start">
+      <div className="flex flex-col gap-6 min-w-0">
         <div className="rounded-2xl overflow-hidden bg-gray-900/50 border border-white/10">
           {isDone && hasResult ? (
             showAsVideoPlayer ? (
@@ -106,10 +170,10 @@ function PhotoGuidedProjectBody({ project, t }) {
               </div>
             )
           ) : isProcessing ? (
-            <ProcessingAnimation
-              variant={contentType === 'video' ? 'film' : 'photo'}
-              label={contentType === 'video' ? t('project.processingVideo') : t('project.processingPhoto')}
-              sub={contentType === 'video' ? t('project.processingVideoSub') : t('project.processingPhotoSub')}
+            <PhotoGuidedGenerationPlaceholder
+              referenceUrl={project.images?.[0]?.url}
+              contentType={contentType}
+              t={t}
             />
           ) : (
             <div className="aspect-[4/5] max-h-[min(70vh,640px)] flex flex-col items-center justify-center gap-3 px-6">
@@ -120,38 +184,6 @@ function PhotoGuidedProjectBody({ project, t }) {
             </div>
           )}
         </div>
-
-      </div>
-
-      <aside className="space-y-6">
-        {qualities.length > 0 && (
-          <div className="card">
-            <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-              {t('project.qualities')}
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              {qualities.map((q) => (
-                <span
-                  key={q}
-                  className="text-xs px-3 py-1 rounded-full bg-white/5 border border-white/10 text-gray-200"
-                >
-                  {q}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {showCreateVideo && (
-          <button
-            type="button"
-            onClick={handleCreateVideo}
-            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gray-900 hover:bg-gray-800 border border-white/10 text-white font-medium transition-colors"
-          >
-            <Video className="w-5 h-5 shrink-0" />
-            {t('project.createVideo')}
-          </button>
-        )}
 
         <div className="card">
           <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
@@ -171,9 +203,71 @@ function PhotoGuidedProjectBody({ project, t }) {
               {project.generation.final_prompt}
             </p>
           ) : (
-            <p className="text-sm text-gray-500">{t('project.noVideo')}</p>
+            <p className="text-sm text-gray-500">{t('project.noPromptYet')}</p>
           )}
         </div>
+      </div>
+
+      <aside className="flex flex-col gap-4 min-w-0">
+        {qualities.length > 0 && (
+          <div className="card py-3">
+            <h2 className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-2">
+              {t('project.qualities')}
+            </h2>
+            <div className="flex flex-wrap gap-1.5">
+              {qualities.map((q) => (
+                <span
+                  key={q}
+                  className="text-[11px] px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-gray-300"
+                >
+                  {q}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {canDownload ? (
+          <a
+            href={downloadUrl}
+            download={downloadName}
+            target="_blank"
+            rel="noreferrer"
+            className="btn-primary w-full inline-flex items-center justify-center gap-2 py-3.5 text-sm font-medium"
+          >
+            <Download className="w-5 h-5 shrink-0" />
+            {t('project.download')}
+          </a>
+        ) : (
+          <button
+            type="button"
+            disabled
+            className="btn-primary w-full inline-flex items-center justify-center gap-2 py-3.5 text-sm font-medium opacity-45 cursor-not-allowed pointer-events-none"
+          >
+            <Download className="w-5 h-5 shrink-0" />
+            {t('project.download')}
+          </button>
+        )}
+
+        <button
+          type="button"
+          onClick={onShare}
+          className="btn-secondary w-full inline-flex items-center justify-center gap-2 py-3.5 text-sm font-medium"
+        >
+          <Share2 className="w-5 h-5 shrink-0" />
+          {t('project.share')}
+        </button>
+
+        {showCreateVideo && (
+          <button
+            type="button"
+            onClick={handleCreateVideo}
+            className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gray-900 hover:bg-gray-800 border border-white/10 text-white text-sm font-medium transition-colors"
+          >
+            <Video className="w-5 h-5 shrink-0" />
+            {t('project.createVideo')}
+          </button>
+        )}
 
         <div className="card">
           <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
@@ -202,7 +296,7 @@ function PhotoGuidedProjectBody({ project, t }) {
             <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
               {t('project.referencePhotos')}
             </h2>
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 gap-2">
               {project.images.map((img) => (
                 <div
                   key={img.id}
@@ -221,6 +315,12 @@ function PhotoGuidedProjectBody({ project, t }) {
           </div>
         )}
 
+        <ProjectDeleteFooter
+          t={t}
+          busy={deleteBusy}
+          disabled={isProcessing}
+          onDelete={onDeleteProject}
+        />
       </aside>
     </div>
   )
@@ -231,15 +331,38 @@ export default function ProjectView() {
   const { t }                         = useTranslation()
   const { project, loading, refresh } = useProject(id)
   const pollRef                       = useRef(null)
+  const navigate                      = useNavigate()
+  const [deleteBusy, setDeleteBusy]   = useState(false)
+
+  const handleDeleteProject = useCallback(async () => {
+    if (!id) return
+    if (!window.confirm(t('project.deleteProjectConfirm'))) return
+    setDeleteBusy(true)
+    try {
+      await projectsApi.delete(Number(id))
+      toast.success(t('project.deleteProjectSuccess'))
+      navigate(`${APP_BASE}/gallery`)
+    } catch (err) {
+      const msg = err?.response?.data?.message ?? t('project.deleteProjectError')
+      toast.error(msg)
+    } finally {
+      setDeleteBusy(false)
+    }
+  }, [id, t, navigate])
 
   useEffect(() => {
-    if (project?.status === 'processing') {
+    const gen = project?.generation?.status
+    const pollActive =
+      project?.status === 'processing' ||
+      (project?.creation_flow === 'photo_guided' &&
+        (gen === 'pending' || gen === 'processing'))
+    if (pollActive) {
       pollRef.current = setInterval(refresh, 5000)
     } else {
       clearInterval(pollRef.current)
     }
     return () => clearInterval(pollRef.current)
-  }, [project?.status, refresh])
+  }, [project?.status, project?.creation_flow, project?.generation?.status, refresh])
 
   if (loading) return <div className="flex justify-center py-20"><Spinner size="lg" /></div>
 
@@ -327,33 +450,44 @@ export default function ProjectView() {
               )}
             </div>
           </div>
-          <div className="flex flex-wrap gap-2 shrink-0">
-            {canDownload && (
-              <a
-                href={downloadUrl}
-                download={downloadName}
-                target="_blank"
-                rel="noreferrer"
-                className="btn-primary inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm"
+          {!isPhotoGuided && (
+            <div className="flex flex-wrap gap-2 shrink-0">
+              {canDownload && (
+                <a
+                  href={downloadUrl}
+                  download={downloadName}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-primary inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm"
+                >
+                  <Download className="w-4 h-4 shrink-0" />
+                  {t('project.download')}
+                </a>
+              )}
+              <button
+                type="button"
+                onClick={handleShare}
+                className="btn-secondary inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm"
               >
-                <Download className="w-4 h-4 shrink-0" />
-                {t('project.download')}
-              </a>
-            )}
-            <button
-              type="button"
-              onClick={handleShare}
-              className="btn-secondary inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm"
-            >
-              <Share2 className="w-4 h-4 shrink-0" />
-              {t('project.share')}
-            </button>
-          </div>
+                <Share2 className="w-4 h-4 shrink-0" />
+                {t('project.share')}
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
       {isPhotoGuided ? (
-        <PhotoGuidedProjectBody project={project} t={t} />
+        <PhotoGuidedProjectBody
+          project={project}
+          t={t}
+          canDownload={canDownload}
+          downloadUrl={downloadUrl}
+          downloadName={downloadName}
+          onShare={handleShare}
+          onDeleteProject={handleDeleteProject}
+          deleteBusy={deleteBusy}
+        />
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div>
@@ -481,6 +615,13 @@ export default function ProjectView() {
                 </p>
               </div>
             )}
+
+            <ProjectDeleteFooter
+              t={t}
+              busy={deleteBusy}
+              disabled={isProcessing}
+              onDelete={handleDeleteProject}
+            />
           </div>
         </div>
       )}

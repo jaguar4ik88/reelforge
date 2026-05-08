@@ -689,7 +689,7 @@ export default {
       photos:        'Photos ({{count}})',
       videoGen:      'Video generation',
       processing:    'Processing…',
-      processingSub: 'This page refreshes automatically every 5 seconds',
+      processingSub: 'You can open other pages — status updates every few seconds while you view this project.',
       ready:         'Video is ready!',
       readySub:      'Download it on the left',
       failed:        'Generation failed',
@@ -699,6 +699,7 @@ export default {
       refresh:       'Refresh',
       download:      'Download',
       noVideo:       'Video not generated yet',
+      noPromptYet:   'No generation prompt saved yet.',
       notFound:      'Project not found.',
       backDashboard: 'Back to dashboard',
       needImages:    'Need at least 3 photos to generate a video.',
@@ -710,9 +711,15 @@ export default {
       promptSent:    'Prompt sent to AI',
       imageCaption:  'Product photo description (auto-detected)',
       processingPhoto:    'Generating image…',
-      processingPhotoSub: 'This page refreshes automatically every 5 seconds',
+      processingPhotoSub: 'You can open other pages — we refresh this project in the background.',
       processingVideo:    'Generating video…',
-      processingVideoSub: 'Image-to-video can take a few minutes. This page refreshes every 5 seconds.',
+      processingVideoSub:
+        'Image-to-video can take a few minutes. You can browse the site — this page updates in the background.',
+      generatingProjectTitle: 'Your project is generating',
+      generatingProjectSubPhoto:
+        'We are creating your image from the reference photo. You can keep browsing — results appear here when ready.',
+      generatingProjectSubVideo:
+        'Video generation can take a few minutes. You can open other pages — this view updates automatically.',
       promptLabel:        'Generation prompt',
       backGallery:        'Gallery',
       downloadOriginal:   'Download',
@@ -726,6 +733,13 @@ export default {
       improveSoon:        'Iterative refinements will be available soon.',
       qualities:          'Highlights',
       referencePhotos:    'Reference photos',
+      deleteProject:      'Delete project',
+      deleteProjectConfirm:
+        'Delete this project permanently? Uploaded photos and all generated files will be removed from storage.',
+      deleteProjectBusy:  'Deleting…',
+      deleteProjectSuccess: 'Project deleted.',
+      deleteProjectError: 'Could not delete project.',
+      deleteProjectHint:  'This removes the database record and files on disk; it cannot be undone.',
       readyImage:         'Image is ready',
       readyImageSub:      'Download or share below',
       creditsShort:       'cr.',
@@ -745,7 +759,7 @@ export default {
     photoFlow: {
       title:    'Product photos',
       subtitle:
-        'Upload product shots, run AI photo analysis, then set generation. A draft is created when you analyze or generate.',
+        'Upload product photos, add a name and category, then configure generation. A draft project is created when you start generation.',
       pageTitleVideo: 'Video generation',
       pageSubtitleVideo:
         'Upload product photos, describe the motion in English, and generate a short vertical video.',
@@ -758,6 +772,9 @@ export default {
       analyzeBlockTitle: '1. Analyze photos',
       nameAfterAnalysisTitle: '2. Name and category',
       nameAfterAnalysisSub: 'Enter now or run analysis below — AI can suggest values you can edit.',
+      productDetailsTitle: 'Product details',
+      productDetailsSub:
+        'Name and category are for your project list; the model uses your uploaded photos and the scene you pick in step 2.',
       runAnalyzeToContinue:
         'Run photo analysis — the product name and category will appear here, then step 2 will unlock.',
       runAnalyzeOptional:

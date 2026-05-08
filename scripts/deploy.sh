@@ -7,7 +7,10 @@
 #   SKIP_GIT_PULL=1     — do not fetch/merge git (e.g. CI already synced files)
 #   USE_DOCKER=1        — run `docker compose` restart for app, nginx, queue (see below)
 #   COPY_FRONTEND_TO=   — if set, rsync frontend/dist/ to this directory (trailing slash ok)
+#   SUPERVISOR_QUEUE_PROGRAM — e.g. reelforge-queue-worker:reelforge-queue-worker_00; if set, supervisorctl restart
 #
+# Queue: `queue:work` must run as a daemon (Docker `queue`, Supervisor, systemd)—do not paste it here (deploy would hang).
+# Example Supervisor: scripts/supervisor/reelforge-queue-worker.conf.example
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -55,6 +58,11 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 php artisan queue:restart
+
+if [[ -n "${SUPERVISOR_QUEUE_PROGRAM:-}" ]] && command -v supervisorctl &>/dev/null; then
+  log "Supervisor: restart ${SUPERVISOR_QUEUE_PROGRAM}"
+  supervisorctl restart "${SUPERVISOR_QUEUE_PROGRAM}" || log "WARN: supervisorctl restart failed — check Supervisor config"
+fi
 
 if [[ "${USE_DOCKER:-0}" == "1" ]]; then
   log "Docker: restart services"

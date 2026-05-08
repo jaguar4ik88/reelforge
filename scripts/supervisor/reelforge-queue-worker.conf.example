@@ -1,0 +1,23 @@
+; Laravel queue worker — copy to Supervisor and fix paths + user.
+;
+;   sudo cp scripts/supervisor/reelforge-queue-worker.conf.example /etc/supervisor/conf.d/reelforge-queue-worker.conf
+;   sudo sed -i 's|/var/www/your-repo|/actual/path/to/repo|g' /etc/supervisor/conf.d/reelforge-queue-worker.conf
+;   sudo supervisorctl reread && sudo supervisorctl update && sudo supervisorctl start reelforge-queue-worker
+;
+; In deploy: export SUPERVISOR_QUEUE_PROGRAM=reelforge-queue-worker
+; (already handled by scripts/deploy.sh after php artisan queue:restart)
+
+[program:reelforge-queue-worker]
+command=php /var/www/your-repo/backend/artisan queue:work database --sleep=3 --tries=3 --max-time=3600
+directory=/var/www/your-repo/backend
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+user=www-data
+redirect_stderr=true
+stdout_logfile=/var/www/your-repo/backend/storage/logs/queue-worker.log
+stopwaitsecs=3600
+
+; Redis queue instead of database:
+; command=php /var/www/your-repo/backend/artisan queue:work redis --sleep=3 --tries=3 --max-time=3600
