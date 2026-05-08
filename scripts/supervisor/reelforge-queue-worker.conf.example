@@ -1,5 +1,8 @@
 ; Laravel queue worker — copy to Supervisor and fix paths + user.
 ;
+; Hosted panels that only accept a script path can use backend/run-queue-worker.sh
+; (committed in the repo; chmod +x is preserved via git).
+;
 ;   sudo cp scripts/supervisor/reelforge-queue-worker.conf.example /etc/supervisor/conf.d/reelforge-queue-worker.conf
 ;   sudo sed -i 's|/var/www/your-repo|/actual/path/to/repo|g' /etc/supervisor/conf.d/reelforge-queue-worker.conf
 ;   sudo supervisorctl reread && sudo supervisorctl update && sudo supervisorctl start reelforge-queue-worker
